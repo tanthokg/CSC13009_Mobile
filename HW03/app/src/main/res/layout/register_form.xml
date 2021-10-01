@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+
+    <TextView
+        android:id="@+id/txtUsername"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:gravity="end"
+        android:text="Username "
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtPassword1"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="80dp"
+        android:gravity="end"
+        android:text="Password "
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtPassword2"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="120dp"
+        android:gravity="end"
+        android:text="Retype "
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edtUsername"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/txtUsername" />
+
+    <EditText
+        android:id="@+id/edtPassword1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="60dp"
+        android:layout_toRightOf="@+id/txtPassword1"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/edtPassword2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="100dp"
+        android:layout_toRightOf="@+id/txtPassword2"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/txtBirthday"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtPassword2"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:gravity="right"
+        android:text="Birthdate "
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:id="@+id/layoutBirthday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtBirthday"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
+
+        <EditText
+            android:id="@+id/edtBirthdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="choose your birthdate"
+            android:textAlignment="center"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:textSize="20sp" />
+        <!--<EditText
+            android:id="@+id/edtBirthday"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtBirthday"
+            android:minHeight="48dp"
+            android:hint="choose your birthdate"
+            android:textAlignment="center"
+            android:clickable="false"
+            android:inputType="none"/>-->
+
+        <Button
+            android:id="@+id/btnPickDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtBirthday"
+            android:layout_marginStart="20dp"
+            android:text=" select "
+            android:textSize="18sp"
+            android:background="@color/cld_picker_color"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/txtGender"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutBirthday"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:gravity="right"
+        android:text="Gender "
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <RadioGroup
+        android:id="@+id/rgGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtGender"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <RadioButton
+            android:id="@+id/rbMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:text="Male" />
+
+        <RadioButton
+            android:id="@+id/rbFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:text="Female" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/txtHobbies"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rgGender"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:gravity="end"
+        android:text="Hobbies"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:id="@+id/layoutHobbies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtHobbies"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
+
+        <CheckBox
+            android:id="@+id/cbTennis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tennis" />
+
+        <CheckBox
+            android:id="@+id/cbFutbal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="Futbal" />
+
+        <CheckBox
+            android:id="@+id/cbOthers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="Others" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp">
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:textSize="20sp"
+            android:padding="16dp"
+            android:background="@color/retry_button_color"/>
+
+        <Button
+            android:id="@+id/btnSignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="Sign up"
+            android:textSize="20sp"
+            android:padding="16dp"
+            android:background="@color/registry_button_color"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

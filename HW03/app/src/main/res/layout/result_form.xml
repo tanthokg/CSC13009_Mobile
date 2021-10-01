@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ResultActivity">
+
+    <TextView
+        android:id="@+id/resultTitle"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:text="Your Information Registered"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/resultUsername"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/resultTitle"
+        app:layout_constraintStart_toStartOf="@+id/resultTitle"
+        app:layout_constraintTop_toBottomOf="@+id/resultTitle" />
+
+    <TextView
+        android:id="@+id/resultPassword"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/resultUsername"
+        app:layout_constraintStart_toStartOf="@+id/resultUsername"
+        app:layout_constraintTop_toBottomOf="@+id/resultUsername" />
+
+    <TextView
+        android:id="@+id/resultBirthdate"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/resultPassword"
+        app:layout_constraintStart_toStartOf="@+id/resultPassword"
+        app:layout_constraintTop_toBottomOf="@+id/resultPassword" />
+
+    <TextView
+        android:id="@+id/resultGender"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/resultBirthdate"
+        app:layout_constraintStart_toStartOf="@+id/resultBirthdate"
+        app:layout_constraintTop_toBottomOf="@+id/resultBirthdate" />
+
+    <TextView
+        android:id="@+id/resultHobbies"
+        android:layout_width="360dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/resultGender"
+        app:layout_constraintStart_toStartOf="@+id/resultGender"
+        app:layout_constraintTop_toBottomOf="@+id/resultGender" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="  exit  "
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
