@@ -14,29 +14,25 @@ import org.w3c.dom.Text;
 
 public class ResultActivity extends Activity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.result_form);
-        TextView resultUsername = (TextView) findViewById(R.id.resultUsername);
-        TextView resultPassword = (TextView) findViewById(R.id.resultPassword);
-        TextView resultBirthdate = (TextView) findViewById(R.id.resultBirthdate);
-        TextView resultGender = (TextView) findViewById(R.id.resultGender);
-        TextView resultHobbies = (TextView) findViewById(R.id.resultHobbies);
+    private TextView resultUsername;
+    private TextView resultPassword;
+    private TextView resultBirthdate;
+    private TextView resultGender;
+    private TextView resultHobbies;
+    Button btnExit;
 
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
+    //Matching the components in register_form.xml with ResultActivity attribute
+    private void initComponents() {
 
-        String password = "";
-        for (int i = 0; i < bundle.getString("password").length(); ++i)
-            password += '*';
-        resultUsername.setText("Username: " + bundle.getString("username"));
-        resultPassword.setText("Password: " + password);
-        resultBirthdate.setText("Birthdate: " + bundle.getString("birthdate"));
-        resultGender.setText("Gender: " + bundle.getString("gender"));
-        resultHobbies.setText("Hobbies: " + bundle.getString("hobbies"));
+        //Match the components
+        resultUsername = (TextView) findViewById(R.id.resultUsername);
+        resultPassword = (TextView) findViewById(R.id.resultPassword);
+        resultBirthdate = (TextView) findViewById(R.id.resultBirthdate);
+        resultGender = (TextView) findViewById(R.id.resultGender);
+        resultHobbies = (TextView) findViewById(R.id.resultHobbies);
+        btnExit = (Button) findViewById(R.id.btnExit);
 
-        Button btnExit = (Button) findViewById(R.id.btnExit);
+        //Click btnExit will kill ResultActivity and RegsiterActivity
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,4 +40,33 @@ public class ResultActivity extends Activity {
             }
         });
     }
+
+    //Get data from RegisterActivity and set them to screen
+    private void loadDataFromRegisterForm() {
+        Intent data = getIntent();
+        Bundle bundle = data.getExtras();
+
+        //Replace original password with '*'
+        StringBuilder password = new StringBuilder("");
+        int passwordSize = bundle.getString("password").length();
+        for (int i = 0; i < passwordSize; ++i) {
+            password.append('*');
+        }
+
+        //Set data to screen
+        resultUsername.setText("Username: " + bundle.getString("username"));
+        resultPassword.setText("Password: " + password.toString());
+        resultBirthdate.setText("Birthdate: " + bundle.getString("birthdate"));
+        resultGender.setText("Gender: " + bundle.getString("gender"));
+        resultHobbies.setText("Hobbies: " + bundle.getString("hobbies"));
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.result_form);
+        initComponents();
+        loadDataFromRegisterForm();
+    }
+
 }
