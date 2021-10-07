@@ -1,4 +1,4 @@
-package com.example.homework03;
+package com.example.homework04;
 
 public class User {
     private String name;

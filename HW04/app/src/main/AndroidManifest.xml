@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.homework03">
+    package="com.example.homework04">
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/appicon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/appicon"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Homework03">
+        android:theme="@style/Theme.Homework04">
         <activity
             android:name=".MainActivity"
             android:exported="true">
