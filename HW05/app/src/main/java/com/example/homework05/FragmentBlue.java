@@ -16,14 +16,15 @@ public class FragmentBlue extends Fragment {
     MainActivity main;
     Context context = null;
     String message = "";
+    private static int currentUserIndex;
 
-    private final User[] users = {
-            new User("Đoàn Thu Ngân", "19_3", "19120302", R.drawable.ic_launcher_background, 8),
-            new User("Huỳnh Tấn Thọ", "19_3", "19120383", R.drawable.ic_launcher_background, 7),
-            new User("Phan Đặng Diễm Uyên", "19_3", "19120426", R.drawable.ic_launcher_background, 9),
-            new User("Sử Nhật Đăng", "19_3", "19120469", R.drawable.ic_launcher_background, 10),
-            new User("Đỗ Thái Duy", "19_3", "19120492", R.drawable.ic_launcher_background, 9)
-        };
+    public static int getCurrentUserIndex() {
+        return currentUserIndex;
+    }
+
+    public static void setCurrentUserIndex(int currentUserIndex) {
+        FragmentBlue.currentUserIndex = currentUserIndex;
+    }
 
     public static FragmentBlue newInstance(String strArg) {
         FragmentBlue fragment = new FragmentBlue();
@@ -50,6 +51,7 @@ public class FragmentBlue extends Fragment {
         final TextView txtMsg = (TextView) layout_blue.findViewById(R.id.txtMsg);
         ListView listView = (ListView) layout_blue.findViewById(R.id.studentListView);
 
+        User[] users = MainActivity.getUsers();
         CustomAdapter customAdapter = new CustomAdapter(context, R.layout.layout_blue_item, users);
         listView.setAdapter(customAdapter);
 
@@ -58,8 +60,11 @@ public class FragmentBlue extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                txtMsg.setText("Selected student: " + position);
-                main.fragmentToMain("BLUE", "Selected Row: " + position);
+                currentUserIndex = position;
+                txtMsg.setText("Mã số: " + MainActivity.getUserAtIndex(currentUserIndex).getStudentID());
+                FragmentRed.chosenUser = currentUserIndex;
+
+                main.fragmentToMain("BLUE", "Selected Row: " + currentUserIndex);
             }
         });
         return layout_blue;
