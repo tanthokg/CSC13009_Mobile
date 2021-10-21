@@ -21,6 +21,7 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
     MainActivity main;
     Context context = null;
     ListView listView;
+    TextView txtViewBlue;
 
     private Student[] _students = {
             new Student("19120302", "Đoàn Thu Ngân", "19_3", 9, R.drawable.avatar_ngan),
@@ -59,7 +60,7 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LinearLayout layout_blue = (LinearLayout) inflater.inflate(R.layout.layout_blue, null);
 
-        final TextView txtViewBlue = (TextView) layout_blue.findViewById(R.id.txtViewBlue);
+        txtViewBlue = (TextView) layout_blue.findViewById(R.id.txtViewBlue);
         listView = (ListView) layout_blue.findViewById(R.id.listViewBlue);
 
         CustomerAdapter adapter = new CustomerAdapter(context, R.layout.layout_blue_item, _students);
@@ -91,5 +92,6 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
                 listView.getChildAt(i).setBackgroundColor(Color.WHITE);
         }
         listView.getChildAt(position).setBackgroundColor(Color.parseColor("#FCDADA"));
+        txtViewBlue.setText(_students[position].getStudentID());
     }
 }

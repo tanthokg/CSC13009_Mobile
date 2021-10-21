@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/avatarBlue"
-        android:layout_width="25dp"
+        android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/ic_launcher_background"
         android:layout_weight="1"/>
