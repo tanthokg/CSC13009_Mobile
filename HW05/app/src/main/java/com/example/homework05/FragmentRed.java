@@ -9,127 +9,108 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.view.menu.MenuView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class FragmentRed extends Fragment implements FragmentCallbacks {
+public class FragmentRed extends Fragment implements FragmentCallbacks{
     MainActivity main;
-    TextView txtStudentID, txtStudentName, txtStudentClass, txtStudentScore;
-    Button btnNext, btnPrevious, btnFirst, btnLast;
-    public static int chosenUser;
+    TextView txtStudentIDRed, txtNameRed, txtClassRed, txtScoreRed;
+    Button btnFirst, btnPrevious, btnNext, btnLast;
+    private Student[] students;
+    int currentPosition;
 
-    public static FragmentRed newInstance(String strArg) {
+    public static FragmentRed newInstance(String strArg1) {
         FragmentRed fragment = new FragmentRed();
         Bundle bundle = new Bundle();
-        bundle.putString("arg1", strArg);
+        bundle.putString("arg1", strArg1);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!(getActivity() instanceof MainCallbacks)) {
+        if(!(getActivity() instanceof MainCallbacks)) {
             throw new IllegalStateException("Activity must implement MainCallbacks");
         }
         main = (MainActivity) getActivity();
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LinearLayout view_layout_red = (LinearLayout) inflater.inflate(R.layout.layout_red, null);
-        txtStudentID = (TextView) view_layout_red.findViewById(R.id.red_txtStudentId);
-        txtStudentName = (TextView) view_layout_red.findViewById(R.id.red_txtStudentName);
-        txtStudentClass = (TextView) view_layout_red.findViewById(R.id.red_txtStudentClass);
-        txtStudentScore = (TextView) view_layout_red.findViewById(R.id.red_txtStudentScore);
-
-        btnFirst = (Button) view_layout_red.findViewById(R.id.btnFirst);
-        btnLast = (Button) view_layout_red.findViewById(R.id.btnLast);
-        btnNext = (Button) view_layout_red.findViewById(R.id.btnNext);
-        btnPrevious = (Button) view_layout_red.findViewById(R.id.btnPrevious);
-
-        btnFirst.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != MainActivity.getUsers())
-                {
-                    FragmentBlue.setCurrentUserIndex(0);
-                    mainToFragment(0);
-                }
-            }
-        });
-        btnLast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != MainActivity.getUsers())
-                {
-                    int lastIndex = MainActivity.getUsers().length - 1;
-                    FragmentBlue.setCurrentUserIndex(lastIndex);
-                    mainToFragment(lastIndex);
-                }
-            }
-        });
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != MainActivity.getUsers())
-                {
-                    int nextIndex = FragmentBlue.getCurrentUserIndex() + 1;
-                    int lastIndex = MainActivity.getUsers().length - 1;
-                    if (FragmentBlue.getCurrentUserIndex() < lastIndex) {
-                        FragmentBlue.setCurrentUserIndex(nextIndex);
-                    }
-                    mainToFragment(nextIndex);
-                }
-            }
-        });
-        btnPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != MainActivity.getUsers())
-                {
-                    int previousIndex = FragmentBlue.getCurrentUserIndex() - 1;
-                    if (FragmentBlue.getCurrentUserIndex() > 0) {
-                        FragmentBlue.setCurrentUserIndex(previousIndex);
-                    }
-                    mainToFragment(previousIndex);
-                }
-            }
-        });
-
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LinearLayout layout_red = (LinearLayout) inflater.inflate(R.layout.layout_red, null);
+        txtStudentIDRed = (TextView) layout_red.findViewById(R.id.txtStudentIDRed);
+        txtNameRed = (TextView) layout_red.findViewById(R.id.txtNameRed);
+        txtClassRed = (TextView) layout_red.findViewById(R.id.txtClassRed);
+        txtScoreRed = (TextView) layout_red.findViewById(R.id.txtScoreRed);
 
         try {
             Bundle arguments = getArguments();
-            txtStudentID.setText(arguments.getString("arg1", "NO VALUE"));
+            txtStudentIDRed.setText(arguments.getString("arg1",""));
         }
         catch (Exception e) {
-            Log.e("RED BUNDLE ERROR – ", "" + e.getMessage());
+            Log.e("RED BUNDLE ERROR - ","" + e.getMessage());
         }
-        return view_layout_red;
+
+        students = main.students;
+
+        btnFirst = (Button) layout_red.findViewById(R.id.btnFirst);
+        btnFirst.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                main.onMsgFromFragToMain("RED", 0);
+            }
+        });
+
+        btnPrevious = (Button) layout_red.findViewById(R.id.btnPrevious);
+        btnPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                main.onMsgFromFragToMain("RED", currentPosition-1);
+            }
+        });
+
+        btnNext = (Button) layout_red.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                main.onMsgFromFragToMain("RED", currentPosition+1);
+            }
+        });
+
+        btnLast = (Button) layout_red.findViewById(R.id.btnLast);
+        btnLast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                main.onMsgFromFragToMain("RED", students.length - 1);
+            }
+        });
+
+        return layout_red;
     }
 
     @Override
-    public void mainToFragment(int index) {
-        User user = MainActivity.getUserAtIndex(index);
-        txtStudentID.setText(user.getStudentID());
-        txtStudentName.setText(user.getName());
-        txtStudentClass.setText(user.getStudentClass());
-        txtStudentScore.setText(Float.toString(user.getAvg()));
-        updateButtons(index);
-        FragmentBlue.setCurrentUserIndex(index);
-
+    public void onMsgFromMainToFragment(int position) {
+        currentPosition = position;
+        txtStudentIDRed.setText(students[position].getStudentID());
+        txtNameRed.setText(students[position].getName());
+        txtClassRed.setText(students[position].getClassID());
+        txtScoreRed.setText(Float.toString(students[position].getAvgScore()));
+        updateButton(students, position);
     }
 
-    private void updateButtons(int index) {
-        int lastIndex = MainActivity.getUsers().length - 1;
-        if (index > 0) {
-            btnPrevious.setEnabled(true);
-            btnNext.setEnabled(index != lastIndex);
-        }
-        else {
+    public void updateButton(Student[] students, int position) {
+        if (position == 0)
             btnPrevious.setEnabled(false);
+        else
+            btnPrevious.setEnabled(true);
+
+        if (position == (students.length - 1))
+            btnNext.setEnabled(false);
+        else
             btnNext.setEnabled(true);
-        }
     }
 }
