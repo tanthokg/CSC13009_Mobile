@@ -2,7 +2,7 @@ package com.example.gallery;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +11,19 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
     private final Context context;
-    private final int[] images;
+    private final String pathToPicturesFolder;
+    private final File pictureFile;
+    private final File[] pictureFiles;
 
-    public GalleryAdapter(Context context, int[] images) {
+    public GalleryAdapter(Context context, String pathToPicturesFolder) {
         this.context = context;
-        this.images = images;
+        this.pathToPicturesFolder = pathToPicturesFolder;
+        this.pictureFile = new File(pathToPicturesFolder);
+        this.pictureFiles = pictureFile.listFiles();
     }
 
     @NonNull
@@ -29,11 +35,18 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.imageItem.setImageResource(images[position]);
+        // Get item path at current position
+        String galleryItemPath = pictureFiles[position].getAbsolutePath();
+        // Set item to the widget
+        holder.imageItem.setImageDrawable(Drawable.createFromPath(galleryItemPath));
+
         holder.imageItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showLargeGalleryItem(holder.getAdapterPosition());
+                // On click, send the folder path and the current position to the destination activity
+                // Sending the string was more preferable, as to send a File object
+                // we need to serialize and deserialize the object before we could use it
+                showLargeGalleryItem(pathToPicturesFolder, holder.getAdapterPosition());
             }
         });
     }
@@ -43,9 +56,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         return 20;
     }
 
-    private void showLargeGalleryItem(int position) {
+    private void showLargeGalleryItem(String pathToPicturesFolder, int itemPosition) {
         Intent intent = new Intent(context, LargeImage.class);
-        intent.putExtra("imageResId", images[position]);
+        // Send the folder path and the current position to the destination activity
+        intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
+        intent.putExtra("itemPosition", itemPosition);
         context.startActivity(intent);
     }
 
@@ -53,7 +68,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         private final ImageView imageItem;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageItem =itemView.findViewById(R.id.galleryItem);
+            imageItem = itemView.findViewById(R.id.galleryItem);
         }
     }
 }
