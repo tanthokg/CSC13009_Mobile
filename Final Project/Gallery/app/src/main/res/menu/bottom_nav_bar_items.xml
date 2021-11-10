@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nav_pictures"
+        android:icon="@drawable/icon_pictures_24"
+        android:title="Pictures" />
+    <item
+        android:id="@+id/nav_album"
+        android:icon="@drawable/icon_albums_24"
+        android:title="Albums" />
+    <item
+        android:id="@+id/nav_setting"
+        android:icon="@drawable/icon_settings_24"
+        android:title="Setting" />
+</menu>

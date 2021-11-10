@@ -3,6 +3,7 @@ package com.example.gallery;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,8 +11,12 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 
@@ -38,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.avatar19,
                 R.drawable.avatar20
     };*/
-    RecyclerView galleryRecView;
-    TextView txtMsg;
-    File[] pictureFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,43 +52,33 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
-        txtMsg = findViewById(R.id.txtMsg);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentHolder, new PicturesFragment(this))
+                .commit();
 
-    }
-
-    void readPicturesFolder() {
-        try {
-            // Get path to external storage: /storage/emulated/0
-            String absolutePathToSDCard = Environment.getExternalStorageDirectory().getAbsolutePath();
-            // Path to Pictures folder: /storage/emulated/0/Pictures/
-            String pathToPicturesFolder = absolutePathToSDCard + "/Pictures/";
-            txtMsg.append("Path: " + pathToPicturesFolder + "\n");
-            File pictureFile = new File(pathToPicturesFolder);
-            pictureFiles = pictureFile.listFiles();
-            txtMsg.append( "Exist: " + pictureFile.exists() + ". Is Directory: " + pictureFile.isDirectory()
-                    + ". Can Read: " + pictureFile.canRead() + "\n");
-            if (pictureFiles == null)
-                txtMsg.append("NULL");
-            else {
-                txtMsg.append("File Count: " + pictureFiles.length + "\n");
-                // Load gallery with current path
-                loadGallery(pathToPicturesFolder);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment selectedFragment = null;
+                switch (item.getItemId()) {
+                    case R.id.nav_pictures:
+                        selectedFragment = new PicturesFragment(MainActivity.this);
+                        break;
+                    case R.id.nav_album:
+                        selectedFragment = new AlbumsFragment();
+                        break;
+                    case R.id.nav_setting:
+                        selectedFragment = new SettingsFragment();
+                        break;
+                }
+                if (selectedFragment != null)
+                    getSupportFragmentManager()
+                            .beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                return true;
             }
-
-        }
-        catch (Exception e) {
-            txtMsg.append(e.getMessage());
-        }
-    }
-
-    void loadGallery(String pathToPicturesFolder) {
-        // The idea was to send a string path to the adapter, not a File object
-        // The adapter will then create everything we need from the provided path
-        // This implementation is my personal idea only, it is not permanent
-        galleryRecView = findViewById(R.id.galleryRecView);
-        GalleryAdapter galleryAdapter = new GalleryAdapter(this, pathToPicturesFolder);
-        galleryRecView.setAdapter(galleryAdapter);
-        galleryRecView.setLayoutManager(new GridLayoutManager(this, 3));
+        });
     }
 
     @Override
@@ -95,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                readPicturesFolder();
+                // TODO: load images, maybe
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied!", Toast.LENGTH_SHORT).show();
             }
