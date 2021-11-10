@@ -65,13 +65,7 @@ public class LargeImage extends AppCompatActivity {
 
     void updateButton(int currentPosition)
     {
-        if (0 == currentPosition)
-            btnPrev.setEnabled(false);
-        else
-            btnPrev.setEnabled(true);
-        if ((pictureFiles.length - 1) == currentPosition)
-            btnNext.setEnabled(false);
-        else
-            btnNext.setEnabled(true);
+        btnPrev.setEnabled(0 != currentPosition);
+        btnNext.setEnabled((pictureFiles.length - 1) != currentPosition);
     }
 }
