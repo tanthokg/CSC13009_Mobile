@@ -26,6 +26,11 @@ public class PicturesFragment extends Fragment {
         this.context = context;
     }
 
+    public static PicturesFragment getInstance(Context context)
+    {
+        return new PicturesFragment(context);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

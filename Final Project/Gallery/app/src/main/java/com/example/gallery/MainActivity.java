@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.avatar19,
                 R.drawable.avatar20
     };*/
+    public PicturesFragment picturesFragment;
+    public AlbumsFragment albumsFragment;
+    public SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +56,13 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
+        picturesFragment = PicturesFragment.getInstance(MainActivity.this);
+        albumsFragment = AlbumsFragment.getInstance();
+        settingsFragment = SettingsFragment.getInstance();
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentHolder, new PicturesFragment(this))
+                .replace(R.id.fragmentHolder, picturesFragment)
                 .commit();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
@@ -64,18 +72,27 @@ public class MainActivity extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 switch (item.getItemId()) {
                     case R.id.nav_pictures:
-                        selectedFragment = new PicturesFragment(MainActivity.this);
+                        //selectedFragment = new PicturesFragment(MainActivity.this);
+                        selectedFragment = picturesFragment;
                         break;
                     case R.id.nav_album:
-                        selectedFragment = new AlbumsFragment();
+                        //selectedFragment = new AlbumsFragment();
+                        selectedFragment = albumsFragment;
                         break;
                     case R.id.nav_setting:
-                        selectedFragment = new SettingsFragment();
+                        //selectedFragment = new SettingsFragment();
+                        selectedFragment = settingsFragment;
                         break;
                 }
+                // Use addToBackStack to return the previous fragment when the Back button is pressed
                 if (selectedFragment != null)
                     getSupportFragmentManager()
-                            .beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                            .beginTransaction()
+                            .replace(R.id.fragmentHolder, selectedFragment)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
+                // TODO: when the Back button is pressed, the selected item in Navigation is not selected
                 return true;
             }
         });
