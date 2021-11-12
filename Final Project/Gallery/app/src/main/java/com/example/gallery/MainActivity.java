@@ -89,10 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentHolder, selectedFragment)
-                            .setReorderingAllowed(true)
-                            .addToBackStack(null)
                             .commit();
-                // TODO: when the Back button is pressed, the selected item in Navigation is not selected
                 return true;
             }
         });
