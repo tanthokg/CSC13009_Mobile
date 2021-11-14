@@ -2,6 +2,7 @@ package com.example.gallery;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
         albumsFragment = AlbumsFragment.getInstance();
         settingsFragment = SettingsFragment.getInstance();
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentHolder, picturesFragment)
@@ -72,15 +74,12 @@ public class MainActivity extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 switch (item.getItemId()) {
                     case R.id.nav_pictures:
-                        //selectedFragment = new PicturesFragment(MainActivity.this);
                         selectedFragment = picturesFragment;
                         break;
                     case R.id.nav_album:
-                        //selectedFragment = new AlbumsFragment();
                         selectedFragment = albumsFragment;
                         break;
                     case R.id.nav_setting:
-                        //selectedFragment = new SettingsFragment();
                         selectedFragment = settingsFragment;
                         break;
                 }
