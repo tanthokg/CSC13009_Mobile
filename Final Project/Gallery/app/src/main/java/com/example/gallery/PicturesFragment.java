@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 
 public class PicturesFragment extends Fragment {
@@ -21,9 +25,17 @@ public class PicturesFragment extends Fragment {
     private TextView txtMsg;
     private File[] pictureFiles;
     Context context;
+    private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
+    private boolean addIsPressed;
+    private Animation menuFABShow, menuFABHide;
 
     PicturesFragment(Context context) {
         this.context = context;
+    }
+
+    public static PicturesFragment getInstance(Context context)
+    {
+        return new PicturesFragment(context);
     }
 
     @Nullable
@@ -32,6 +44,44 @@ public class PicturesFragment extends Fragment {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
         galleryRecView = picturesFragment.findViewById(R.id.picturesRecView);
         txtMsg = picturesFragment.findViewById(R.id.txtMsg);
+
+        btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
+        btnUpload = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUpload_PicturesFragment);
+        btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
+        btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
+
+        menuFABShow = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_button_show);
+        menuFABHide = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_bottom_hide);
+
+        addIsPressed = false;
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAnimationButton(addIsPressed);
+                setVisibilityButton(addIsPressed);
+                addIsPressed = !addIsPressed;
+            }
+        });
+
+        galleryRecView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    btnAdd.show();
+                }
+                if (RecyclerView.SCROLL_STATE_DRAGGING == newState) {
+                    if (addIsPressed) {
+                        setAnimationButton(addIsPressed);
+                        setVisibilityButton(addIsPressed);
+                        addIsPressed = !addIsPressed;
+                    }
+                    btnAdd.hide();
+                }
+            }
+        });
+
         readPicturesFolder();
         return picturesFragment;
     }
@@ -67,5 +117,33 @@ public class PicturesFragment extends Fragment {
         GalleryAdapter galleryAdapter = new GalleryAdapter(context, pathToPicturesFolder);
         galleryRecView.setAdapter(galleryAdapter);
         galleryRecView.setLayoutManager(new GridLayoutManager(context, 3));
+    }
+
+    void setAnimationButton(boolean isPressed) {
+        if (isPressed) {
+            btnAdd.setImageResource(R.drawable.ic_round_add_24);
+            btnUpload.startAnimation(menuFABHide);
+            btnCamera.startAnimation(menuFABHide);
+            btnUrl.startAnimation(menuFABHide);
+        }
+        else {
+            btnAdd.setImageResource(R.drawable.ic_round_close_24);
+            btnUpload.startAnimation(menuFABShow);
+            btnCamera.startAnimation(menuFABShow);
+            btnUrl.startAnimation(menuFABShow);
+        }
+    }
+
+    void setVisibilityButton(boolean isPressed) {
+        if (isPressed) {
+            btnUpload.setVisibility(FloatingActionButton.INVISIBLE);
+            btnCamera.setVisibility(FloatingActionButton.INVISIBLE);
+            btnUrl.setVisibility(FloatingActionButton.INVISIBLE);
+        }
+        else {
+            btnUpload.setVisibility(FloatingActionButton.VISIBLE);
+            btnCamera.setVisibility(FloatingActionButton.VISIBLE);
+            btnUrl.setVisibility(FloatingActionButton.VISIBLE);
+        }
     }
 }

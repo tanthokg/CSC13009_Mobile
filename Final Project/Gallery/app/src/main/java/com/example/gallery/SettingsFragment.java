@@ -10,6 +10,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class SettingsFragment extends Fragment {
+    public static SettingsFragment getInstance()
+    {
+        return new SettingsFragment();
+    }
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

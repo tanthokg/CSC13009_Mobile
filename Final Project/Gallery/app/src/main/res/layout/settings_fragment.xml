@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/txtSettings"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Settings fragment"
-        android:textSize="32sp" />
+        android:text="Setting"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:id="@+id/txtSetting"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/sDarkMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSetting"
+        android:checked="false"
+        android:padding="20dp"
+        android:text="Dark mode"/>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/design_default_color_on_secondary"
+        android:layout_below="@id/sDarkMode"/>
 
 </RelativeLayout>
