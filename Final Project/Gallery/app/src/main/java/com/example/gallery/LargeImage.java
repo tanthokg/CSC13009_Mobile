@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class LargeImage extends AppCompatActivity {
     ImageView largeImage;
@@ -30,7 +31,12 @@ public class LargeImage extends AppCompatActivity {
         // Create a File object from the received path
         pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
         // Create an array contains all files in the folder above
-        pictureFiles = pictureFile.listFiles();
+        pictureFiles = pictureFile.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return s.endsWith("png") || s.endsWith("jpg");
+            }
+        });
         // Get current position from intent
         // It has to be final int[] when used in anonymous functions, otherwise it will cause errors
         final int[] currentPosition = {intent.getIntExtra("itemPosition", -1)};
