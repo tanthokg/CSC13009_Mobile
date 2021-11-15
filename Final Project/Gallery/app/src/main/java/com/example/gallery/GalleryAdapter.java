@@ -12,18 +12,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
     private final Context context;
     private final String pathToPicturesFolder;
     private final File pictureFile;
-    private final File[] pictureFiles;
+    private File[] pictureFiles;
 
     public GalleryAdapter(Context context, String pathToPicturesFolder) {
         this.context = context;
         this.pathToPicturesFolder = pathToPicturesFolder;
         this.pictureFile = new File(pathToPicturesFolder);
-        this.pictureFiles = pictureFile.listFiles();
+
+        FilenameFilter filter = new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return s.endsWith("png") || s.endsWith("jpg");
+            }
+        };
+        this.pictureFiles = pictureFile.listFiles(filter);
     }
 
     @NonNull
@@ -43,9 +51,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         holder.imageItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // On click, send the folder path and the current position to the destination activity
+                // On click, send the folder path and the current position to a new activity
                 // Sending the string was more preferable, as to send a File object
-                // we need to serialize and deserialize the object before we could use it
+                // we need to serialize and deserialize the object
                 showLargeGalleryItem(pathToPicturesFolder, holder.getAdapterPosition());
             }
         });
@@ -53,7 +61,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return 20;
+        return pictureFiles.length;
     }
 
     private void showLargeGalleryItem(String pathToPicturesFolder, int itemPosition) {

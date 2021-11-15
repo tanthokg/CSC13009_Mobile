@@ -68,29 +68,27 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
-                switch (item.getItemId()) {
-                    case R.id.nav_pictures:
-                        selectedFragment = picturesFragment;
-                        break;
-                    case R.id.nav_album:
-                        selectedFragment = albumsFragment;
-                        break;
-                    case R.id.nav_setting:
-                        selectedFragment = settingsFragment;
-                        break;
-                }
-                // Use addToBackStack to return the previous fragment when the Back button is pressed
-                if (selectedFragment != null)
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragmentHolder, selectedFragment)
-                            .commit();
-                return true;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            switch (item.getItemId()) {
+                case R.id.nav_pictures:
+                    selectedFragment = picturesFragment;
+                    break;
+                case R.id.nav_album:
+                    selectedFragment = albumsFragment;
+                    break;
+                case R.id.nav_setting:
+                    selectedFragment = settingsFragment;
+                    break;
             }
+            // Use addToBackStack to return the previous fragment when the Back button is pressed
+            // Checking null was just a precaution
+            if (selectedFragment != null)
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentHolder, selectedFragment)
+                        .commit();
+            return true;
         });
     }
 
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // TODO: load images, maybe
+                Toast.makeText(MainActivity.this, "Permission granted!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied!", Toast.LENGTH_SHORT).show();
             }

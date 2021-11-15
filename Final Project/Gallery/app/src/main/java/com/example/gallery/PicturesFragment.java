@@ -19,11 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class PicturesFragment extends Fragment {
     private RecyclerView galleryRecView;
     private TextView txtMsg;
+    private File[] allFiles;
     private File[] pictureFiles;
+
     Context context;
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
     private boolean addIsPressed;
@@ -50,7 +53,7 @@ public class PicturesFragment extends Fragment {
         btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
         btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
 
-        menuFABShow = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_button_show);
+        menuFABShow = AnimationUtils.loadAnimation(context, R.anim.menu_button_show);
         menuFABHide = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_bottom_hide);
 
         addIsPressed = false;
@@ -93,14 +96,23 @@ public class PicturesFragment extends Fragment {
             // Path to Pictures folder: /storage/emulated/0/Pictures/
             String pathToPicturesFolder = absolutePathToSDCard + "/Pictures/";
             txtMsg.append("Path: " + pathToPicturesFolder + "\n");
+
             File pictureFile = new File(pathToPicturesFolder);
-            pictureFiles = pictureFile.listFiles();
+            FilenameFilter filter = new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.endsWith("png") || s.endsWith("jpg");
+                }
+            };
+            allFiles = pictureFile.listFiles();
+            pictureFiles = pictureFile.listFiles(filter);
             txtMsg.append( "Exist: " + pictureFile.exists() + ". Is Directory: " + pictureFile.isDirectory()
                     + ". Can Read: " + pictureFile.canRead() + "\n");
             if (pictureFiles == null)
                 txtMsg.append("NULL");
             else {
-                txtMsg.append("File Count: " + pictureFiles.length + "\n");
+                txtMsg.append("Total Item: " + allFiles.length + "\n");
+                txtMsg.append("Total Pictures: " + pictureFiles.length);
                 // Load gallery with current path
                 loadGallery(pathToPicturesFolder);
             }
