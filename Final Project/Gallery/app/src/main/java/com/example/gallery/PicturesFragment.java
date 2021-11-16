@@ -1,8 +1,13 @@
 package com.example.gallery;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 
 public class PicturesFragment extends Fragment {
@@ -31,6 +37,7 @@ public class PicturesFragment extends Fragment {
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
+    private final int CAMERA_CAPTURED = 100;
 
     PicturesFragment(Context context) {
         this.context = context;
@@ -82,6 +89,13 @@ public class PicturesFragment extends Fragment {
                     }
                     btnAdd.hide();
                 }
+            }
+        });
+
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCamera();
             }
         });
 
@@ -156,6 +170,45 @@ public class PicturesFragment extends Fragment {
             btnUpload.setVisibility(FloatingActionButton.VISIBLE);
             btnCamera.setVisibility(FloatingActionButton.VISIBLE);
             btnUrl.setVisibility(FloatingActionButton.VISIBLE);
+        }
+    }
+
+    void openCamera() {
+        try {
+            Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            getActivity().startActivityFromFragment(this, takePhotoIntent, CAMERA_CAPTURED);
+        }
+        catch (Exception e) {
+            Log.e("Error to open camera", e.getMessage());
+        }
+    }
+
+    private File getFolderDirectory() {
+        String pathToPictureFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath();
+        File pictureDirectory = new File(pathToPictureFolder);
+        if (!pictureDirectory.exists())
+            pictureDirectory.mkdirs();
+        return pictureDirectory;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == CAMERA_CAPTURED) {
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                File pictureFile = new File(getFolderDirectory(), bitmap.toString() + ".jpg");
+                FileOutputStream output = null;
+                try {
+                    output = new FileOutputStream(pictureFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                    output.flush();
+                    output.close();
+                } catch (Exception e) {
+                    Log.e("Error to save image", e.getMessage());
+                }
+                readPicturesFolder();
+            }
         }
     }
 }
