@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 Manifest.permission.CAMERA, Manifest.permission.INTERNET}, 1);
 
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
-        albumsFragment = AlbumsFragment.getInstance();
+        albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
         getSupportFragmentManager()
                 .beginTransaction()
