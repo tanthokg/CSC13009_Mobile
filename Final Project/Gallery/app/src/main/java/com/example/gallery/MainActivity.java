@@ -11,8 +11,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
@@ -26,7 +32,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainCallbacks {
     /*private final int[] images = {
         R.drawable.avatar01,
                 R.drawable.avatar02,
@@ -59,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA, Manifest.permission.INTERNET}, 1);
 
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
         albumsFragment = AlbumsFragment.getInstance();
@@ -110,5 +117,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public boolean checkInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo == null) {
+            Toast.makeText(MainActivity.this, "No network is currently active!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!networkInfo.isConnected()) {
+            Toast.makeText(MainActivity.this, "Network is not connected!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!networkInfo.isAvailable()) {
+            Toast.makeText(MainActivity.this, "Network is not available!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        Toast.makeText(MainActivity.this, "Network is OK!", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onMsgFromFragtoMain(String sender, String request) {
+        switch (sender) {
+            case "PICTURES-FLAG":
+                new UrlDialogFragment().show(getSupportFragmentManager(), UrlDialogFragment.Tag);
+                break;
+            case "URL-FLAG":
+                boolean network = checkInternetConnection();
+                if (!network)
+                    return;
+                DownloadImageFromURL task = new DownloadImageFromURL();
+                task.execute(request);
+                try {
+                    Bitmap bitmap = task.get();
+                    picturesFragment.onMsgFromMainToFrag(bitmap);
+                }
+                catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "No result", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,8 +29,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class PicturesFragment extends Fragment {
+public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView galleryRecView;
     private TextView txtMsg;
     private File[] allFiles;
@@ -38,6 +44,7 @@ public class PicturesFragment extends Fragment {
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
+    MainActivity main;
 
     PicturesFragment(Context context) {
         this.context = context;
@@ -46,6 +53,17 @@ public class PicturesFragment extends Fragment {
     public static PicturesFragment getInstance(Context context)
     {
         return new PicturesFragment(context);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            main = (MainActivity) getActivity();
+        }
+        catch (IllegalStateException e) {
+            throw new IllegalStateException("MainActivity must implement callbacks");
+        }
     }
 
     @Nullable
@@ -96,6 +114,13 @@ public class PicturesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 openCamera();
+            }
+        });
+
+        btnUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.onMsgFromFragtoMain("PICTURES-FLAG", "Open Url Dialog");
             }
         });
 
@@ -191,24 +216,33 @@ public class PicturesFragment extends Fragment {
         return pictureDirectory;
     }
 
+    void saveImage(Bitmap bitmap) {
+        File pictureFile = new File(getFolderDirectory(), bitmap.toString() + ".jpg");
+        FileOutputStream output = null;
+        try {
+            output = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+            output.flush();
+            output.close();
+        } catch (Exception e) {
+            Log.e("Error to save image", e.getMessage());
+        }
+        readPicturesFolder();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == CAMERA_CAPTURED) {
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                File pictureFile = new File(getFolderDirectory(), bitmap.toString() + ".jpg");
-                FileOutputStream output = null;
-                try {
-                    output = new FileOutputStream(pictureFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-                    output.flush();
-                    output.close();
-                } catch (Exception e) {
-                    Log.e("Error to save image", e.getMessage());
-                }
-                readPicturesFolder();
+                saveImage(bitmap);
             }
         }
+    }
+
+    @Override
+    public void onMsgFromMainToFrag(Bitmap result) {
+        saveImage(result);
     }
 }
