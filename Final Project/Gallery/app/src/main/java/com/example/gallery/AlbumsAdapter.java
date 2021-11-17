@@ -110,10 +110,22 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
                         case R.id.deleteAlbum:
                             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(itemView.getContext());
                             confirmDialog.setMessage("Are you sure to delete this album?");
-
-                            albums.remove(getAdapterPosition());
-                            notifyItemRemoved(getAdapterPosition());
-                            Toast.makeText(itemView.getContext(), "Album " + getAdapterPosition() + " Deleted", Toast.LENGTH_SHORT).show();
+                            confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    albums.remove(getAdapterPosition());
+                                    notifyItemRemoved(getAdapterPosition());
+                                    Toast.makeText(itemView.getContext(), "Album " + getAdapterPosition() + " Deleted",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                }
+                            });
+                            confirmDialog.create();
+                            confirmDialog.show();
                             break;
                         default:
                             break;
