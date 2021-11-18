@@ -41,16 +41,19 @@ public class AlbumsFragment extends Fragment {
         return new AlbumsFragment(context);
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View albumsFragment = inflater.inflate(R.layout.albums_fragment, container, false);
 
-        albums.add("Flowers");
-        albums.add("Dogs");
-        albums.add("Cats");
-        albums.add("Backyard Garden");
-        albums.add("School");
+        if (albums.size() == 0) {
+            albums.add("Flowers");
+            albums.add("Dogs");
+            albums.add("Cats");
+            albums.add("Backyard Garden");
+            albums.add("School");
+        }
 
         albumRecView = albumsFragment.findViewById(R.id.albumsRecView);
         albumsAdapter = new AlbumsAdapter(albums);
