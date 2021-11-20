@@ -3,26 +3,14 @@ package com.example.gallery;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class UrlDialogFragment extends DialogFragment {
     private String url;
@@ -58,7 +46,7 @@ public class UrlDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         url = edtURL.getText().toString();
                         dismiss();
-                        main.onMsgFromFragtoMain("URL-FLAG", url);
+                        main.onMsgFromFragToMain("URL-FLAG", url);
                     }
                 });
 

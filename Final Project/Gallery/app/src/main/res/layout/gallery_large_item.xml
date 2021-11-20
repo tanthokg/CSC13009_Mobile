@@ -28,7 +28,7 @@
         android:layout_alignParentBottom="false"
         android:layout_marginEnd="9dp"
         android:layout_marginBottom="610dp"
-        android:text="next"></Button>
+        android:text="next" />
 
     <include layout="@layout/nav_bar_items"></include>
 </RelativeLayout>

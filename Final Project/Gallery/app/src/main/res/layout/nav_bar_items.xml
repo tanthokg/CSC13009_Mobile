@@ -20,7 +20,7 @@
         app:itemIconSize="28dp"
         app:itemIconTint="@drawable/selected_icon"
         app:itemTextColor="@color/design_default_color_on_secondary"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="auto"
         app:menu="@menu/album_item_menu" />
 
 </RelativeLayout>

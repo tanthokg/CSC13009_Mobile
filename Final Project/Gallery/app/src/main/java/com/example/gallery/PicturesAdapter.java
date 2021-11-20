@@ -11,16 +11,18 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
+public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHolder> {
     private final Context context;
     private final String pathToPicturesFolder;
     private final File pictureFile;
     private File[] pictureFiles;
 
-    public GalleryAdapter(Context context, String pathToPicturesFolder) {
+    public PicturesAdapter(Context context, String pathToPicturesFolder) {
         this.context = context;
         this.pathToPicturesFolder = pathToPicturesFolder;
         this.pictureFile = new File(pathToPicturesFolder);
@@ -37,7 +39,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pictures_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -45,15 +47,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get item path at current position
         String galleryItemPath = pictureFiles[position].getAbsolutePath();
-        // Set item to the widget
+        // Set item to the ImageView
         holder.imageItem.setImageDrawable(Drawable.createFromPath(galleryItemPath));
 
         holder.imageItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // On click, send the folder path and the current position to a new activity
-                // Sending the string was more preferable, as to send a File object
-                // we need to serialize and deserialize the object
+                // Send the folder path and the current position to a new activity
+                // Sending the string was more preferable. If you want to send a File object
+                // you can use GSON library to serialize and deserialize objects
                 showLargeGalleryItem(pathToPicturesFolder, holder.getAdapterPosition());
             }
         });
@@ -70,13 +72,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
         context.startActivity(intent);
+
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageItem;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageItem = itemView.findViewById(R.id.galleryItem);
+            imageItem = itemView.findViewById(R.id.picturesItem);
         }
     }
 }

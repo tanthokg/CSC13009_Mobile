@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     @Override
-    public void onMsgFromFragtoMain(String sender, String request) {
+    public void onMsgFromFragToMain(String sender, String request) {
         switch (sender) {
             case "PICTURES-FLAG":
                 new UrlDialogFragment().show(getSupportFragmentManager(), UrlDialogFragment.Tag);

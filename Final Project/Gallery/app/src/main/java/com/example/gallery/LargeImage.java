@@ -31,12 +31,11 @@ public class LargeImage extends AppCompatActivity {
     {
         File a = new File(path);
         a.delete();
-       // largeImage.setImageResource(-1);
-        //largeImage.setImageResource(android.R.color.transparent);
-        //largeImag.setImageDrawable(null);
-
+        /* largeImage.setImageResource(-1);
+         largeImage.setImageResource(android.R.color.transparent);
+         largeImage.setImageDrawable(null);*/
         callScanItent(getApplicationContext(),path);
-        Toast.makeText(this,"image deleted",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"Image Deleted",Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -73,7 +72,6 @@ public class LargeImage extends AppCompatActivity {
             updateButton(currentPosition[0]);
         }
 
-        // TODO: make sure the range does not exceed the item count in folder
         btnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,16 +97,9 @@ public class LargeImage extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-            switch (item.getItemId()) {
-
-                case R.id.deleteAlbum:
-                        String path=pictureFiles[currentPosition[0]].getAbsolutePath();
-
-
-
-              deleteOn(path);
-                    break;
-
+            if (item.getItemId() == R.id.deleteAlbum) {
+                String path = pictureFiles[currentPosition[0]].getAbsolutePath();
+                deleteOn(path);
             }
             // Use addToBackStack to return the previous fragment when the Back button is pressed
             // Checking null was just a precaution
