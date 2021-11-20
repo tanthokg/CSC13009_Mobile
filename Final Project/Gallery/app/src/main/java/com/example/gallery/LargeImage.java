@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,23 +28,9 @@ public class LargeImage extends AppCompatActivity {
     File[] pictureFiles;
     int[] currentPosition ;
 
-
-    private void deleteOn(String path)
-    {
-        File a = new File(path);
-        a.delete();
-        /* largeImage.setImageResource(-1);
-         largeImage.setImageResource(android.R.color.transparent);
-         largeImage.setImageDrawable(null);*/
-        callScanItent(getApplicationContext(),path);
-        Toast.makeText(this,"Image Deleted",Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
-    public void  callScanItent(Context context,String path) {
-        MediaScannerConnection.scanFile(context,
-                new String[] { path }, null,null);
-    }
+    private ScaleGestureDetector scaleGestureDetector;
+    //we are defining our scale factor.
+    private float mScaleFactor = 1.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +41,7 @@ public class LargeImage extends AppCompatActivity {
         largeImage = findViewById(R.id.largeGalleryItem);
         btnPrev = findViewById(R.id.btnPrev);
         btnNext = findViewById(R.id.btnNext);
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         // Create a File object from the received path
         pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
@@ -93,7 +82,6 @@ public class LargeImage extends AppCompatActivity {
             }
         });
 
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
@@ -116,5 +104,42 @@ public class LargeImage extends AppCompatActivity {
     {
         btnPrev.setEnabled(0 != currentPosition);
         btnNext.setEnabled((pictureFiles.length - 1) != currentPosition);
+    }
+
+    private void deleteOn(String path)
+    {
+        File a = new File(path);
+        a.delete();
+        callScanIntent(getApplicationContext(),path);
+        Toast.makeText(this,"Image Deleted",Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    public void  callScanIntent(Context context,String path) {
+        MediaScannerConnection.scanFile(context,
+                new String[] { path }, null,null);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        // inside on touch event method we are calling on
+        // touch event method and passing our motion event to it.
+        scaleGestureDetector.onTouchEvent(motionEvent);
+        return true;
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            // inside on scale method we are setting scale
+            // for our image in our image view.
+            mScaleFactor *= scaleGestureDetector.getScaleFactor();
+            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
+
+            // on below line we are setting scale x and scale y to our image view.
+            largeImage.setScaleX(mScaleFactor);
+            largeImage.setScaleY(mScaleFactor);
+            return true;
+        }
     }
 }
