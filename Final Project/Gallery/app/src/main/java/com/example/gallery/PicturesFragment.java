@@ -237,15 +237,15 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     }
 
     @Override
-    public void onMsgFromMainToFrag(Bitmap result) {
-        saveImage(result);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         // Update pictures view when LargeImage activity is finished
         txtMsg.setText("");
         readPicturesFolder();
+    }
+
+    @Override
+    public void onMsgFromMainToFrag(Bitmap result) {
+        saveImage(result);
     }
 }
