@@ -50,7 +50,7 @@ public class LargeImage extends AppCompatActivity {
         pictureFiles = pictureFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.endsWith("png") || s.endsWith("jpg");
+                return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
             }
         });
         // Get current position from intent

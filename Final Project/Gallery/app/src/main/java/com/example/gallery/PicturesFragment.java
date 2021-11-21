@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.Locale;
 
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView picturesRecView;
@@ -135,7 +136,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.endsWith("png") || s.endsWith("jpg");
+                    return s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
                 }
             };
             allFiles = pictureFile.listFiles();

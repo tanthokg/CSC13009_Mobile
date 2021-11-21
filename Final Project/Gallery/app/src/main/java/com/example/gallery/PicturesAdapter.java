@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Locale;
 
 public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHolder> {
     private final Context context;
@@ -30,7 +31,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                return s.endsWith("png") || s.endsWith("jpg");
+                return s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
             }
         };
         this.pictureFiles = pictureFile.listFiles(filter);
