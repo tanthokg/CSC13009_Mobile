@@ -244,6 +244,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onResume() {
         super.onResume();
         // Update pictures view when LargeImage activity is finished
+        txtMsg.setText("");
         readPicturesFolder();
     }
 }

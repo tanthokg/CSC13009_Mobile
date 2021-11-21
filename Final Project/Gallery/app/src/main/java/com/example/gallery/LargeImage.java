@@ -20,6 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Locale;
 
 public class LargeImage extends AppCompatActivity {
     ImageView largeImage;
