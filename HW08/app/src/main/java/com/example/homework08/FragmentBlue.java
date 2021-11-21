@@ -24,10 +24,8 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
     ListView listView;
     TextView txtViewBlue;
 
-
-
-    private Student[] _students = new Student[10];
-    private Class[] _classes = new Class[10];
+    private Student[] _students = new Student[5];
+    private Class[] _classes = new Class[1];
 
     public Student[] get_students() {
         return _students;
@@ -38,13 +36,16 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
 
     public void getDataFromDatabase() {
         SQLiteDatabase database = main.getDatabase();
-        database = SQLiteDatabase.openDatabase(main.getMyDatabasePath(), null, SQLiteDatabase.CREATE_IF_NECESSARY);
 
         Cursor cursor = database.rawQuery("select * from HOCSINH", null);
         cursor.moveToPosition(-1);
         int i = 0;
         while (cursor.moveToNext()) {
-            _students[i] = new Student(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getFloat(3));
+            _students[i] = new Student(
+                    cursor.getString(0),
+                    cursor.getString(1),
+                    cursor.getInt(2),
+                    cursor.getFloat(3));
             i++;
         }
 
@@ -61,8 +62,8 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
             _classes[i] = new Class(cursor.getInt(0), cursor.getString(1));
             i++;
         }
-
-        database.close();
+        main.setStudents(_students);
+        main.setClasses(_classes);
     }
 
 

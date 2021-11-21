@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="19120001"
+        android:text="MSSV"
         android:textSize="20dp"
         android:textStyle="bold"/>
 
@@ -27,8 +27,7 @@
             android:id="@+id/txtNameRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Nguyễn Văn A"/>
+            android:layout_margin="10dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,8 +44,7 @@
             android:id="@+id/txtClassRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="19_3"/>
+            android:layout_margin="10dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -63,8 +61,7 @@
             android:id="@+id/txtScoreRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="8"/>
+            android:layout_margin="10dp" />
     </LinearLayout>
 
     <LinearLayout

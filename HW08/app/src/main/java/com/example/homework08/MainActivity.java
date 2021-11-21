@@ -26,6 +26,27 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
     com.example.homework08.Student[] students;
     com.example.homework08.Class[] classes;
 
+    public void setStudents(Student[] _students) {
+        students = _students;
+    }
+
+    public void setClasses(Class[] _classes) {
+        classes = _classes;
+    }
+
+    private void buildFragments() {
+        ft = getSupportFragmentManager().beginTransaction();
+        blueFragment = com.example.homework08.FragmentBlue.newInstance("first-blue");
+        ft.replace(R.id.main_holder_blue, blueFragment);
+        ft.commit();
+
+        ft = getSupportFragmentManager().beginTransaction();
+        redFragment = com.example.homework08.FragmentRed.newInstance("first-red");
+        ft.replace(R.id.main_holder_red, redFragment);
+        ft.commit();
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,20 +57,16 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
 
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+    }
 
-        ft = getSupportFragmentManager().beginTransaction();
-        blueFragment = com.example.homework08.FragmentBlue.newInstance("first-blue");
-        ft.replace(R.id.main_holder_blue, blueFragment);
-        ft.commit();
 
-        ft = getSupportFragmentManager().beginTransaction();
-        redFragment = com.example.homework08.FragmentRed.newInstance("first-red");
-        ft.replace(R.id.main_holder_red, redFragment);
-        ft.commit();
-
-        blueFragment.getDataFromDatabase();
-        students = blueFragment.get_students();
-        classes = blueFragment.get_classes();
+    @Override
+    public void onDestroy() {
+        // Database will stay opened all the time, only close it on app destroy
+        if (database.isOpen()) {
+            database.close();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -59,8 +76,7 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 createDatabase();
-
-                //Toast.makeText(MainActivity.this, "Permission granted!", Toast.LENGTH_SHORT).show();
+                buildFragments();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied!", Toast.LENGTH_SHORT).show();
             }
@@ -95,7 +111,7 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
             createTables();
             insertTables();
             queryDatabase();
-            database.close();
+            Toast.makeText(MainActivity.this, "Database created successfully", Toast.LENGTH_SHORT).show();
         }
         catch (SQLiteException e) {
             e.printStackTrace();
@@ -114,7 +130,7 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
             database.execSQL("CREATE TABLE LOPHOC ( "
                     + "CLASSID INTEGER PRIMARY KEY, "
                     + "CLASSNAME TEXT);");
-            //Toast.makeText(this, "Create Tables Completed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Create Tables Completed", Toast.LENGTH_SHORT).show();
 
         }
         catch (SQLiteException e) {
@@ -130,7 +146,6 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
             database.execSQL("INSERT INTO HOCSINH VALUES ('19120426','Phan Dang Diem Uyen',0,10)");
             database.execSQL("INSERT INTO HOCSINH VALUES ('19120469','Su Nhat Dang',0,10)");
             database.execSQL("INSERT INTO HOCSINH VALUES ('19120492','Do Thai Duy',0,10)");
-            //Toast.makeText(this, "Insert Completed", Toast.LENGTH_SHORT).show();
         }
         catch (SQLiteException e) {
             e.printStackTrace();
@@ -149,7 +164,4 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
         return database;
     }
 
-    public String getMyDatabasePath() {
-        return myDatabasePath;
-    }
 }
