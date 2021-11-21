@@ -12,11 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class CustomerAdapter extends ArrayAdapter<Student> {
+public class CustomAdapter extends ArrayAdapter<Student> {
     private final Context context;
     private final Student[] students;
 
-    public CustomerAdapter(Context context, int resource, Student[] students) {
+    public CustomAdapter(Context context, int resource, Student[] students) {
         super(context, resource, students);
         this.context = context;
         this.students = students;

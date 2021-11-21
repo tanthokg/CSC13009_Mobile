@@ -33,7 +33,7 @@ public class FragmentRed extends Fragment implements FragmentCallbacks{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(!(getActivity() instanceof com.example.homework08.MainCallbacks)) {
+        if(!(getActivity() instanceof MainCallbacks)) {
             throw new IllegalStateException("Activity must implement MainCallbacks");
         }
         main = (MainActivity) getActivity();

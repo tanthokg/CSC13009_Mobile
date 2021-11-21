@@ -17,14 +17,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import java.io.File;
 
-public class MainActivity extends FragmentActivity implements com.example.homework08.MainCallbacks {
+public class MainActivity extends FragmentActivity implements MainCallbacks {
     FragmentTransaction ft;
     SQLiteDatabase database;
     String myDatabasePath;
-    com.example.homework08.FragmentRed redFragment;
-    com.example.homework08.FragmentBlue blueFragment;
-    com.example.homework08.Student[] students;
-    com.example.homework08.Class[] classes;
+    FragmentRed redFragment;
+    FragmentBlue blueFragment;
+    Student[] students;
+    Class[] classes;
 
     public void setStudents(Student[] _students) {
         students = _students;
@@ -36,12 +36,12 @@ public class MainActivity extends FragmentActivity implements com.example.homewo
 
     private void buildFragments() {
         ft = getSupportFragmentManager().beginTransaction();
-        blueFragment = com.example.homework08.FragmentBlue.newInstance("first-blue");
+        blueFragment = FragmentBlue.newInstance("first-blue");
         ft.replace(R.id.main_holder_blue, blueFragment);
         ft.commit();
 
         ft = getSupportFragmentManager().beginTransaction();
-        redFragment = com.example.homework08.FragmentRed.newInstance("first-red");
+        redFragment = FragmentRed.newInstance("first-red");
         ft.replace(R.id.main_holder_red, redFragment);
         ft.commit();
     }

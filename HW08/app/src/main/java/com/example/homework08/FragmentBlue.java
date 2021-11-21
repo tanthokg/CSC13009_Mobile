@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,7 +95,7 @@ public class FragmentBlue extends Fragment implements FragmentCallbacks {
         txtViewBlue = layout_blue.findViewById(R.id.txtViewBlue);
         listView = layout_blue.findViewById(R.id.listViewBlue);
 
-        CustomerAdapter adapter = new CustomerAdapter(context, R.layout.layout_blue_item, _students);
+        CustomAdapter adapter = new CustomAdapter(context, R.layout.layout_blue_item, _students);
         listView.setAdapter(adapter);
 
         listView.setSelection(0);
