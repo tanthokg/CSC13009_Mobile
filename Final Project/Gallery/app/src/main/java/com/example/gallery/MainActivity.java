@@ -14,6 +14,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -162,6 +164,42 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     Toast.makeText(MainActivity.this, "No result", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case "SETTING-FLAG":
+                try {
+                    boolean theme = Boolean.parseBoolean(request);
+                    changeTheme(theme);
+                }
+                catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Can't set dark mode!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
         }
+    }
+
+    private void changeTheme(boolean isChecked) {
+        SharedPreferences preferences = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("current fragment", "setting fragment");
+
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            editor.putBoolean("dark mode", true);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            editor.putBoolean("dark mode", false);
+        }
+
+        editor.commit();
+    }
+
+    private boolean checkTheme() {
+        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        boolean theme = false;
+        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
+            theme = preferencesContainer.getBoolean("dark mode", false);
+        return theme;
     }
 }
