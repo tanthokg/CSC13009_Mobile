@@ -51,6 +51,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         // Set item to the ImageView using Glide library
         // holder.imageItem.setImageDrawable(Drawable.createFromPath(picturePath));
         Glide.with(context).asBitmap().load(picturePath).into(holder.imageItem);
+
         holder.imageItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
