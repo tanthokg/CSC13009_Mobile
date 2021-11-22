@@ -1,5 +1,6 @@
 package com.example.gallery;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -7,8 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -87,20 +90,24 @@ public class LargeImage extends AppCompatActivity {
         });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            if (item.getItemId() == R.id.deleteAlbum) {
-                String path = pictureFiles[currentPosition[0]].getAbsolutePath();
-                deleteOn(path);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment selectedFragment = null;
+                if (item.getItemId() == R.id.deleteAlbum) {
+                    String path = pictureFiles[currentPosition[0]].getAbsolutePath();
+                    LargeImage.this.deleteOn(path);
+                }
+
+                // Use addToBackStack to return the previous fragment when the Back button is pressed
+                // Checking null was just a precaution
+                if (selectedFragment != null)
+                    LargeImage.this.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragmentHolder, selectedFragment)
+                            .commit();
+                return true;
             }
-            // Use addToBackStack to return the previous fragment when the Back button is pressed
-            // Checking null was just a precaution
-            if (selectedFragment != null)
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragmentHolder, selectedFragment)
-                        .commit();
-            return true;
         });
     }
 
@@ -149,15 +156,31 @@ public class LargeImage extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:break;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
-
+        if (item.getItemId() == R.id.menu_SetWallpaper) {
+            // TODO: set image as wallpaper here
+            Toast.makeText(this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
+        }
+        if (item.getItemId() == R.id.menu_SetLockscreen) {
+            // TODO: set image as lockscreen here
+            Toast.makeText(this, "Set as Lockscreen", Toast.LENGTH_SHORT).show();
+        }
+        if (item.getItemId() == R.id.menu_ViewInfo) {
+            // TODO: show image info here
+            Toast.makeText(this, "View Info", Toast.LENGTH_SHORT).show();
+        }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.large_image_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
 }
