@@ -46,17 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 R.drawable.avatar07,
                 R.drawable.avatar08,
                 R.drawable.avatar09,
-                R.drawable.avatar10,
-                R.drawable.avatar11,
-                R.drawable.avatar12,
-                R.drawable.avatar13,
-                R.drawable.avatar14,
-                R.drawable.avatar15,
-                R.drawable.avatar16,
-                R.drawable.avatar17,
-                R.drawable.avatar18,
-                R.drawable.avatar19,
-                R.drawable.avatar20
+                R.drawable.avatar10
     };*/
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
@@ -79,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         actionBar.setDisplayShowHomeEnabled(true);
 
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
-        albumsFragment = AlbumsFragment.getInstance();
+        albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
         getSupportFragmentManager()
                 .beginTransaction()

@@ -11,15 +11,5 @@
         <item>@drawable/avatar08</item>
         <item>@drawable/avatar09</item>
         <item>@drawable/avatar10</item>
-        <item>@drawable/avatar11</item>
-        <item>@drawable/avatar12</item>
-        <item>@drawable/avatar13</item>
-        <item>@drawable/avatar14</item>
-        <item>@drawable/avatar15</item>
-        <item>@drawable/avatar16</item>
-        <item>@drawable/avatar17</item>
-        <item>@drawable/avatar18</item>
-        <item>@drawable/avatar19</item>
-        <item>@drawable/avatar20</item>
     </integer-array>
 </resources>

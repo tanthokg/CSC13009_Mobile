@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,10 +17,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.DialogFragment;
+
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,15 +30,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.Locale;
 
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
-    private RecyclerView galleryRecView;
+    private RecyclerView picturesRecView;
     private TextView txtMsg;
     private File[] allFiles;
     private File[] pictureFiles;
+    private final int spanCount = 4;
 
     Context context;
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
@@ -71,7 +70,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
-        galleryRecView = picturesFragment.findViewById(R.id.picturesRecView);
+        picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
         txtMsg = picturesFragment.findViewById(R.id.txtMsg);
 
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
@@ -92,7 +91,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         });
 
-        galleryRecView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        picturesRecView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -141,7 +140,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.endsWith("png") || s.endsWith("jpg");
+                    return s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
                 }
             };
             allFiles = pictureFile.listFiles();
@@ -151,8 +150,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             if (pictureFiles == null)
                 txtMsg.append("NULL");
             else {
-                txtMsg.append("Total Item: " + allFiles.length + "\n");
-                txtMsg.append("Total Pictures: " + pictureFiles.length);
+                txtMsg.append("Picture/Item: " + pictureFiles.length + "/" + allFiles.length + "\n");
                 // Load gallery with current path
                 loadGallery(pathToPicturesFolder);
             }
@@ -166,9 +164,9 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // The idea was to send a string path to the adapter, not a File object
         // The adapter will then create everything we need from the provided path
         // This implementation is not permanent
-        GalleryAdapter galleryAdapter = new GalleryAdapter(context, pathToPicturesFolder);
-        galleryRecView.setAdapter(galleryAdapter);
-        galleryRecView.setLayoutManager(new GridLayoutManager(context, 3));
+        PicturesAdapter picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
+        picturesRecView.setAdapter(picturesAdapter);
+        picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
 
     void setAnimationButton(boolean isPressed) {
@@ -205,7 +203,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             getActivity().startActivityFromFragment(this, takePhotoIntent, CAMERA_CAPTURED);
         }
         catch (Exception e) {
-            Log.e("Error to open camera", e.getMessage());
+            Log.e("Error to open camera! ", e.getMessage());
         }
     }
 
@@ -226,7 +224,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             output.flush();
             output.close();
         } catch (Exception e) {
-            Log.e("Error to save image", e.getMessage());
+            Log.e("Error to save image! ", e.getMessage());
         }
         readPicturesFolder();
     }
@@ -240,6 +238,14 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 saveImage(bitmap);
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Update pictures view when LargeImage activity is finished
+        txtMsg.setText("");
+        readPicturesFolder();
     }
 
     @Override
