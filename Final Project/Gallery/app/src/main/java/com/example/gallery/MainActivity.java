@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
     ActionBar actionBar;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 .replace(R.id.fragmentHolder, picturesFragment)
                 .commit();
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+        bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     selectedFragment = settingsFragment;
                     break;
             }
-            // Use addToBackStack to return the previous fragment when the Back button is pressed
+
             // Checking null was just a precaution
             if (selectedFragment != null)
                 getSupportFragmentManager()
@@ -174,6 +175,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        bottomNavigationView.setSelectedItemId(R.id.nav_pictures);
     }
 
     private void changeTheme(boolean isChecked) {
