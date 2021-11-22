@@ -22,11 +22,24 @@
     </style>
 
     <style name="Theme.Gallery.ActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>
     </style>
+
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/Text</item>
+    </style>
+
+    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="buttonBarButtonStyle">@style/Text</item>
+    </style>
+
+    <style name="Text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>
