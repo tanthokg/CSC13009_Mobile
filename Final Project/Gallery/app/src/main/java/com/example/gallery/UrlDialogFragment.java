@@ -58,7 +58,7 @@ public class UrlDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         url = edtURL.getText().toString();
                         dismiss();
-                        main.onMsgFromFragtoMain("URL-FLAG", url);
+                        main.onMsgFromFragToMain("URL-FLAG", url);
                     }
                 });
 

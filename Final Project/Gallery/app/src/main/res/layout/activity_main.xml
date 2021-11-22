@@ -19,7 +19,7 @@
         android:layout_alignParentBottom="true"
         app:itemIconSize="28dp"
         app:itemIconTint="@drawable/selected_icon"
-        app:itemTextColor="@color/design_default_color_on_secondary"
+        app:itemTextColor="?attr/colorOnSecondary"
         app:labelVisibilityMode="selected"
         app:menu="@menu/bottom_nav_bar_items" />
 

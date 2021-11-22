@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -120,7 +121,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         btnUrl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                main.onMsgFromFragtoMain("PICTURES-FLAG", "Open Url Dialog");
+                main.onMsgFromFragToMain("PICTURES-FLAG", "Open Url Dialog");
             }
         });
 

@@ -23,11 +23,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/add_icon"
-        app:backgroundTint="@color/design_default_color_on_primary"
+        app:backgroundTint="?attr/colorOnPrimary"
         app:fabSize="normal"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnUpload_PicturesFragment"
@@ -39,7 +42,7 @@
         android:src="@drawable/ic_outline_file_upload_24"
         android:tooltipText="Upload"
         android:visibility="invisible"
-        app:backgroundTint="@color/design_default_color_on_primary"
+        app:backgroundTint="?attr/colorOnPrimary"
         app:fabSize="mini"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
 
@@ -53,7 +56,7 @@
         android:src="@drawable/ic_outline_photo_camera_24"
         android:tooltipText="Camera"
         android:visibility="invisible"
-        app:backgroundTint="@color/design_default_color_on_primary"
+        app:backgroundTint="?attr/colorOnPrimary"
         app:fabSize="mini"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
 
@@ -67,7 +70,7 @@
         android:src="@drawable/ic_outline_link_24"
         android:tooltipText="URL"
         android:visibility="invisible"
-        app:backgroundTint="@color/design_default_color_on_primary"
+        app:backgroundTint="?attr/colorOnPrimary"
         app:fabSize="mini"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
 

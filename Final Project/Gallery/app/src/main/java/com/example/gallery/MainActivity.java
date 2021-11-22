@@ -2,6 +2,7 @@ package com.example.gallery;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
@@ -22,6 +23,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA, Manifest.permission.INTERNET}, 1);
+
+        actionBar = getSupportActionBar();
+        actionBar.setIcon(R.drawable.picture);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
         albumsFragment = AlbumsFragment.getInstance();
@@ -145,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     @Override
-    public void onMsgFromFragtoMain(String sender, String request) {
+    public void onMsgFromFragToMain(String sender, String request) {
         switch (sender) {
             case "PICTURES-FLAG":
                 new UrlDialogFragment().show(getSupportFragmentManager(), UrlDialogFragment.Tag);
@@ -185,10 +193,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
         if (isChecked) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
             editor.putBoolean("dark mode", true);
         }
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
             editor.putBoolean("dark mode", false);
         }
 

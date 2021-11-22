@@ -1,5 +1,5 @@
 package com.example.gallery;
 
 public interface MainCallbacks {
-    public void onMsgFromFragtoMain(String sender, String request);
+    public void onMsgFromFragToMain(String sender, String request);
 }
