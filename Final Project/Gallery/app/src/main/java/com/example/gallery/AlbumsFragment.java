@@ -29,7 +29,7 @@ public class AlbumsFragment extends Fragment {
     private RecyclerView albumRecView;
     private AlbumsAdapter albumsAdapter;
 
-    private ArrayList<String> albums = new ArrayList<String>();
+    private ArrayList<String> albums;
     private final int CAMERA_CAPTURED = 1;
     private Context context;
 
@@ -41,19 +41,20 @@ public class AlbumsFragment extends Fragment {
         return new AlbumsFragment(context);
     }
 
+    public ArrayList<String> getAlbums() {
+        return AlbumUtility.getInstance(context).getAllAlbums();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        albums = AlbumUtility.getInstance(context).getAllAlbums();
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View albumsFragment = inflater.inflate(R.layout.albums_fragment, container, false);
-
-        if (albums.size() == 0) {
-            albums.add("Flowers");
-            albums.add("Dogs");
-            albums.add("Cats");
-            albums.add("Backyard Garden");
-            albums.add("School");
-        }
 
         albumRecView = albumsFragment.findViewById(R.id.albumsRecView);
         albumsAdapter = new AlbumsAdapter(albums);
@@ -82,10 +83,11 @@ public class AlbumsFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String newAlbumName = edtAlbumName.getText().toString();
                 if (newAlbumName.length() != 0) {
+                    AlbumUtility.getInstance(context).addNewAlbum(newAlbumName);
                     albumsAdapter.addAlbum(newAlbumName);
                     Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "Empty Name! Cannot create new album!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Empty Name!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
