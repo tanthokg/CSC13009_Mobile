@@ -17,7 +17,7 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
         android:src="@drawable/ic_round_add_24"
-        app:backgroundTint="@color/design_default_color_on_primary"
+        app:backgroundTint="?attr/colorOnPrimary"
         app:fabSize="auto"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
 

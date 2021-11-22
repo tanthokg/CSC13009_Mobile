@@ -2,6 +2,7 @@ package com.example.gallery;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +23,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -48,15 +51,22 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA, Manifest.permission.INTERNET}, 1);
+
+        actionBar = getSupportActionBar();
+        actionBar.setIcon(R.drawable.picture);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
         picturesFragment = PicturesFragment.getInstance(MainActivity.this);
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
@@ -152,6 +162,44 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     Toast.makeText(MainActivity.this, "No result", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case "SETTING-FLAG":
+                try {
+                    boolean theme = Boolean.parseBoolean(request);
+                    changeTheme(theme);
+                }
+                catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Can't set dark mode!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
         }
+    }
+
+    private void changeTheme(boolean isChecked) {
+        SharedPreferences preferences = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("current fragment", "setting fragment");
+
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
+            editor.putBoolean("dark mode", true);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
+            editor.putBoolean("dark mode", false);
+        }
+
+        editor.commit();
+    }
+
+    private boolean checkTheme() {
+        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        boolean theme = false;
+        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
+            theme = preferencesContainer.getBoolean("dark mode", false);
+        return theme;
     }
 }
