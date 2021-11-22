@@ -52,6 +52,7 @@ public class LargeImage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_large_item);
 
