@@ -10,7 +10,7 @@
         android:text="Add Image From URL"
         android:padding="10dp"
         android:textSize="15sp"
-        android:textColor="?attr/colorOnSecondary"/>
+        android:textColor="@color/design_default_color_on_secondary"/>
 
     <EditText
         android:layout_width="match_parent"

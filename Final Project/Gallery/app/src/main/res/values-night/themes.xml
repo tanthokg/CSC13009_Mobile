@@ -20,18 +20,4 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>
     </style>
-
-    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
-        <item name="buttonBarPositiveButtonStyle">@style/TextColor</item>
-        <item name="android:backgroundTint">#121212</item>
-    </style>
-
-    <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="buttonBarButtonStyle">@style/TextColor</item>
-        <item name="android:backgroundTint">#121212</item>
-    </style>
-
-    <style name="TextColor">
-        <item name="android:textColor">@color/white</item>
-    </style>
 </resources>
