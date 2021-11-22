@@ -215,25 +215,6 @@ public class LargeImage extends AppCompatActivity {
             }
         });
 
-
-    private void changeTheme(boolean isChecked) {
-        if (isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            setTheme(R.style.Theme_Gallery_);
-        }
-        else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            setTheme(R.style.Theme_Gallery);
-        }
-    }
-
-    private boolean checkTheme() {
-        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        boolean theme = false;
-        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
-            theme = preferencesContainer.getBoolean("dark mode", false);
-        return theme;
-
         AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this);
         addToAlbumDialog.setView(addToAlbumView);
 
@@ -251,5 +232,23 @@ public class LargeImage extends AppCompatActivity {
         });
         addToAlbumDialog.create();
         addToAlbumDialog.show();
+    }
+    private void changeTheme(boolean isChecked) {
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
+        }
+    }
+
+    private boolean checkTheme() {
+        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        boolean theme = false;
+        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
+            theme = preferencesContainer.getBoolean("dark mode", false);
+        return theme;
     }
 }

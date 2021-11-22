@@ -30,7 +30,7 @@
         <item name="cornerSize">20dp</item>
     </style>
 
-    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Dialog.Alert">
         <item name="buttonBarPositiveButtonStyle">@style/Text</item>
     </style>
 
