@@ -2,16 +2,12 @@ package com.example.gallery;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
@@ -53,7 +49,6 @@ public class LargeImage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_large_item);
 
@@ -214,25 +209,6 @@ public class LargeImage extends AppCompatActivity {
                 Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-    private void changeTheme(boolean isChecked) {
-        if (isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            setTheme(R.style.Theme_Gallery_);
-        }
-        else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            setTheme(R.style.Theme_Gallery);
-        }
-    }
-
-    private boolean checkTheme() {
-        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        boolean theme = false;
-        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
-            theme = preferencesContainer.getBoolean("dark mode", false);
-        return theme;
 
         AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this);
         addToAlbumDialog.setView(addToAlbumView);
