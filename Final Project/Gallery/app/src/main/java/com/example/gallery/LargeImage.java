@@ -6,39 +6,50 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class LargeImage extends AppCompatActivity {
-    ImageView largeImage;
-    Button btnPrev, btnNext;
-    File pictureFile;
-    File[] pictureFiles;
-    int[] currentPosition ;
+    private ImageView largeImage;
+    private Button btnPrev, btnNext;
+    private File pictureFile;
+    private File[] pictureFiles;
+    private int[] currentPosition ;
 
     private ScaleGestureDetector scaleGestureDetector;
     //we are defining our scale factor.
     private float mScaleFactor = 1.0f;
+
+    private AlbumsFragment albumsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +63,7 @@ public class LargeImage extends AppCompatActivity {
         largeImage = findViewById(R.id.largeGalleryItem);
         btnPrev = findViewById(R.id.btnPrev);
         btnNext = findViewById(R.id.btnNext);
+        albumsFragment = new AlbumsFragment(this);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         // Create a File object from the received path
@@ -64,11 +76,11 @@ public class LargeImage extends AppCompatActivity {
             }
         });
         // Get current position from intent
-        // It has to be final int[] when used in anonymous functions, otherwise it will cause errors
+        // It must be final int[] when used in anonymous functions, otherwise it will cause errors
         currentPosition = new int[]{intent.getIntExtra("itemPosition", -1)};
         if (pictureFiles != null) {
             // Set image for widget
-            largeImage.setImageDrawable(Drawable.createFromPath(pictureFiles[currentPosition[0]].getAbsolutePath()));
+            Glide.with(this).asBitmap().load(pictureFiles[currentPosition[0]].getAbsolutePath()).into(largeImage);
             updateButton(currentPosition[0]);
         }
 
@@ -100,7 +112,7 @@ public class LargeImage extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.deleteAlbum) {
                     String path = pictureFiles[currentPosition[0]].getAbsolutePath();
-                    LargeImage.this.deleteOn(path);
+                    LargeImage.this.deleteOnPath(path);
                 }
 
                 // Use addToBackStack to return the previous fragment when the Back button is pressed
@@ -121,7 +133,7 @@ public class LargeImage extends AppCompatActivity {
         btnNext.setEnabled((pictureFiles.length - 1) != currentPosition);
     }
 
-    private void deleteOn(String path)
+    private void deleteOnPath(String path)
     {
         File a = new File(path);
         a.delete();
@@ -130,7 +142,7 @@ public class LargeImage extends AppCompatActivity {
         finish();
     }
 
-    public void  callScanIntent(Context context,String path) {
+    public void  callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context,
                 new String[] { path }, null,null);
     }
@@ -159,6 +171,13 @@ public class LargeImage extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.large_image_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
@@ -176,15 +195,26 @@ public class LargeImage extends AppCompatActivity {
             // TODO: show image info here
             Toast.makeText(this, "View Info", Toast.LENGTH_SHORT).show();
         }
+        if (item.getItemId() == R.id.menu_AddToAlbum) {
+            addPictureToAlbum();
+            Toast.makeText(this, albumsFragment.getAlbums().size() + " item(s).", Toast.LENGTH_SHORT).show();
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.large_image_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+    private void addPictureToAlbum() {
+        View addToAlbumView = LayoutInflater.from(this).inflate(R.layout.choose_album_form, null);
+        ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
+        ArrayList<String> albums = albumsFragment.getAlbums();
+        ArrayAdapter<String> albumDefaultAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albums);
+        chooseAlbumListView.setAdapter(albumDefaultAdapter);
+        chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
     private void changeTheme(boolean isChecked) {
         if (isChecked) {
@@ -203,5 +233,23 @@ public class LargeImage extends AppCompatActivity {
         if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
             theme = preferencesContainer.getBoolean("dark mode", false);
         return theme;
+
+        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this);
+        addToAlbumDialog.setView(addToAlbumView);
+
+        addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        addToAlbumDialog.create();
+        addToAlbumDialog.show();
     }
 }

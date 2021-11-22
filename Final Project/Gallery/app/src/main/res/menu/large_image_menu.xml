@@ -9,4 +9,7 @@
     <item
         android:id="@+id/menu_ViewInfo"
         android:title="View info"/>
+    <item
+        android:id="@+id/menu_AddToAlbum"
+        android:title="Add To Album"/>
 </menu>

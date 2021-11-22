@@ -8,10 +8,10 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="12dp"
         android:layout_centerInParent="true"
         app:strokeColor="@color/purple_700"
-        app:strokeWidth="2dp">
+        app:strokeWidth="3dp">
 
         <RelativeLayout
             android:layout_width="match_parent"

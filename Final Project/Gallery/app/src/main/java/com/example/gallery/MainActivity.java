@@ -38,15 +38,15 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
     /*private final int[] images = {
         R.drawable.avatar01,
-                R.drawable.avatar02,
-                R.drawable.avatar03,
-                R.drawable.avatar04,
-                R.drawable.avatar05,
-                R.drawable.avatar06,
-                R.drawable.avatar07,
-                R.drawable.avatar08,
-                R.drawable.avatar09,
-                R.drawable.avatar10
+        R.drawable.avatar02,
+        R.drawable.avatar03,
+        R.drawable.avatar04,
+        R.drawable.avatar05,
+        R.drawable.avatar06,
+        R.drawable.avatar07,
+        R.drawable.avatar08,
+        R.drawable.avatar09,
+        R.drawable.avatar10
     };*/
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
@@ -80,16 +80,13 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-            switch (item.getItemId()) {
-                case R.id.nav_pictures:
-                    selectedFragment = picturesFragment;
-                    break;
-                case R.id.nav_album:
-                    selectedFragment = albumsFragment;
-                    break;
-                case R.id.nav_setting:
-                    selectedFragment = settingsFragment;
-                    break;
+            int itemId = item.getItemId();
+            if (R.id.nav_pictures == itemId) {
+                selectedFragment = picturesFragment;
+            } else if (R.id.nav_album == itemId) {
+                selectedFragment = albumsFragment;
+            } else if (R.id.nav_setting == itemId) {
+                selectedFragment = settingsFragment;
             }
 
             // Checking null was just a precaution
