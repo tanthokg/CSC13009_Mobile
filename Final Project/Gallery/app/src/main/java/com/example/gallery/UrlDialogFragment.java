@@ -37,7 +37,7 @@ public class UrlDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder urlDialog = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder urlDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.url_dialog_fragment, null);
         urlDialog.setView(view)

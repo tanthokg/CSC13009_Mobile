@@ -76,7 +76,7 @@ public class AlbumsFragment extends Fragment {
         View addNewAlbumForm = LayoutInflater.from(context).inflate(R.layout.add_album_form, null);
         EditText edtAlbumName = addNewAlbumForm.findViewById(R.id.edtAlbumName);
 
-        AlertDialog.Builder addDialog = new AlertDialog.Builder(context);
+        AlertDialog.Builder addDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
         addDialog.setView(addNewAlbumForm);
         addDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

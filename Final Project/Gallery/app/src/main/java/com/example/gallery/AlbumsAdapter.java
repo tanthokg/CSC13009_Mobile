@@ -104,7 +104,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             TextView txtFormTitle = view.findViewById(R.id.txtFormTitle);
             EditText editText = view.findViewById(R.id.edtAlbumName);
 
-            AlertDialog.Builder editDialog = new AlertDialog.Builder(itemView.getContext());
+            AlertDialog.Builder editDialog = new AlertDialog.Builder(itemView.getContext(), R.style.AlertDialog);
             editDialog.setView(view);
             txtFormTitle.setText("Edit Album Name");
             editText.setText(albums.get(position));
@@ -134,7 +134,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             int position = getAdapterPosition();
             Context context = itemView.getContext();
 
-            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(itemView.getContext());
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(itemView.getContext(), R.style.AlertDialog);
             confirmDialog.setMessage("Are you sure to delete this album?");
 
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {

@@ -18,7 +18,8 @@
         android:layout_alignParentBottom="false"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="607dp"
-        android:text="previous" />
+        android:text="previous"
+        android:textColor="?attr/colorOnSecondary"/>
 
     <Button
         android:id="@+id/btnNext"
@@ -28,7 +29,8 @@
         android:layout_alignParentBottom="false"
         android:layout_marginEnd="9dp"
         android:layout_marginBottom="610dp"
-        android:text="next" />
+        android:text="next"
+        android:textColor="?attr/colorOnSecondary"/>
 
     <include layout="@layout/nav_bar_items"></include>
 </RelativeLayout>

@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
     ActionBar actionBar;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 .replace(R.id.fragmentHolder, picturesFragment)
                 .commit();
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+        bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
@@ -171,6 +172,13 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        bottomNavigationView.setSelectedItemId(R.id.nav_pictures);
+
     }
 
     private void changeTheme(boolean isChecked) {
