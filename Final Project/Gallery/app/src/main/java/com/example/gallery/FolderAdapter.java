@@ -33,14 +33,16 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Set the name of folder
-        int getPositionStartName = folders.get(position).lastIndexOf("Pictures/");
-        String nameFolder = folders.get(position).substring(getPositionStartName + 9);
+        // Just display name folder: Facebook, Messenger,...not path: emulator/0/Pictures/...
+        int getPositionStartName = folders.get(position).lastIndexOf("/");
+        String nameFolder = folders.get(position).substring(getPositionStartName + 1);
         holder.txtFolderName.setText(nameFolder);
 
         holder.folderItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = holder.getAdapterPosition();
+                // Send to Main Activity the path of the folder selected
                 ((MainActivity)context).onMsgFromFragToMain("FOLDER-FLAG", folders.get(pos));
             }
         });

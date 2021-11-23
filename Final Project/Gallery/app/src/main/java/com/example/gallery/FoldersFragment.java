@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class FoldersFragment extends Fragment {
     Context context;
@@ -45,7 +47,10 @@ public class FoldersFragment extends Fragment {
         File[] folders = inputFile.listFiles();
 
         try {
+            folderPaths.add(inputFile.getAbsolutePath());
             for (File folder : folders) {
+                if (folder.getAbsolutePath().toString().contains(".png")||folder.getAbsolutePath().toString().contains(".jpg"))
+                    continue;
                 folderPaths.add(folder.getAbsolutePath());
             }
         }
