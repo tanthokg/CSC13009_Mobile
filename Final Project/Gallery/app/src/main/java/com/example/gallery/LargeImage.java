@@ -7,12 +7,16 @@ import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +38,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -44,6 +49,7 @@ public class LargeImage extends AppCompatActivity {
     private File[] pictureFiles;
     private int[] currentPosition ;
 
+    WallpaperManager wallpaperManager;
     private ScaleGestureDetector scaleGestureDetector;
     //we are defining our scale factor.
     private float mScaleFactor = 1.0f;
@@ -57,6 +63,8 @@ public class LargeImage extends AppCompatActivity {
         setContentView(R.layout.gallery_large_item);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
         largeImage = findViewById(R.id.largeGalleryItem);
@@ -96,7 +104,7 @@ public class LargeImage extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               if (pictureFiles != null) {
+                if (pictureFiles != null) {
                     int position = ++currentPosition[0];
                     largeImage.setImageDrawable(Drawable.createFromPath(pictureFiles[position].getAbsolutePath()));
                     updateButton(position);
@@ -111,7 +119,7 @@ public class LargeImage extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.deleteAlbum) {
                     String path = pictureFiles[currentPosition[0]].getAbsolutePath();
-                    LargeImage.this.deleteOnPath(path);
+                    LargeImage.this.deleteOnPath(path, bottomNavigationView);
                 }
 
                 // Use addToBackStack to return the previous fragment when the Back button is pressed
@@ -132,13 +140,28 @@ public class LargeImage extends AppCompatActivity {
         btnNext.setEnabled((pictureFiles.length - 1) != currentPosition);
     }
 
-    private void deleteOnPath(String path)
+    private void deleteOnPath(String path, View bottomNav)
     {
-        File a = new File(path);
-        a.delete();
-        callScanIntent(getApplicationContext(),path);
-        Toast.makeText(this,"Image Deleted",Toast.LENGTH_SHORT).show();
-        finish();
+        androidx.appcompat.app.AlertDialog.Builder confirmDialog = new androidx.appcompat.app.AlertDialog.Builder(bottomNav.getContext(), R.style.AlertDialog);
+        confirmDialog.setMessage("Are you sure to delete this image?");
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                File a = new File(path);
+                a.delete();
+                callScanIntent(getApplicationContext(),path);
+                Toast.makeText(getApplicationContext(),"Image Deleted",Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        confirmDialog.create();
+        confirmDialog.show();
     }
 
     public void  callScanIntent(Context context, String path) {
@@ -184,11 +207,30 @@ public class LargeImage extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.menu_SetWallpaper) {
             // TODO: set image as wallpaper here
+            try {
+                // set the wallpaper by calling the setResource function and
+                // passing the drawable file
+                //Glide.with(this).asBitmap().load(pictureFiles[currentPosition[0]].getAbsolutePath())
+                wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()));
+            } catch (IOException e) {
+                // here the errors can be logged instead of printStackTrace
+                e.printStackTrace();
+            }
             Toast.makeText(this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
         }
         if (item.getItemId() == R.id.menu_SetLockscreen) {
             // TODO: set image as lockscreen here
-            Toast.makeText(this, "Set as Lockscreen", Toast.LENGTH_SHORT).show();
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()), null, true, WallpaperManager.FLAG_LOCK); //For Lock screen
+                    Toast.makeText(this, "Set as Lockscreen", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Lock screen walpaper not supported", Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         if (item.getItemId() == R.id.menu_ViewInfo) {
             // TODO: show image info here
@@ -250,5 +292,12 @@ public class LargeImage extends AppCompatActivity {
         if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
             theme = preferencesContainer.getBoolean("dark mode", false);
         return theme;
+    }
+
+    public static Bitmap viewToBitmap(View view,int width,int height){
+        Bitmap bm=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
+        Canvas canvas=new Canvas(bm);
+        view.draw(canvas);
+        return bm;
     }
 }
