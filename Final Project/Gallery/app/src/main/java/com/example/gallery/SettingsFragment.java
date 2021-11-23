@@ -36,6 +36,11 @@ public class SettingsFragment extends Fragment {
         catch (IllegalStateException e) {
             throw new IllegalStateException("MainActivity must implement callbacks");
         }
+
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Gallery");
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Nullable

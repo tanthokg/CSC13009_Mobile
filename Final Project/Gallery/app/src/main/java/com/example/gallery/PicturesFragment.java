@@ -68,10 +68,16 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             throw new IllegalStateException("MainActivity must implement callbacks");
         }
 
-        // Show the up-key back arrow on Action Bar
+        // Show the up-key back arrow and name folder on Action Bar
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(false);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+        int getPositionStartName = pathFolder.lastIndexOf("/");
+        String nameFolder = pathFolder.substring(getPositionStartName + 1);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(nameFolder);
     }
 
     @Nullable
@@ -219,8 +225,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     }
 
     private File getFolderDirectory() {
-        String pathToPictureFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath();
-        File pictureDirectory = new File(pathToPictureFolder);
+        File pictureDirectory = new File(pathFolder);
         if (!pictureDirectory.exists())
             pictureDirectory.mkdirs();
         return pictureDirectory;

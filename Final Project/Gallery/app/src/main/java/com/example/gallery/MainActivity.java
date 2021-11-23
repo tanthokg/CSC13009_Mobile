@@ -62,19 +62,25 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
 
-        foldersFragment = new FoldersFragment(MainActivity.this);
+        bottomNavigationView = findViewById(R.id.bottomNavBar);
+
+        foldersFragment = FoldersFragment.getInstance(MainActivity.this);
+        picturesFragment = null;
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
-        if (!darkButtonIsPressed)
+        if (!darkButtonIsPressed) {
             selectedFragment = foldersFragment;
-        else
+        }
+        else {
             selectedFragment = settingsFragment;
+            darkButtonIsPressed = false;
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentHolder, selectedFragment)
                 .commit();
 
-        bottomNavigationView = findViewById(R.id.bottomNavBar);
+        //bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (R.id.nav_pictures == itemId) {
@@ -175,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 try {
                     picturesFragment = PicturesFragment.getInstance(foldersFragment.getContext(), request);
                     selectedFragment = picturesFragment;
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).addToBackStack("").commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
                 }
                 catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
