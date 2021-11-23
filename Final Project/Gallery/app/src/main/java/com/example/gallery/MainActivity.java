@@ -19,9 +19,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
     /*private final int[] images = {
@@ -40,8 +42,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
+    Fragment selectedFragment;
     ActionBar actionBar;
     BottomNavigationView bottomNavigationView;
+    static boolean darkButtonIsPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +65,17 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         foldersFragment = new FoldersFragment(MainActivity.this);
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
+        if (!darkButtonIsPressed)
+            selectedFragment = foldersFragment;
+        else
+            selectedFragment = settingsFragment;
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentHolder, foldersFragment)
+                .replace(R.id.fragmentHolder, selectedFragment)
                 .commit();
 
         bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
             int itemId = item.getItemId();
             if (R.id.nav_pictures == itemId) {
                 selectedFragment = foldersFragment;
@@ -135,8 +142,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             case "PICTURES-FLAG":
                 if (request.contains("Open Url Dialog"))
                     new UrlDialogFragment().show(getSupportFragmentManager(), UrlDialogFragment.Tag);
-                else if (request.contains("Turn back folder"))
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, foldersFragment).commit();
+                else if (request.contains("Turn back folder")) {
+                    selectedFragment = foldersFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                }
                 break;
             case "URL-FLAG":
                 boolean network = checkInternetConnection();
@@ -155,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             case "SETTING-FLAG":
                 try {
                     boolean theme = Boolean.parseBoolean(request);
+                    darkButtonIsPressed = true;
                     changeTheme(theme);
                 }
                 catch (Exception e) {
@@ -164,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             case "FOLDER-FLAG":
                 try {
                     picturesFragment = PicturesFragment.getInstance(foldersFragment.getContext(), request);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, picturesFragment).addToBackStack("").commit();
+                    selectedFragment = picturesFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).addToBackStack("").commit();
                 }
                 catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
@@ -173,13 +184,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             default:
                 break;
         }
-    }
-
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        bottomNavigationView.setSelectedItemId(R.id.nav_pictures);
-
     }
 
     private void changeTheme(boolean isChecked) {

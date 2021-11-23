@@ -18,7 +18,7 @@
         android:theme="@style/Theme.Gallery">
         <activity
             android:name=".LargeImage"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -67,13 +67,19 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         catch (IllegalStateException e) {
             throw new IllegalStateException("MainActivity must implement callbacks");
         }
+
+        // Show the up-key back arrow on Action Bar
+        setHasOptionsMenu(true);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
-        ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        /*((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((MainActivity)context).getSupportActionBar().setHomeButtonEnabled(true);*/
 
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
         txtMsg = picturesFragment.findViewById(R.id.txtMsg);
@@ -258,12 +264,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         saveImage(result);
     }
 
+    // call the up-key back on Action Bar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.home) {
-            main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
+        return true;
     }
 }
