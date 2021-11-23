@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -40,19 +41,21 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private final int spanCount = 4;
 
     Context context;
+    String pathFolder;
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
     MainActivity main;
 
-    PicturesFragment(Context context) {
-        this.context = context;
+    public static PicturesFragment getInstance(Context context, String pathFolder)
+    {
+        return new PicturesFragment(context, pathFolder);
     }
 
-    public static PicturesFragment getInstance(Context context)
-    {
-        return new PicturesFragment(context);
+    PicturesFragment(Context context, String pathFolder) {
+        this.context = context;
+        this.pathFolder = pathFolder;
     }
 
     @Override
@@ -70,6 +73,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
+        ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
         txtMsg = picturesFragment.findViewById(R.id.txtMsg);
 
@@ -130,13 +135,13 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     void readPicturesFolder() {
         try {
-            // Get path to external storage: /storage/emulated/0
+            /*// Get path to external storage: /storage/emulated/0
             String absolutePathToSDCard = Environment.getExternalStorageDirectory().getAbsolutePath();
             // Path to Pictures folder: /storage/emulated/0/Pictures/
             String pathToPicturesFolder = absolutePathToSDCard + "/Pictures/";
-            txtMsg.append("Path: " + pathToPicturesFolder + "\n");
+            txtMsg.append("Path: " + pathToPicturesFolder + "\n");*/
 
-            File pictureFile = new File(pathToPicturesFolder);
+            File pictureFile = new File(pathFolder);
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
@@ -152,7 +157,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             else {
                 txtMsg.append("Picture/Item: " + pictureFiles.length + "/" + allFiles.length + "\n");
                 // Load gallery with current path
-                loadGallery(pathToPicturesFolder);
+                loadGallery(pathFolder);
             }
         }
         catch (Exception e) {
@@ -251,5 +256,14 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     @Override
     public void onMsgFromMainToFrag(Bitmap result) {
         saveImage(result);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.home) {
+            main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
