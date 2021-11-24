@@ -49,6 +49,11 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albums = AlbumUtility.getInstance(context).getAllAlbums();
+
+        ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)context).getSupportActionBar().setTitle("Gallery");
+        ((MainActivity)context).getSupportActionBar().setDisplayUseLogoEnabled(true);
+        ((MainActivity)context).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Nullable

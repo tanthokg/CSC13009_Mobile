@@ -26,12 +26,19 @@ public class FoldersFragment extends Fragment {
 
     FoldersFragment(Context context) {this.context = context;}
 
+    public static FoldersFragment getInstance(Context context) {
+        return new FoldersFragment(context);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View foldersFragment = inflater.inflate(R.layout.folder_picture_fragment, container, false);
 
         ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)context).getSupportActionBar().setTitle("Gallery");
+        ((MainActivity)context).getSupportActionBar().setDisplayUseLogoEnabled(true);
+        ((MainActivity)context).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         folderPicturesRecView = (RecyclerView) foldersFragment.findViewById(R.id.folderPicturesRecView);
         folderPaths = new ArrayList<String>();
