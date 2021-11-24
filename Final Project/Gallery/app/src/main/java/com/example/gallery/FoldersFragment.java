@@ -49,13 +49,25 @@ public class FoldersFragment extends Fragment {
     }
 
     private void readFolders() {
-        String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File inputFile = new File(sdPath, "Pictures");
-        File[] folders = inputFile.listFiles();
+        //String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        //File inputFile = new File(sdPath, "Pictures");
+
+        String sdPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+        File sdFile = new File(sdPath);
+        File[] foldersSd = sdFile.listFiles();
+
+        String dcimPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
+        File dcimFile = new File(dcimPath);
+        File[] foldersDCIM = dcimFile.listFiles();
 
         try {
-            folderPaths.add(inputFile.getAbsolutePath());
-            for (File folder : folders) {
+            folderPaths.add(sdFile.getAbsolutePath());
+            for (File folder : foldersSd) {
+                if (folder.getAbsolutePath().toString().contains(".png")||folder.getAbsolutePath().toString().contains(".jpg"))
+                    continue;
+                folderPaths.add(folder.getAbsolutePath());
+            }
+            for (File folder : foldersDCIM) {
                 if (folder.getAbsolutePath().toString().contains(".png")||folder.getAbsolutePath().toString().contains(".jpg"))
                     continue;
                 folderPaths.add(folder.getAbsolutePath());
