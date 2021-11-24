@@ -173,8 +173,6 @@ public class LargeImage extends AppCompatActivity {
         confirmDialog.show();
     }
     private void shareOnPath(String path) {
-
-
         Drawable drawable=largeImage.getDrawable();
         Bitmap bitmap=((BitmapDrawable)drawable).getBitmap();
 
@@ -261,7 +259,7 @@ public class LargeImage extends AppCompatActivity {
                     wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()), null, true, WallpaperManager.FLAG_LOCK); //For Lock screen
                     Toast.makeText(this, "Set as Lockscreen", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "Lock screen walpaper not supported", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Lock screen wallpaper not supported", Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
