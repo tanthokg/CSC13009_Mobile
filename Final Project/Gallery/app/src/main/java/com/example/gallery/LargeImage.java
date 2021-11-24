@@ -174,40 +174,12 @@ public class LargeImage extends AppCompatActivity {
     }
     private void shareOnPath(String path) {
 
-     /*  Bitmap bitmap=viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight());
-        Intent intent=new Intent(Intent.ACTION_SEND);
-         intent.setType("*");
-   //   intent.setType("/image/*");
-      File file= new File(path);
-        /*ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-       bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
-       try {
-            file.createNewFile();
-            FileOutputStream fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(byteArrayOutputStream.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //   intent.putExtra(Intent.EXTRA_SUBJECT, resultObject.getShareSubject());
-
-//      ntent.putExtra(Intent.EXTRA_TEXT, resultObject.getShareText());
-        /*intent.putExtra(Intent.EXTRA_STREAM,Uri.parse(path));
-        startActivity(Intent.createChooser(intent,"Share Image"));*/
-    /*  final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-      shareIntent.setType("image/jpg");
-      final File photoFile = new File(path);
-      shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-      startActivity(Intent.croser(shareIntent, "Share image using"));
-*/
-
-
 
         Drawable drawable=largeImage.getDrawable();
         Bitmap bitmap=((BitmapDrawable)drawable).getBitmap();
 
         try {
             File file=new File(path);
-            //  File file = new File(getApplicationContext().getExternalCacheDir(), File.separator +);
             FileOutputStream fOut = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
             fOut.flush();
