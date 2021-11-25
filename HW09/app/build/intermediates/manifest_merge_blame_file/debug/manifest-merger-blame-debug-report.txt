@@ -1,0 +1,89 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.homework09"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+8-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="31" />
+9-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:5:5-67
+11-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:5:22-64
+12
+13    <application
+13-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:7:5-29:19
+14        android:allowBackup="true"
+14-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:8:9-35
+15        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+15-->[androidx.core:core:1.7.0] C:\Users\ASUS\.gradle\caches\transforms-3\21249a56641fb0309777a5ae16ce99ff\transformed\core-1.7.0\AndroidManifest.xml:24:18-86
+16        android:debuggable="true"
+17        android:extractNativeLibs="false"
+18        android:icon="@mipmap/ic_launcher"
+18-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:9:9-43
+19        android:label="@string/app_name"
+19-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:10:9-41
+20        android:roundIcon="@mipmap/ic_launcher_round"
+20-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:11:9-54
+21        android:supportsRtl="true"
+21-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:12:9-35
+22        android:testOnly="true"
+23        android:theme="@style/Theme.Homework09" >
+23-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:13:9-48
+24        <activity
+24-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:14:9-16:40
+25            android:name="com.example.homework09.ShowCategories"
+25-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:15:13-43
+26            android:exported="false" />
+26-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:16:13-37
+27        <activity
+27-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:17:9-19:40
+28            android:name="com.example.homework09.ShowHeadlines"
+28-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:18:13-42
+29            android:exported="false" />
+29-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:19:13-37
+30        <activity
+30-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:20:9-28:20
+31            android:name="com.example.homework09.MainActivity"
+31-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:21:13-41
+32            android:exported="true" >
+32-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:22:13-36
+33            <intent-filter>
+33-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:23:13-27:29
+34                <action android:name="android.intent.action.MAIN" />
+34-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:24:17-69
+34-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:24:25-66
+35
+36                <category android:name="android.intent.category.LAUNCHER" />
+36-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:26:17-77
+36-->D:\Programming\Java_Mobile\PTPMDD\HW09\app\src\main\AndroidManifest.xml:26:27-74
+37            </intent-filter>
+38        </activity>
+39
+40        <provider
+40-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:26:9-34:20
+41            android:name="androidx.startup.InitializationProvider"
+41-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:27:13-67
+42            android:authorities="com.example.homework09.androidx-startup"
+42-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:28:13-68
+43            android:exported="false" >
+43-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:29:13-37
+44            <meta-data
+44-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:31:13-33:52
+45                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+45-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:32:17-75
+46                android:value="androidx.startup" />
+46-->[androidx.emoji2:emoji2:1.0.0] C:\Users\ASUS\.gradle\caches\transforms-3\beb1e8c1d1724370afa1be71eb324942\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:33:17-49
+47            <meta-data
+47-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\ASUS\.gradle\caches\transforms-3\4d87c3e3b70abeed5e61faf08f3b9b5b\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:31:13-33:52
+48                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+48-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\ASUS\.gradle\caches\transforms-3\4d87c3e3b70abeed5e61faf08f3b9b5b\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:32:17-78
+49                android:value="androidx.startup" />
+49-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\ASUS\.gradle\caches\transforms-3\4d87c3e3b70abeed5e61faf08f3b9b5b\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:33:17-49
+50        </provider>
+51    </application>
+52
+53</manifest>

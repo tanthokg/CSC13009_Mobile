@@ -1,0 +1,16 @@
+com/example/homework09/ShowCategories.java
+ com.example.homework09.ShowCategories
+ com.example.homework09.ShowCategories$1
+com/example/homework09/DownloadRssFeed.java
+ com.example.homework09.DownloadRssFeed
+com/example/homework09/SingleItem.java
+ com.example.homework09.SingleItem
+com/example/homework09/MainActivity.java
+ com.example.homework09.MainActivity
+ com.example.homework09.MainActivity$1
+com/example/homework09/ShowHeadlines.java
+ com.example.homework09.ShowHeadlines
+ com.example.homework09.ShowHeadlines$1
+ com.example.homework09.ShowHeadlines$2
+com/example/homework09/BuildConfig.java
+ com.example.homework09.BuildConfig

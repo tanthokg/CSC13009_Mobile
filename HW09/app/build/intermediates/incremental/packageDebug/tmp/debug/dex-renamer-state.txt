@@ -1,0 +1,10 @@
+#Thu Nov 25 15:34:28 ICT 2021
+base.2=D\:\\Programming\\Java_Mobile\\PTPMDD\\HW09\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
+path.2=12/classes.dex
+base.1=D\:\\Programming\\Java_Mobile\\PTPMDD\\HW09\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+path.1=0/classes.dex
+base.0=D\:\\Programming\\Java_Mobile\\PTPMDD\\HW09\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+path.0=classes.dex
