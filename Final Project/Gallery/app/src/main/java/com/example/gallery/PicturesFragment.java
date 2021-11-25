@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.DialogFragment;
 
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
@@ -39,6 +42,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private File[] allFiles;
     private File[] pictureFiles;
     private final int spanCount = 4;
+
+    PicturesAdapter picturesAdapter;
+    private ActionMode actionMode;
+    ArrayList<File> message_models = new ArrayList<>();
 
     Context context;
     String pathFolder;
@@ -142,6 +149,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         });
 
         readPicturesFolder();
+        implementClickListener();
         return picturesFragment;
     }
 
@@ -181,7 +189,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // The idea was to send a string path to the adapter, not a File object
         // The adapter will then create everything we need from the provided path
         // This implementation is not permanent
-        PicturesAdapter picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
+        picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
@@ -274,5 +282,66 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
         return true;
+    }
+
+    private void implementClickListener() {
+        picturesRecView.addOnItemTouchListener(new RecyclerTouchListener(context, picturesRecView, new RecyclerClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //If ActionMode not null select item
+                if (actionMode != null)
+                    onListItemSelect(position);
+                else
+                {
+                    showLargeGalleryItem(pathFolder, position);
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                //Select item on long click
+                main.bottomNavigationView.setVisibility(View.GONE);
+                onListItemSelect(position);
+            }
+        }));
+
+
+    }
+
+    //List item select method
+    private void onListItemSelect(int position) {
+        picturesAdapter.toggleSelection(position);//Toggle the selection
+
+        boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;//Check if any items are already selected or not
+
+
+        if (hasCheckedItems && actionMode == null)// there are some selected items, start the actionMode
+        {
+            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(new ToolbarActionModeCallback(context ,picturesAdapter, message_models));
+        }
+        else if (!hasCheckedItems && actionMode != null)
+            // there no selected items, finish the actionMode
+            actionMode.finish();
+
+        if (actionMode != null)
+            //set action mode title on item selection
+            actionMode.setTitle(String.valueOf(picturesAdapter
+                    .getSelectedCount()) + " selected");
+
+
+    }
+    //Set action mode null after use
+    public void setNullToActionMode() {
+        if (actionMode != null)
+            actionMode = null;
+    }
+
+    private void showLargeGalleryItem(String pathToPicturesFolder, int itemPosition) {
+        Intent intent = new Intent(context, LargeImage.class);
+        // Send the folder path and the current position to the destination activity
+        intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
+        intent.putExtra("itemPosition", itemPosition);
+        context.startActivity(intent);
     }
 }

@@ -2,10 +2,13 @@ package com.example.gallery;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +25,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
     private final String pathToPicturesFolder;
     private final File pictureFile;
     private File[] pictureFiles;
+    private SparseBooleanArray mSelectedItemsIds;
 
     public PicturesAdapter(Context context, String pathToPicturesFolder) {
         this.context = context;
@@ -35,6 +39,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
             }
         };
         this.pictureFiles = pictureFile.listFiles(filter);
+        mSelectedItemsIds = new SparseBooleanArray();
     }
 
     @NonNull
@@ -52,15 +57,18 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         // holder.imageItem.setImageDrawable(Drawable.createFromPath(picturePath));
         Glide.with(context).asBitmap().load(picturePath).into(holder.imageItem);
 
-        holder.imageItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Send the folder path and the current position to a new activity
-                // Sending the string was more preferable. If you want to send a File object
-                // you can use GSON library to serialize and deserialize objects
-                showLargeGalleryItem(pathToPicturesFolder, holder.getAdapterPosition());
-            }
-        });
+        if(mSelectedItemsIds.get(position))
+        {
+            holder.itemView.setBackgroundColor( 0x9934B5E4);
+            holder.checkbox.setVisibility(View.VISIBLE);
+            holder.checkbox.setChecked(true);
+        }
+        else
+        {
+            holder.checkbox.setVisibility(View.GONE);
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+
+        }
     }
 
     @Override
@@ -68,20 +76,39 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         return pictureFiles.length;
     }
 
-    private void showLargeGalleryItem(String pathToPicturesFolder, int itemPosition) {
-        Intent intent = new Intent(context, LargeImage.class);
-        // Send the folder path and the current position to the destination activity
-        intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
-        intent.putExtra("itemPosition", itemPosition);
-        context.startActivity(intent);
-
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView imageItem;
+        private ImageView imageItem;
+        private CheckBox checkbox;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageItem = itemView.findViewById(R.id.picturesItem);
+            checkbox = itemView.findViewById(R.id.checkBox);
         }
+    }
+
+    public void toggleSelection(int position) {
+        if (mSelectedItemsIds.get(position)) {
+            mSelectedItemsIds.delete(position);
+        } else {
+            mSelectedItemsIds.put(position, true);
+        }
+        notifyItemChanged(position);
+    }
+
+
+    //Remove selected selections
+    public void removeSelection() {
+        mSelectedItemsIds.clear();
+        notifyDataSetChanged();
+    }
+
+    //Get total selected count
+    public int getSelectedCount() {
+        return mSelectedItemsIds.size();
+    }
+
+    //Return all selected ids
+    public SparseBooleanArray getSelectedIds() {
+        return mSelectedItemsIds;
     }
 }
