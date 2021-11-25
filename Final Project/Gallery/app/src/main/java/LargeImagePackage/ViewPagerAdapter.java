@@ -57,7 +57,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         // setting the image in the imageView
         //Drawable draw = Drawable.createFromPath(pictureFiles[position].getAbsolutePath());
-        view.setImageDrawable(Drawable.createFromPath(pictureFiles[position].getAbsolutePath()));
+        Glide.with(context).asBitmap().load(pictureFiles[position].getAbsolutePath()).into(view);
 
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
