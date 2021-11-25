@@ -10,7 +10,6 @@ import androidx.viewpager.widget.ViewPager;
 
 public class ZoomableViewPager extends ViewPager {
 
-
     public ZoomableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

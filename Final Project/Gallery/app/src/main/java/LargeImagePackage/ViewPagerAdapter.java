@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
@@ -14,15 +13,33 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.example.gallery.R;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
-    //Intent intent;
+    static final int MAX_CACHE_SIZE = 16;
     Context context;
     File[] pictureFiles;
     LayoutInflater mLayoutInflater;
     ZoomableImageView imageView;
+    static HashMap<String, Drawable> drawableCache = new HashMap<String, Drawable>();
+
+    static private Drawable getDrawable(String key) {
+
+        //Clear data when the memory is too large
+        if (drawableCache.size() >=  MAX_CACHE_SIZE) {
+            drawableCache.clear();
+        }
+
+        //If there isn't the drawable exists => store it
+        if (!drawableCache.containsKey(key))
+        {
+            drawableCache.put(key, Drawable.createFromPath(key));
+        }
+
+        return drawableCache.get(key);
+    }
 
     public ZoomableImageView getImageView() {return imageView; }
 
@@ -31,7 +48,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         this.context = context;
         this.pictureFiles = pictureFiles;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
     }
 
     @Override
@@ -52,11 +68,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         View itemView = mLayoutInflater.inflate(R.layout.gallery_large_item, container, false);
 
         // referencing the image view from the item.xml file
-        imageView = itemView.findViewById(R.id.largeGalleryItem);
+        ZoomableImageView view = itemView.findViewById(R.id.largeGalleryItem);
 
         // setting the image in the imageView
-        //Drawable draw = Drawable.createFromPath(pictureFiles[position].getAbsolutePath());
-        imageView.setImageDrawable(Drawable.createFromPath(pictureFiles[position].getAbsolutePath()));
+        view.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
 
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
@@ -64,9 +79,17 @@ public class ViewPagerAdapter extends PagerAdapter {
         return itemView;
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
 
+    @Override
+    public void setPrimaryItem (ViewGroup container, int position, Object object){
+        super.setPrimaryItem(container, position, object);
+        imageView = ((View)object).findViewById(R.id.largeGalleryItem);
+        imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object)
+    {
         container.removeView((RelativeLayout) object);
     }
 

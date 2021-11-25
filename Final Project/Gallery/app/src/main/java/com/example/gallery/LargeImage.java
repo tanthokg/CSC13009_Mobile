@@ -91,27 +91,6 @@ public class LargeImage extends AppCompatActivity {
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setCurrentItem(currentPosition[0]);
 
-        /*
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
-                if (item.getItemId() == R.id.deleteAlbum) {
-                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.deleteOnPath(path, bottomNavigationView);
-                }
-
-                // Use addToBackStack to return the previous fragment when the Back button is pressed
-                // Checking null was just a precaution
-                if (selectedFragment != null)
-                    LargeImage.this.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragmentHolder, selectedFragment)
-                            .commit();
-                return true;
-            }
-        });*/
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -138,15 +117,6 @@ public class LargeImage extends AppCompatActivity {
             }
         });
     }
-
-    /*
-    private void deleteOn(String path) {
-        File a = new File(path);
-        a.delete();
-        callScanIntent(getApplicationContext(),path);
-        Toast.makeText(this,"Image Deleted",Toast.LENGTH_SHORT).show();
-        finish();
-    }*/
 
     private void deleteOnPath(String path, View bottomNav)
     {
@@ -203,6 +173,7 @@ public class LargeImage extends AppCompatActivity {
         MediaScannerConnection.scanFile(context,
                 new String[] { path }, null,null);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
