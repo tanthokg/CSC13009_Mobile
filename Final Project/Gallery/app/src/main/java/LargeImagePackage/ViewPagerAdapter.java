@@ -5,24 +5,37 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.widget.ImageView;
+
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+
 import com.example.gallery.R;
 
 import java.io.File;
 import java.util.HashMap;
+
+import com.bumptech.glide.Glide;
+import com.example.gallery.R;
+
+import java.io.File;
+
 import java.util.Objects;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
+
     static final int MAX_CACHE_SIZE = 16;
+
     Context context;
     File[] pictureFiles;
     LayoutInflater mLayoutInflater;
     ZoomableImageView imageView;
+
     static HashMap<String, Drawable> drawableCache = new HashMap<String, Drawable>();
 
     static private Drawable getDrawable(String key) {
@@ -40,6 +53,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         return drawableCache.get(key);
     }
+
 
     public ZoomableImageView getImageView() {return imageView; }
 
@@ -71,7 +85,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         ZoomableImageView view = itemView.findViewById(R.id.largeGalleryItem);
 
         // setting the image in the imageView
+
         view.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
+
+        
 
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
@@ -85,6 +102,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         super.setPrimaryItem(container, position, object);
         imageView = ((View)object).findViewById(R.id.largeGalleryItem);
         imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
+
     }
 
     @Override
