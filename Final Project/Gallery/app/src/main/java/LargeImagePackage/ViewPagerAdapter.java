@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.bumptech.glide.Glide;
 import com.example.gallery.R;
 
 import java.io.File;
@@ -52,11 +53,11 @@ public class ViewPagerAdapter extends PagerAdapter {
         View itemView = mLayoutInflater.inflate(R.layout.gallery_large_item, container, false);
 
         // referencing the image view from the item.xml file
-        imageView = itemView.findViewById(R.id.largeGalleryItem);
+        ZoomableImageView view = itemView.findViewById(R.id.largeGalleryItem);
 
         // setting the image in the imageView
         //Drawable draw = Drawable.createFromPath(pictureFiles[position].getAbsolutePath());
-        imageView.setImageDrawable(Drawable.createFromPath(pictureFiles[position].getAbsolutePath()));
+        view.setImageDrawable(Drawable.createFromPath(pictureFiles[position].getAbsolutePath()));
 
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
@@ -64,9 +65,17 @@ public class ViewPagerAdapter extends PagerAdapter {
         return itemView;
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
 
+    @Override
+    public void setPrimaryItem (ViewGroup container, int position, Object object){
+        super.setPrimaryItem(container, position, object);
+        imageView = ((View)object).findViewById(R.id.largeGalleryItem);
+        Glide.with(context).asBitmap().load(pictureFiles[position].getAbsolutePath()).into(imageView);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object)
+    {
         container.removeView((RelativeLayout) object);
     }
 

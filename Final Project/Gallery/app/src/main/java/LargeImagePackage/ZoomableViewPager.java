@@ -10,9 +10,10 @@ import androidx.viewpager.widget.ViewPager;
 
 public class ZoomableViewPager extends ViewPager {
 
-
+    private final int limitPreload = 7;
     public ZoomableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.setOffscreenPageLimit(limitPreload);
     }
 
     @Override

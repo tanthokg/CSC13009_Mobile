@@ -46,11 +46,13 @@ public class ZoomableImageView extends ImageView {
 
     public ZoomableImageView(Context context) {
         super(context);
+        saveScale = 1f;
         sharedConstructing(context);
     }
 
     public ZoomableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        saveScale = 1f;
         sharedConstructing(context);
     }
 
