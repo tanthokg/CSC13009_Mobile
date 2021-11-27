@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 
+import com.example.gallery.LargeImage;
 import com.example.gallery.R;
 
 import java.io.File;
@@ -85,11 +86,8 @@ public class ViewPagerAdapter extends PagerAdapter {
         ZoomableImageView view = itemView.findViewById(R.id.largeGalleryItem);
 
         // setting the image in the imageView
-
         view.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
-
-        
-
+        // LargeImage.currentPosition = position;
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
 
@@ -104,6 +102,8 @@ public class ViewPagerAdapter extends PagerAdapter {
         imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
 
     }
+
+
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
