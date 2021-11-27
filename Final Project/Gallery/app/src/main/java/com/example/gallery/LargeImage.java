@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,18 +15,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,7 +34,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.gallery.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -223,18 +220,18 @@ public class LargeImage extends AppCompatActivity {
             File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
 
-            View pictureInfo = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
-            TextView filename = pictureInfo.findViewById(R.id.info_filename);
-            TextView filepath = pictureInfo.findViewById(R.id.info_filepath);
-            TextView lastModified = pictureInfo.findViewById(R.id.info_lastmodified);
-            TextView filesize = pictureInfo.findViewById(R.id.info_filesize);
+            View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
+            TextView filename = pictureInfoView.findViewById(R.id.info_filename);
+            TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
+            TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
+            TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
             filename.setText(currentFile.getName());
             filepath.setText(currentFile.getAbsolutePath());
             lastModified.setText(sdf.format(currentFile.lastModified()));
             filesize.setText(Math.round(currentFile.length() * 1.0 / 1000) + " KB");
-            
+
             AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
-            dialog.setView(pictureInfo);
+            dialog.setView(pictureInfoView);
             dialog.create().show();
 
         }
