@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/invisible"
+        android:visible="false"
+        android:title="invisible"/>
+    <item
         android:id="@+id/editAlbum"
         android:icon="@drawable/ic_baseline_edit_24"
         android:title="Edit"/>
