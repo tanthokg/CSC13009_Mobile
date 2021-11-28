@@ -1,6 +1,7 @@
 package com.example.homework09;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,21 +24,93 @@ public class ShowCategories extends Activity {
     ListView myMainListView;
     Context context;
     String[][] thanhnienUrls = {
-            {"https://thanhnien.vn/rss/the-gioi-66.rss", "Thế giới"},
-            {"https://thanhnien.vn/rss/thoi-su-4.rss", "Thời sự"},
-            {"https://thanhnien.vn/rss/van-hoa-93.rss", "Văn hóa"}
+            {"https://thanhnien.vn/rss/cong-nghe-12.rss","Công nghệ"},
+            {"https://thanhnien.vn/rss/game-315.rss","Game"},
+            {"https://thanhnien.vn/rss/suc-khoe-65.rss","Sức khoẻ"},
+            {"https://thanhnien.vn/rss/xe-317.rss","Xe"},
+            {"https://thanhnien.vn/rss/thoi-trang-tre-319.rss","Thời trang trẻ"},
+            {"https://thanhnien.vn/rss/giao-duc-26.rss","Giáo dục"},
+            {"https://thanhnien.vn/rss/gioi-tre-69.rss","Giới trẻ"},
+            {"https://thanhnien.vn/rss/tai-chinh-kinh-doanh-49.rss","Tài chính kinh doanh"},
+            {"https://thanhnien.vn/rss/doi-song-17.rss","Đời sống"},
+            {"https://thanhnien.vn/rss/the-thao-318.rss","Thể thao"},
+            {"https://thanhnien.vn/rss/the-gioi-66.rss","Thế giới"},
+            {"https://thanhnien.vn/rss/thoi-su-4.rss","Thời sự"}
     };
     String[][] vnexpressUrls = {
             {"https://vnexpress.net/rss/the-gioi.rss", "Thế giới"},
             {"https://vnexpress.net/rss/thoi-su.rss", "Thời sự"},
-            {"https://vnexpress.net/rss/giao-duc.rss", "Giáo dục"}
+            {"https://vnexpress.net/rss/giao-duc.rss", "Giáo dục"},
+            {"https://vnexpress.net/rss/kinh-doanh.rss","Kinh doạnh"},
+            {"https://vnexpress.net/rss/giai-tri.rss","Giải trí"},
+            {"https://vnexpress.net/rss/the-thao.rss","Thể thao"},
+            {"https://vnexpress.net/rss/phap-luat.rss","Pháp luật"},
+            {"https://vnexpress.net/rss/suc-khoe.rss","Sức khoẻ"},
+            {"https://vnexpress.net/rss/du-lich.rss","Du lịch"},
+            {"https://vnexpress.net/rss/khoa-hoc.rss","Khoa học"},
+            {"https://vnexpress.net/rss/tam-su.rss","Tâm sự"},
+            {"https://vnexpress.net/rss/y-kien.rss","Ý kiến"}
     };
     String[][] tuoitreUrls = {
             {"https://tuoitre.vn/rss/khoa-hoc.rss", "Khoa học"},
-            {"https://tuoitre.vn/rss/nhip-song-so.rss", "Nhịp sống số"},
-            {"https://tuoitre.vn/rss/the-gioi.rss", "Thế giới"}
+            {"https://tuoitre.vn/rss/giai-tri.rss", "Giải trí"},
+            {"https://tuoitre.vn/rss/the-gioi.rss", "Thế giới"},
+            {"https://tuoitre.vn/rss/kinh-doanh.rss","Kinh doanh"},
+            {"https://tuoitre.vn/rss/xe.rss","Xe"},
+            {"https://tuoitre.vn/rss/van-hoa.rss","Văn hoá"},
+            {"https://tuoitre.vn/rss/the-thao.rss","Thể thao"},
+            {"https://tuoitre.vn/rss/thoi-su.rss","Thời sự"},
+            {"https://tuoitre.vn/rss/phap-luat.rss","Pháp luật"},
+            {"https://tuoitre.vn/rss/giao-duc.rss","Giáo dục"},
+            {"https://tuoitre.vn/rss/du-lich.rss","Du lịch"},
+            {"https://tuoitre.vn/rss/suc-khoe.rss","Sức khoẻ"}
+
+    };
+    String[][] vietnamnetUrls={
+            {"https://vietnamnet.vn/rss/thoi-su-chinh-tri.rss","Chính trị"},
+            {"https://vietnamnet.vn/rss/talkshow.rss","Talkshow"},
+            {"https://vietnamnet.vn/rss/thoi-su.rss","Thời sự"},
+            {"https://vietnamnet.vn/rss/kinh-doanh.rss","Kinh doanh"},
+            {"https://vietnamnet.vn/rss/giai-tri.rss","Giải trí"},
+            {"https://vietnamnet.vn/rss/the-gioi.rss","Thế giới"},
+            {"https://vietnamnet.vn/rss/giao-duc.rss","Giáo dục"},
+            {"https://vietnamnet.vn/rss/doi-song.rss","Đời sống"},
+            {"https://vietnamnet.vn/rss/phap-luat.rss","Pháp luật"},
+            {"https://vietnamnet.vn/rss/the-thao.rss","Thể thao"},
+            {"https://vietnamnet.vn/rss/cong-nghe.rss","Công nghệ"},
+            {"https://vietnamnet.vn/rss/suc-khoe.rss","Sức khoẻ"}
+
+    };
+    /*String[][] nguoiLaoDongUrls={
+            {"https://nld.com.vn/thoi-su.rss","Thời sự"},
+            {"https://nld.com.vn/thoi-su-quoc-te.rss","Thời sự quốc tế"},
+            {"https://nld.com.vn/cong-doan.rss","Công đoàn"},
+            {"https://nld.com.vn/ban-doc.rss","Bạn đọc"},
+            {"https://nld.com.vn/kinh-te.rss","Kinh tế"},
+            {"https://nld.com.vn/suc-khoe.rss","Sức khoẻ"},
+            {"https://nld.com.vn/giao-duc-khoa-hoc.rss","Giáo dục"},
+            {"https://nld.com.vn/phap-luat.rss","Pháp luật"},
+            {"https://nld.com.vn/giai-tri.rss","Giải trí"},
+            {"https://nld.com.vn/the-thao.rss","Thể thao"},
+            {"https://nld.com.vn/cong-nghe.rss","Công nghệ"},
+            {"https://nld.com.vn/du-lich-xanh.rss","Du lịch xanh"}
+    };*/
+    /*String [][] zingNewsUrls={
+            {"https://news.zing.vn/rss/thoi-su.rss","Thời sự"},
+            {"https://news.zing.vn/rss/the-gioi.rss","Thế giới"},
+            {"https://news.zing.vn/rss/kinh-doanh-tai-chinh.rss","Kinh doanh tài chính"},
+            {"https://news.zing.vn/rss/phap-luat.rss","Pháp luật"},
+            {"https://news.zing.vn/rss/the-thao.rss","Thể thao"},
+            {"https://news.zing.vn/rss/cong-nghe.rss","Công nghệ"},
+            {"https://news.zing.vn/rss/giai-tri.rss","Giải trí"},
+            {"https://news.zing.vn/rss/am-nhac.rss","Âm nhạc"},
+            {"https://news.zing.vn/rss/phim-anh.rss","Phim ảnh"},
+            {"https://news.zing.vn/rss/thoi-trang.rss","Thời trang"},
+            {"https://news.zing.vn/rss/giao-duc.rss","Giáo dục"},
+            {"https://news.zing.vn/rss/du-lich.rss","Du lịch"}
     };
 
+*/
 
     String [][] myUrlCaptionMenu = thanhnienUrls;
 
@@ -57,14 +131,17 @@ public class ShowCategories extends Activity {
         String newspaper = intent.getStringExtra("newspaper");
         Toast.makeText(this, newspaper, Toast.LENGTH_SHORT).show();
         switch (newspaper) {
-            case "Thanhnien":
+            case "Thanh Niên":
                 myUrlCaptionMenu = thanhnienUrls;
                 break;
             case "VnExpress":
                 myUrlCaptionMenu = vnexpressUrls;
                 break;
-            case "Tuoitre":
+            case "Tuổi Trẻ":
                 myUrlCaptionMenu = tuoitreUrls;
+                break;
+            case "VietNamNet":
+                myUrlCaptionMenu = vietnamnetUrls;
                 break;
             default:
                 break;
@@ -81,8 +158,10 @@ public class ShowCategories extends Activity {
         txtMsg.setText(("Channels in " + newspaper).toUpperCase(Locale.ROOT));
 
         // user will tap on a ListView’s row to request category’s headlines
-        myMainListView = (ListView)this.findViewById(R.id.myListView);
-        myMainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      myMainListView = (ListView) this.findViewById(R.id.myListView);
+      myMainListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+
+      {
             public void onItemClick(AdapterView<?> _av, View _v, int _index, long _id) {
                 String urlAddress = myUrlAddress[_index], urlCaption = myUrlCaption[_index];
                 //create an Intent to talk to activity: ShowHeadlines
@@ -98,5 +177,6 @@ public class ShowCategories extends Activity {
         // fill up the Main-GUI’s ListView with main news categories
         adapterMainSubjects = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myUrlCaption);
         myMainListView.setAdapter(adapterMainSubjects);
+
     }
 }

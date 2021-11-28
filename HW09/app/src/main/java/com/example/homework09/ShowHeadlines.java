@@ -13,6 +13,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,11 +23,13 @@ import java.util.Locale;
 public class ShowHeadlines extends Activity {
 
     ArrayList<SingleItem> newsList = new ArrayList<SingleItem>();
-    ListView myListView; String urlAddress = "", urlCaption = ""; SingleItem selectedNewsItem;
+    ListView myListView;
+    String urlAddress = "", urlCaption = "";
+    SingleItem selectedNewsItem;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); setContentView(R.layout.activity_main);
-        myListView = (ListView)this.findViewById(R.id.myListView);
+      myListView = (ListView)this.findViewById(R.id.myListView);
 
         Intent callingIntent = getIntent();
         Bundle myBundle = callingIntent.getExtras();
@@ -37,8 +40,7 @@ public class ShowHeadlines extends Activity {
         // this.setTitle("NPR –" + urlCaption + " \t" + ShowCategories.niceDate());
         TextView txtMsg = (TextView) findViewById(R.id.txtMsg);
         txtMsg.setText(("Items in channel " + urlCaption + " - " + newspaper).toUpperCase(Locale.ROOT));
-
-        myListView = (ListView)this.findViewById(R.id.myListView);
+     myListView = (ListView)this.findViewById(R.id.myListView);
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
