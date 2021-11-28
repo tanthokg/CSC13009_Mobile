@@ -21,6 +21,6 @@
         app:itemIconTint="@drawable/selected_icon"
         app:itemTextColor="?attr/colorOnSecondary"
         app:labelVisibilityMode="selected"
-        app:menu="@menu/bottom_nav_bar_items" />
+        app:menu="@menu/main_bottom_menu"/>
 
 </RelativeLayout>

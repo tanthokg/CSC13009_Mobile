@@ -21,7 +21,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,10 +40,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -67,7 +62,7 @@ public class LargeImage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gallery_large_item_container);
+        setContentView(R.layout.large_picture_container);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -180,7 +175,7 @@ public class LargeImage extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.large_image_menu, menu);
+        menuInflater.inflate(R.menu.large_picture_top_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

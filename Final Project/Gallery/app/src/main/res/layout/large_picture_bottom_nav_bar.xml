@@ -19,8 +19,8 @@
         android:layout_alignParentBottom="true"
         app:itemIconSize="28dp"
         app:itemIconTint="@drawable/selected_icon"
-        app:itemTextColor="@color/design_default_color_on_secondary"
+        app:itemTextColor="?attr/colorOnSecondary"
         app:labelVisibilityMode="auto"
-        app:menu="@menu/album_item_menu" />
+        app:menu="@menu/large_picture_bottom_menu"/>
 
 </RelativeLayout>

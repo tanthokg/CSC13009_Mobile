@@ -80,7 +80,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         private void showAlbumPopupMenu(View itemView) {
             String currentAlbum = albums.get(getAdapterPosition());
             PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
-            popupMenu.inflate(R.menu.album_item_menu);
+            popupMenu.inflate(R.menu.large_picture_bottom_menu);
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
