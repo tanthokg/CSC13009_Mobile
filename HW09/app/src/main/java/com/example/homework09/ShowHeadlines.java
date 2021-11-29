@@ -62,8 +62,6 @@ public class ShowHeadlines extends Activity {
             String storyLink = selectedStoryItem.getLink();
             if (storyLink.contains(" "))
                 storyLink = storyLink.replace(" ", "");
-            if (storyLink.contains("https"))
-                storyLink = storyLink.replace("https", "http");
 
             final Uri uri = Uri.parse(storyLink);
             AlertDialog.Builder myBuilder = new AlertDialog.Builder(this);
