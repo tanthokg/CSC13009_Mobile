@@ -147,11 +147,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    if (AlbumUtility.getInstance(context).deleteAlbum(albums.get(position))) {
+                        albums.remove(position);
+                        notifyItemRemoved(position);
+                        Toast.makeText(context, "Album " + position + " Deleted!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to delete this album!", Toast.LENGTH_SHORT).show();
 
-                    AlbumUtility.getInstance(context).deleteAlbum(albums.get(position));
-                    albums.remove(position);
-                    notifyItemRemoved(position);
-                    Toast.makeText(context, "Album " + position + " Deleted", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {

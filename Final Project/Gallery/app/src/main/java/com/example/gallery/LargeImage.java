@@ -54,9 +54,7 @@ public class LargeImage extends AppCompatActivity {
     ZoomableViewPager mViewPager;
     ViewPagerAdapter mViewPagerAdapter;
     int currentPosition;
-
     private WallpaperManager wallpaperManager;
-    private AlbumsFragment albumsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,6 @@ public class LargeImage extends AppCompatActivity {
 
         Intent intent = getIntent();
         wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        albumsFragment = new AlbumsFragment(this);
 
         // Get current position from intent
         currentPosition = intent.getIntExtra("itemPosition", -1);
@@ -185,7 +182,6 @@ public class LargeImage extends AppCompatActivity {
             onBackPressed();
             return true;
         }
-
         ImageView largeImage = mViewPagerAdapter.getImageView();
         if (item.getItemId() == R.id.menu_SetWallpaper) {
             try {
@@ -228,22 +224,22 @@ public class LargeImage extends AppCompatActivity {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
             dialog.setView(pictureInfoView);
             dialog.create().show();
-
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            Toast.makeText(this, albumsFragment.getAlbums().size() + " item(s).", Toast.LENGTH_SHORT).show();
+            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + "";
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
     private void addPictureToAlbum() {
         View addToAlbumView = LayoutInflater.from(this).inflate(R.layout.choose_album_form, null);
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
-        ArrayList<String> albums = albumsFragment.getAlbums();
-        ArrayAdapter<String> albumDefaultAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albums);
-        chooseAlbumListView.setAdapter(albumDefaultAdapter);
+
+        ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albums);
+        chooseAlbumListView.setAdapter(adapter);
         chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -268,7 +264,6 @@ public class LargeImage extends AppCompatActivity {
         });
         addToAlbumDialog.create();
         addToAlbumDialog.show();
-
     }
     private void changeTheme(boolean isChecked) {
         if (isChecked) {

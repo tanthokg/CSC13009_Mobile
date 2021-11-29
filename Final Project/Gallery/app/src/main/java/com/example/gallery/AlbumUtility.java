@@ -13,11 +13,15 @@ public class AlbumUtility {
     private SharedPreferences sharedPreferences;
     private static AlbumUtility instance;
     private static final String ALL_ALBUM_KEY = "album_list";
+    private static final String ALL_ALBUM_DATA_KEY = "album_data";
 
     private AlbumUtility(Context context) {
         sharedPreferences = context.getSharedPreferences("albums_database", Context.MODE_PRIVATE);
         if (getAllAlbums() == null) {
-            initData();
+            initAlbums();
+        }
+        if (getAllAlbumData() == null) {
+            initAlbumData();
         }
     }
 
@@ -33,6 +37,11 @@ public class AlbumUtility {
         return gson.fromJson(sharedPreferences.getString(ALL_ALBUM_KEY, null), type);
     }
 
+    public ArrayList<AlbumData> getAllAlbumData() {
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<String>>(){}.getType();
+        return gson.fromJson(sharedPreferences.getString(ALL_ALBUM_DATA_KEY, null), type);
+    }
 
     public void setAllAlbums(ArrayList<String> albums) {
         Gson gson = new Gson();
@@ -42,7 +51,7 @@ public class AlbumUtility {
         editor.apply();
     }
 
-    private void initData() {
+    private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Cats");
         albums.add("Dogs");
@@ -52,6 +61,14 @@ public class AlbumUtility {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_KEY, gson.toJson(albums));
+        editor.apply();
+    }
+
+    private void initAlbumData() {
+        ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(albumData));
         editor.apply();
     }
 
