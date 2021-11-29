@@ -180,8 +180,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 txtMsg.append("NULL");
             else {
                 txtMsg.append("Picture/Item: " + pictureFiles.length + "/" + allFiles.length + "\n");
-                // Load gallery with current path
-                showAllPictures(pathFolder);
+                ArrayList<String> paths = new ArrayList<String>();
+                for (File file : pictureFiles)
+                    paths.add(file.getAbsolutePath());
+                showAllPictures(paths);
             }
         }
         catch (Exception e) {
@@ -190,14 +192,16 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     }
 
     void readPicturesInAlbum() {
+        AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
+        ArrayList<String> paths = data.getPicturePaths();
 
     }
 
-    void showAllPictures(String pathToPicturesFolder) {
-        // The idea was to send a string path to the adapter, not a File object
-        // The adapter will then create everything we need from the provided path
+    void showAllPictures(ArrayList<String> paths) {
+        // Send a string path to the adapter. The adapter will create everything from the provided path
         // This implementation is not permanent
-        picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
+        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this for albums
+        picturesAdapter = new PicturesAdapter(context, paths);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
