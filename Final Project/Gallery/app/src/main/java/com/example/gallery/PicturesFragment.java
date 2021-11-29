@@ -193,14 +193,19 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     void readPicturesInAlbum() {
         AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
-        ArrayList<String> paths = data.getPicturePaths();
-
+        ArrayList<String> paths;
+        if (null != data) {
+            paths = data.getPicturePaths();
+        } else {
+            paths = new ArrayList<String>();
+        }
+        showAllPictures(paths);
     }
 
     void showAllPictures(ArrayList<String> paths) {
         // Send a string path to the adapter. The adapter will create everything from the provided path
         // This implementation is not permanent
-        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this for albums
+        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
         picturesAdapter = new PicturesAdapter(context, paths);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
