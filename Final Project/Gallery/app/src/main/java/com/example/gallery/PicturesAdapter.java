@@ -67,7 +67,6 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         {
             holder.checkbox.setVisibility(View.GONE);
             holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-
         }
     }
 

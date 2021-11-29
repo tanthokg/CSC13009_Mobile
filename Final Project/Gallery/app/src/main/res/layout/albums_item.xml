@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/albumItemCard"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:cardCornerRadius="12dp"

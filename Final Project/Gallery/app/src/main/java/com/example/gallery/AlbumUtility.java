@@ -126,7 +126,7 @@ public class AlbumUtility {
         return false;
     }
 
-    private AlbumData findDataByAlbumName(String albumName) {
+    public AlbumData findDataByAlbumName(String albumName) {
         ArrayList<AlbumData> data = getAllAlbumData();
 
         if (null != data) {

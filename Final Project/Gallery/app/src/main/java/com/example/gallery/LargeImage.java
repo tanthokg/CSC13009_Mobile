@@ -253,7 +253,7 @@ public class LargeImage extends AppCompatActivity {
             }
         });
 
-        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this);
+        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
         addToAlbumDialog.setView(addToAlbumView);
 
         addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {

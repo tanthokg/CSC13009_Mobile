@@ -19,6 +19,8 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -65,6 +67,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         ImageView albumThumbnail;
         TextView albumName, albumItemCount;
         ImageView albumItemMenu;
+        MaterialCardView albumItemCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +75,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             albumName = itemView.findViewById(R.id.albumName);
             albumItemCount = itemView.findViewById(R.id.albumItemCount);
             albumItemMenu = itemView.findViewById(R.id.albumItemMenu);
+            albumItemCard = itemView.findViewById(R.id.albumItemCard);
 
             albumItemMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,15 +83,19 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
                     showAlbumPopupMenu(albumItemMenu);
                 }
             });
+            albumItemCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG", albums.get(getAdapterPosition()));
+                }
+            });
         }
         
-        @SuppressLint("RestrictedApi")
         private void showAlbumPopupMenu(View itemView) {
             String currentAlbum = albums.get(getAdapterPosition());
             PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
             popupMenu.inflate(R.menu.album_menu);
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @SuppressLint("RestrictedApi")
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     int itemId = item.getItemId();
