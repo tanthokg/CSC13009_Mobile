@@ -13,8 +13,10 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -22,7 +24,10 @@ import java.util.Locale;
 public class ShowHeadlines extends Activity {
 
     ArrayList<SingleItem> newsList = new ArrayList<SingleItem>();
-    ListView myListView; String urlAddress = "", urlCaption = ""; SingleItem selectedNewsItem;
+    ListView myListView;
+    String urlAddress = "", urlCaption = "";
+    SingleItem selectedNewsItem;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); setContentView(R.layout.activity_main);
@@ -34,10 +39,8 @@ public class ShowHeadlines extends Activity {
         urlCaption = myBundle.getString("urlCaption");
         String newspaper = myBundle.getString("newspaper", "NULL");
 
-        // this.setTitle("NPR –" + urlCaption + " \t" + ShowCategories.niceDate());
         TextView txtMsg = (TextView) findViewById(R.id.txtMsg);
         txtMsg.setText(("Items in channel " + urlCaption + " - " + newspaper).toUpperCase(Locale.ROOT));
-
         myListView = (ListView)this.findViewById(R.id.myListView);
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -56,15 +59,18 @@ public class ShowHeadlines extends Activity {
         String description = selectedStoryItem.getDescription();
         if (title.toLowerCase().equals(description.toLowerCase())){ description = ""; }
         try {
+            String storyLink = selectedStoryItem.getLink();
+            if (storyLink.contains(" "))
+                storyLink = storyLink.replace(" ", "");
 
-            final Uri storyLink = Uri.parse(selectedStoryItem.getLink());
+            final Uri uri = Uri.parse(storyLink);
             AlertDialog.Builder myBuilder = new AlertDialog.Builder(this);
             myBuilder.setTitle(Html.fromHtml(urlCaption) )
                     .setMessage(title + "\n\n" + Html.fromHtml(description) + "\n")
                     .setPositiveButton("Close", null)
                     .setNegativeButton("More", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichOne) {
-                            Intent browser = new Intent(Intent.ACTION_VIEW, storyLink);
+                            Intent browser = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(browser);
                         }})
                     .show();
