@@ -243,7 +243,13 @@ public class LargeImage extends AppCompatActivity {
         chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
+                String albumName = albums.get(i);
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
+                    Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LargeImage.this, "Error: Cannot Add To Selected Album", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -253,12 +259,13 @@ public class LargeImage extends AppCompatActivity {
         addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                Toast.makeText(LargeImage.this, "OK!!!", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(LargeImage.this, "CANCELED", Toast.LENGTH_SHORT).show();
 
             }
         });

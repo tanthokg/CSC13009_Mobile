@@ -6,9 +6,9 @@ public class AlbumData {
     private String albumName;
     private ArrayList<String> picturePaths;
 
-    public AlbumData(String albumName, ArrayList<String> picturePath) {
+    public AlbumData(String albumName, ArrayList<String> picturePaths) {
         this.albumName = albumName;
-        this.picturePaths = picturePath;
+        this.picturePaths = picturePaths;
     }
 
     public String getAlbumName() {
@@ -25,5 +25,15 @@ public class AlbumData {
 
     public void setPicturePaths(ArrayList<String> picturePaths) {
         this.picturePaths = picturePaths;
+    }
+
+    public boolean addNewPath(String newPath) {
+        // To avoid duplications in album data
+        for (String p: picturePaths) {
+            if (p.equals(newPath))
+                return false;
+        }
+        picturePaths.add(newPath);
+        return true;
     }
 }
