@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,15 +59,20 @@ public class ShowHeadlines extends Activity {
         String description = selectedStoryItem.getDescription();
         if (title.toLowerCase().equals(description.toLowerCase())){ description = ""; }
         try {
+            String storyLink = selectedStoryItem.getLink();
+            if (storyLink.contains(" "))
+                storyLink = storyLink.replace(" ", "");
+            if (storyLink.contains("https"))
+                storyLink = storyLink.replace("https", "http");
 
-            final Uri storyLink = Uri.parse(selectedStoryItem.getLink());
+            final Uri uri = Uri.parse(storyLink);
             AlertDialog.Builder myBuilder = new AlertDialog.Builder(this);
             myBuilder.setTitle(Html.fromHtml(urlCaption) )
                     .setMessage(title + "\n\n" + Html.fromHtml(description) + "\n")
                     .setPositiveButton("Close", null)
                     .setNegativeButton("More", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichOne) {
-                            Intent browser = new Intent(Intent.ACTION_VIEW, storyLink);
+                            Intent browser = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(browser);
                         }})
                     .show();

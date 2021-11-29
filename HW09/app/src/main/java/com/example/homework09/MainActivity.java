@@ -8,14 +8,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
-    private  final String newspaperNames [] = {"Thanh Niên", "VnExpress", "Tuổi Trẻ", "VietNamNet", "Người Lao Động", "VTC News", "VTV News"};
+    private  final String newspaperNames [] = {"Thanh Niên", "VnExpress", "Tuổi Trẻ", "VietNamNet", "Người Lao Động", "VTV News"};
     private  final  int[] newspaperImageIds = {
             R.drawable.thanhnien,
             R.drawable.vnexpress,
             R.drawable.tuoitre,
             R.drawable.vietnamnet,
             R.drawable.nguoilaodong,
-            R.drawable.vtcnews,
             R.drawable.vtvnews
     };
 

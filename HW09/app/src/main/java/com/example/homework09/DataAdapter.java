@@ -68,8 +68,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textview = (TextView) itemView.findViewById(R.id.text_view);
-            imageview = (ImageView) itemView.findViewById(R.id.img_view);
+            textview = (TextView) itemView.findViewById(R.id.txtTitle);
+            imageview = (ImageView) itemView.findViewById(R.id.logoImgView);
         }
     }
 }
