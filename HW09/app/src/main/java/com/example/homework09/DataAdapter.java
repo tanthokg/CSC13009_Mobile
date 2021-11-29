@@ -20,14 +20,16 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     public DataAdapter(Context context,ArrayList<Newspaper> newspaperArrayList) {
         this.newspaperArrayList = newspaperArrayList;
         this.context = context;
-      this.listener = listener;
+        this.listener = listener;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.grid_item_layout, viewGroup, false);
         return new ViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(DataAdapter.ViewHolder Holder,int i)
     {
@@ -56,17 +58,18 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
        ((MainActivity)context).startActivity(intent);
     }
 
-   public interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onItemClick(Newspaper newspaper);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-    public TextView textview;
-    public ImageView imageview;
+        public TextView textview;
+        public ImageView imageview;
 
-    public ViewHolder(@NonNull View itemView) {
-        super(itemView);
-        textview = (TextView) itemView.findViewById(R.id.text_view);
-        imageview = (ImageView) itemView.findViewById(R.id.img_view);
-    }}
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textview = (TextView) itemView.findViewById(R.id.text_view);
+            imageview = (ImageView) itemView.findViewById(R.id.img_view);
+        }
+    }
 }
