@@ -1,5 +1,6 @@
 package com.example.gallery;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -14,8 +15,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
@@ -77,11 +81,13 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             });
         }
         
+        @SuppressLint("RestrictedApi")
         private void showAlbumPopupMenu(View itemView) {
             String currentAlbum = albums.get(getAdapterPosition());
             PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
-            popupMenu.inflate(R.menu.large_picture_bottom_menu);
+            popupMenu.inflate(R.menu.album_menu);
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @SuppressLint("RestrictedApi")
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     int itemId = item.getItemId();
@@ -94,6 +100,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
                 }
             });
             popupMenu.show();
+
         }
 
         private void handleEditAlbumItem(View itemView) {

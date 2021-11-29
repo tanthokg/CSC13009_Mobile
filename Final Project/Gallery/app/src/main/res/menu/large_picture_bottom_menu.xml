@@ -5,15 +5,15 @@
         android:visible="false"
         android:title="invisible"/>
     <item
-        android:id="@+id/editAlbum"
+        android:id="@+id/editPicture"
         android:icon="@drawable/ic_baseline_edit_24"
         android:title="Edit"/>
     <item
-        android:id="@+id/deleteAlbum"
+        android:id="@+id/deletePicture"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="Delete"/>
     <item
-        android:id="@+id/shareAlbum"
+        android:id="@+id/sharePicture"
         android:icon="@drawable/ic_baseline_share_24"
         android:title="Share"/>
 </menu>
