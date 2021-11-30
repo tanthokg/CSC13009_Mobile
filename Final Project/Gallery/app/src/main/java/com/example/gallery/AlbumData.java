@@ -1,12 +1,14 @@
 package com.example.gallery;
 
+import java.util.ArrayList;
+
 public class AlbumData {
     private String albumName;
-    private String picturePath;
+    private ArrayList<String> picturePaths;
 
-    public AlbumData(String albumName, String picturePath) {
+    public AlbumData(String albumName, ArrayList<String> picturePaths) {
         this.albumName = albumName;
-        this.picturePath = picturePath;
+        this.picturePaths = picturePaths;
     }
 
     public String getAlbumName() {
@@ -17,11 +19,21 @@ public class AlbumData {
         this.albumName = albumName;
     }
 
-    public String getPicturePath() {
-        return picturePath;
+    public ArrayList<String> getPicturePaths() {
+        return picturePaths;
     }
 
-    public void setPicturePath(String picturePath) {
-        this.picturePath = picturePath;
+    public void setPicturePaths(ArrayList<String> picturePaths) {
+        this.picturePaths = picturePaths;
+    }
+
+    public boolean addNewPath(String newPath) {
+        // To avoid duplications in album data
+        for (String p: picturePaths) {
+            if (p.equals(newPath))
+                return false;
+        }
+        picturePaths.add(newPath);
+        return true;
     }
 }

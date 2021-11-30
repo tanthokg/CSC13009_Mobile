@@ -88,18 +88,22 @@ public class AlbumsFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String newAlbumName = edtAlbumName.getText().toString();
                 if (newAlbumName.length() != 0) {
-                    AlbumUtility.getInstance(context).addNewAlbum(newAlbumName);
-                    albumsAdapter.addAlbum(newAlbumName);
-                    Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+                    if (AlbumUtility.getInstance(context).addNewAlbum(newAlbumName)) {
+                        albumsAdapter.addAlbum(newAlbumName);
+                        Toast.makeText(context, "New album created successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(context, "Error: Failed to create new album!", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(context, "Empty Name!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Empty Album Name!", Toast.LENGTH_LONG).show();
                 }
             }
         });
         addDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context, "Operation Canceled!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Canceled!", Toast.LENGTH_SHORT).show();
             }
         });
         addDialog.create();

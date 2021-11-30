@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +18,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.fragment.app.DialogFragment;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -49,20 +46,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     Context context;
     String pathFolder;
+    String type;
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
     MainActivity main;
 
-    public static PicturesFragment getInstance(Context context, String pathFolder)
+    public static PicturesFragment getInstance(Context context, String pathFolder, String type)
     {
-        return new PicturesFragment(context, pathFolder);
+        return new PicturesFragment(context, pathFolder, type);
     }
 
-    PicturesFragment(Context context, String pathFolder) {
+    PicturesFragment(Context context, String pathFolder, String type) {
         this.context = context;
         this.pathFolder = pathFolder;
+        this.type = type;
     }
 
     @Override
@@ -148,12 +147,17 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         });
 
-        readPicturesFolder();
-        implementClickListener();
+        if (type.equals("FOLDER")) {
+            readPicturesInFolder();
+            implementClickListener();
+        }
+        if (type.equals("ALBUM")) {
+            readPicturesInAlbum();
+        }
         return picturesFragment;
     }
 
-    void readPicturesFolder() {
+    void readPicturesInFolder() {
         try {
             /*// Get path to external storage: /storage/emulated/0
             String absolutePathToSDCard = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -176,8 +180,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 txtMsg.append("NULL");
             else {
                 txtMsg.append("Picture/Item: " + pictureFiles.length + "/" + allFiles.length + "\n");
-                // Load gallery with current path
-                loadGallery(pathFolder);
+                ArrayList<String> paths = new ArrayList<String>();
+                for (File file : pictureFiles)
+                    paths.add(file.getAbsolutePath());
+                showAllPictures(paths);
             }
         }
         catch (Exception e) {
@@ -185,11 +191,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
     }
 
-    void loadGallery(String pathToPicturesFolder) {
-        // The idea was to send a string path to the adapter, not a File object
-        // The adapter will then create everything we need from the provided path
+    void readPicturesInAlbum() {
+        AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
+        ArrayList<String> paths;
+        if (null != data) {
+            paths = data.getPicturePaths();
+        } else {
+            paths = new ArrayList<String>();
+        }
+        showAllPictures(paths);
+    }
+
+    void showAllPictures(ArrayList<String> paths) {
+        // Send a string path to the adapter. The adapter will create everything from the provided path
         // This implementation is not permanent
-        picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
+        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
+        picturesAdapter = new PicturesAdapter(context, paths);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
@@ -250,7 +267,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } catch (Exception e) {
             Log.e("Error to save image! ", e.getMessage());
         }
-        readPicturesFolder();
+        readPicturesInFolder();
     }
 
     @Override
@@ -269,7 +286,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         super.onResume();
         // Update pictures view when LargeImage activity is finished
         txtMsg.setText("");
-        readPicturesFolder();
+        readPicturesInFolder();
     }
 
     @Override
@@ -280,7 +297,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     // call the up-key back on Action Bar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
+        String request = "";
+        if (type.equals("FOLDER")) request = "Turn back folder";
+        if (type.equals("ALBUM")) request = "Turn back album";
+        main.onMsgFromFragToMain("PICTURES-FLAG", request);
         return true;
     }
 
@@ -292,10 +312,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 if (actionMode != null)
                     onListItemSelect(position);
                 else
-                {
-                    showLargeGalleryItem(pathFolder, position);
-                }
-
+                    showLargePicture(pathFolder, position);
             }
 
             @Override
@@ -305,29 +322,26 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 onListItemSelect(position);
             }
         }));
-
-
     }
 
     //List item select method
     private void onListItemSelect(int position) {
-        picturesAdapter.toggleSelection(position);//Toggle the selection
-
-        boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;//Check if any items are already selected or not
-
-
-        if (hasCheckedItems && actionMode == null)// there are some selected items, start the actionMode
-        {
-            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(new ToolbarActionModeCallback(context ,picturesAdapter, message_models));
-        }
-        else if (!hasCheckedItems && actionMode != null)
+        //Toggle the selection
+        picturesAdapter.toggleSelection(position);
+        //Check if any items are already selected or not
+        boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;
+        // there are some selected items, start the actionMode
+        if (hasCheckedItems && actionMode == null) {
+            actionMode = ((AppCompatActivity) getActivity()).
+                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, message_models));
+        } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
+        }
 
         if (actionMode != null)
             //set action mode title on item selection
-            actionMode.setTitle(String.valueOf(picturesAdapter
-                    .getSelectedCount()) + " selected");
+            actionMode.setTitle(String.valueOf(picturesAdapter.getSelectedCount()) + " selected");
 
 
     }
@@ -337,7 +351,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             actionMode = null;
     }
 
-    private void showLargeGalleryItem(String pathToPicturesFolder, int itemPosition) {
+    private void showLargePicture(String pathToPicturesFolder, int itemPosition) {
         Intent intent = new Intent(context, LargeImage.class);
         // Send the folder path and the current position to the destination activity
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);

@@ -151,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 else if (request.contains("Turn back folder")) {
                     selectedFragment = foldersFragment;
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                } else if (request.contains("Turn back album")) {
+                    selectedFragment = albumsFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
                 }
                 break;
             case "URL-FLAG":
@@ -179,11 +182,22 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 break;
             case "FOLDER-FLAG":
                 try {
-                    picturesFragment = PicturesFragment.getInstance(foldersFragment.getContext(), request);
+                    picturesFragment = PicturesFragment.getInstance(foldersFragment.getContext(), request, "FOLDER");
                     selectedFragment = picturesFragment;
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
                 }
                 catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case "ALBUM-FLAG":
+                // todo: open album item view here
+                try {
+                    picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
+                    selectedFragment = picturesFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                    Toast.makeText(MainActivity.this, "PictureFragment Loaded!", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
                 }
                 break;
