@@ -53,8 +53,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private final int CAMERA_CAPTURED = 100;
     MainActivity main;
 
-    public static PicturesFragment getInstance(Context context, String pathFolder, String type)
-    {
+    public static PicturesFragment getInstance(Context context, String pathFolder, String type) {
         return new PicturesFragment(context, pathFolder, type);
     }
 

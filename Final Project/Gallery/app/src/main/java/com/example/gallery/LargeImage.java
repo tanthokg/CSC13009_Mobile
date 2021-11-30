@@ -21,6 +21,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -189,8 +190,8 @@ public class LargeImage extends AppCompatActivity {
                 // Glide.with(this).asBitmap().load(pictureFiles[currentPosition[0]].getAbsolutePath())
                 wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()));
             } catch (IOException e) {
-                // here the errors can be logged instead of printStackTrace
-                e.printStackTrace();
+                // e.printStackTrace();
+                Log.e("Error set as wallpaper: ", e.getMessage());
             }
             Toast.makeText(this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
         }
@@ -203,7 +204,8 @@ public class LargeImage extends AppCompatActivity {
                     Toast.makeText(this, "Lock screen wallpaper not supported", Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+                Log.e("Error set as lockscreen: ", e.getMessage());
             }
 
         }
@@ -227,7 +229,7 @@ public class LargeImage extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + "";
+            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
@@ -238,9 +240,10 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albums);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
-        chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String albumName = albums.get(i);
@@ -251,22 +254,30 @@ public class LargeImage extends AppCompatActivity {
                     Toast.makeText(LargeImage.this, "Error: Cannot Add To Selected Album", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });*/
 
         AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
         addToAlbumDialog.setView(addToAlbumView);
+        ArrayList<String> chosen = new ArrayList<String>();
 
         addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(LargeImage.this, "OK!!!", Toast.LENGTH_SHORT).show();
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                for (int index = 0; index < chooseAlbumListView.getCount(); ++index) {
+                    if (chooseAlbumListView.isItemChecked(index))
+                        chosen.add(chooseAlbumListView.getItemAtPosition(index).toString());
+                }
+                for (String s: chosen) {
+                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(s, picturePath);
+                }
+                Toast.makeText(LargeImage.this, "OK", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(LargeImage.this, "CANCELED", Toast.LENGTH_SHORT).show();
-
             }
         });
         addToAlbumDialog.create();
