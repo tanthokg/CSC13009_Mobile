@@ -39,15 +39,13 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         if(item.getItemId() == R.id.delete)
         {
-            //TODO: delete item click with function written in PictureFragment
-            Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show();
+            ((MainActivity)context).picturesFragment.deleteMulti();
             mode.finish();
             ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
         else if (item.getItemId() == R.id.share)
         {
-            //TODO: share item click with function written in PictureFragment
-            Toast.makeText(context, "share", Toast.LENGTH_SHORT).show();
+            ((MainActivity)context).picturesFragment.shareMulti();
             mode.finish();
             ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }

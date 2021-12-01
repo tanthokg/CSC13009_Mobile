@@ -2,11 +2,15 @@ package com.example.gallery;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -357,5 +363,79 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
         context.startActivity(intent);
+    }
+
+    public void deleteMulti() {
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();//Get selected ids
+        ArrayList<String> path = new ArrayList<String>();
+
+        // Get paths of selected images
+        for (int index = (selected.size() - 1); index >= 0; index--) {
+            if (selected.valueAt(index)) {
+                //If current id is selected remove the item via key
+                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
+            }
+        }
+
+        // Start deleting all image selected
+        androidx.appcompat.app.AlertDialog.Builder confirmDialog =
+                new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AlertDialog);
+        confirmDialog.setMessage("Are you sure to delete these image?");
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                for (int index = 0; index < path.size(); index++) {
+                    File a = new File(path.get(index));
+                    a.delete();
+                    callScanIntent(context,path.get(index));
+                }
+                Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
+                picturesAdapter.notifyDataSetChanged();
+                onResume();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        confirmDialog.create();
+        confirmDialog.show();
+    }
+
+    public void  callScanIntent(Context context, String path) {
+        MediaScannerConnection.scanFile(context,
+                new String[] { path }, null,null);
+    }
+
+    public void shareMulti() {
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> path = new ArrayList<String>();
+
+        // Get paths of selected images
+        for (int index = (selected.size() - 1); index >= 0; index--) {
+            if (selected.valueAt(index)) {
+                //If current id is selected remove the item via key
+                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
+            }
+        }
+
+        try {
+            ArrayList<Uri> imageUris = new ArrayList<Uri>();
+            for (int i = 0; i < path.size(); i++) {
+                File file = new File(path.get(i));
+                Uri photoURI = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".provider", file);
+                imageUris.add(photoURI);
+            }
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.setType("image/jpg");
+            startActivity(Intent.createChooser(shareIntent, "Share images via"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
