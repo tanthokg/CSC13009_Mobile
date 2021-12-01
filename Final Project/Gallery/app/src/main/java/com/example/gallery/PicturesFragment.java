@@ -365,6 +365,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         context.startActivity(intent);
     }
 
+    // Delete multiple Images in PicturesFragments
     public void deleteMulti() {
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();//Get selected ids
         ArrayList<String> path = new ArrayList<String>();
@@ -409,6 +410,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 new String[] { path }, null,null);
     }
 
+    // Share multiple Images in PicturesFragments
     public void shareMulti() {
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();
         ArrayList<String> path = new ArrayList<String>();

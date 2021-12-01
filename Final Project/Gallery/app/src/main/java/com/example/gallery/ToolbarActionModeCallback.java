@@ -39,12 +39,14 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         if(item.getItemId() == R.id.delete)
         {
+            //Delete Multiple Images
             ((MainActivity)context).picturesFragment.deleteMulti();
             mode.finish();
             ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
         else if (item.getItemId() == R.id.share)
         {
+            //Share Multiple Images
             ((MainActivity)context).picturesFragment.shareMulti();
             mode.finish();
             ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
