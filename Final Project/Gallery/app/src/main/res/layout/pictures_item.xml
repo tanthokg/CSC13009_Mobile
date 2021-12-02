@@ -7,11 +7,12 @@
 
     <ImageView
         android:id="@+id/picturesItem"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_centerInParent="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background"/>
+        android:src="@drawable/ic_launcher_background" />
+
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
