@@ -375,6 +375,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
+    }
 
     // Delete multiple Images in PicturesFragments
     public void deleteMulti() {
