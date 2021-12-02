@@ -276,7 +276,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onResume() {
         super.onResume();
         // Update pictures view when LargeImage activity is finished
-        readPicturesInFolder();
+        if (type.equals("FOLDER")) {
+            readPicturesInFolder();
+        }
+        if (type.equals("ALBUM")) {
+            readPicturesInAlbum();
+        }
     }
 
     @Override
