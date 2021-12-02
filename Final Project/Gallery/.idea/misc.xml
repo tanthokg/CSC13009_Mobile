@@ -58,6 +58,7 @@
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/add_album_form.xml" value="0.25416666666666665" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/albums_fragment.xml" value="0.25416666666666665" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/albums_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/choose_album_form.xml" value="0.23333333333333334" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/gallery_item.xml" value="0.23796296296296296" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/gallery_large_item.xml" value="0.25416666666666665" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/gallery_large_item_container.xml" value="0.13020833333333334" />
@@ -86,7 +87,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
