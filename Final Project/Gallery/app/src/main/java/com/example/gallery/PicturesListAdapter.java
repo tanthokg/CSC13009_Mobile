@@ -22,28 +22,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHolder> {
+public class PicturesListAdapter extends RecyclerView.Adapter<PicturesListAdapter.ViewHolder> {
+
     private final Context context;
     private SparseBooleanArray mSelectedItemsIds;
 
     private ArrayList<String> paths;
-    private static int spanCount;
 
-    public PicturesAdapter(Context context, ArrayList<String> paths, int spanCount) {
+    public PicturesListAdapter(Context context, ArrayList<String> paths) {
         this.context = context;
         this.paths = paths;
         mSelectedItemsIds = new SparseBooleanArray();
-        this.spanCount = spanCount;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        if (spanCount != 1)
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pictures_item, parent, false);
-        else
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pictures_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pictures_list_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -53,42 +48,35 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         String picturePath = paths.get(position);
         // Set item to the ImageView using Glide library
         // holder.imageItem.setImageDrawable(Drawable.createFromPath(picturePath));
-        Glide.with(context).asBitmap().load(picturePath).into(holder.imageItem);
+        Glide.with(context).asBitmap().load(picturePath).into(holder.imageListItem);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         // Set width and height of ImageView
         ((MainActivity)context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        // Depend on how many columns of images are displayed in view
-        if (spanCount != 1) {
-            int size = displaymetrics.widthPixels / spanCount;
-            holder.imageItem.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
-        }
-        else {
-            // Set image size to display
-            int size = displaymetrics.widthPixels / 4;
-            holder.imageItem.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
+        // Set image size to display
+        int size = displaymetrics.widthPixels / 4;
+        holder.imageListItem.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
 
-            // Set the information of image
-            File pictureFile = new File(paths.get(position));
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ROOT);
+        // Set the information of image
+        File pictureFile = new File(paths.get(position));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ROOT);
 
-            int lastSlash = pictureFile.getAbsolutePath().lastIndexOf('/');
-            String imageName = pictureFile.getAbsolutePath().substring(lastSlash + 1);
-            holder.txtNameImage.setText(imageName);
-            holder.txtSizeAndDateImage.setText(Math.round(pictureFile.length() * 1.0 / 1000) + " KB");
-            holder.txtSizeAndDateImage.append(", ");
-            holder.txtSizeAndDateImage.append(sdf.format(pictureFile.lastModified()));
-        }
+        int lastSlash = pictureFile.getAbsolutePath().lastIndexOf('/');
+        String imageName = pictureFile.getAbsolutePath().substring(lastSlash + 1);
+        holder.txtNameImage.setText(imageName);
+        holder.txtSizeAndDateImage.setText(Math.round(pictureFile.length() * 1.0 / 1000) + " KB");
+        holder.txtSizeAndDateImage.append(", ");
+        holder.txtSizeAndDateImage.append(sdf.format(pictureFile.lastModified()));
 
 
         if(mSelectedItemsIds.get(position))
         {
             holder.itemView.setBackgroundColor( 0x9934B5E4);
-            holder.checkbox.setVisibility(View.VISIBLE);
-            holder.checkbox.setChecked(true);
+            holder.checkListbox.setVisibility(View.VISIBLE);
+            holder.checkListbox.setChecked(true);
         }
         else
         {
-            holder.checkbox.setVisibility(View.GONE);
+            holder.checkListbox.setVisibility(View.GONE);
             holder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
     }
@@ -98,23 +86,17 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         return paths.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageItem;
-        private CheckBox checkbox;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView imageListItem;
+        private CheckBox checkListbox;
         private TextView txtNameImage;
         private TextView txtSizeAndDateImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            if (spanCount != 1) {
-                imageItem = itemView.findViewById(R.id.picturesItem);
-                checkbox = itemView.findViewById(R.id.checkBox);
-            }
-            else {
-                imageItem = itemView.findViewById(R.id.picturesListItem);
-                checkbox = itemView.findViewById(R.id.checkListBox);
-                txtNameImage = itemView.findViewById(R.id.txtNameImage);
-                txtSizeAndDateImage = itemView.findViewById(R.id.txtSizeAndDateImage);
-            }
+            imageListItem = itemView.findViewById(R.id.picturesListItem);
+            checkListbox = itemView.findViewById(R.id.checkListBox);
+            txtNameImage = itemView.findViewById(R.id.txtNameImage);
+            txtSizeAndDateImage = itemView.findViewById(R.id.txtSizeAndDateImage);
         }
     }
 
@@ -126,7 +108,6 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         }
         notifyItemChanged(position);
     }
-
 
     //Remove selected selections
     public void removeSelection() {
