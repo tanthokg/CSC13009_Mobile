@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,19 +21,19 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.gallery.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -42,6 +41,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -54,26 +54,22 @@ public class LargeImage extends AppCompatActivity {
     File[] pictureFiles;
     ZoomableViewPager mViewPager;
     ViewPagerAdapter mViewPagerAdapter;
-    int[] currentPosition;
-
+    int currentPosition;
     private WallpaperManager wallpaperManager;
-    private AlbumsFragment albumsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gallery_large_item_container);
+        setContentView(R.layout.large_picture_container);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        albumsFragment = new AlbumsFragment(this);
 
         // Get current position from intent
-        // It has to be final int[] when used in anonymous functions, otherwise it will cause errors
-        currentPosition = new int[]{intent.getIntExtra("itemPosition", -1)};
+        currentPosition = intent.getIntExtra("itemPosition", -1);
 
         // Create a File object from the received path
         pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
@@ -89,19 +85,19 @@ public class LargeImage extends AppCompatActivity {
         mViewPager = (ZoomableViewPager)findViewById(R.id.viewPagerMain);
         mViewPagerAdapter = new ViewPagerAdapter(this, pictureFiles);
         mViewPager.setAdapter(mViewPagerAdapter);
-        mViewPager.setCurrentItem(currentPosition[0]);
-
+        mViewPager.setCurrentItem(currentPosition);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
-                if (item.getItemId() == R.id.deleteAlbum) {
+
+                if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     LargeImage.this.deleteOnPath(path, bottomNavigationView);
                 }
-                if (item.getItemId() == R.id.shareAlbum) {
+                if (item.getItemId() == R.id.sharePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     LargeImage.this.shareOnPath(path)    ;
                 }
@@ -148,7 +144,7 @@ public class LargeImage extends AppCompatActivity {
         Bitmap bitmap=((BitmapDrawable)drawable).getBitmap();
 
         try {
-            File file=new File(path);
+            File file = new File(path);
             FileOutputStream fOut = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
             fOut.flush();
@@ -178,7 +174,7 @@ public class LargeImage extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.large_image_menu, menu);
+        menuInflater.inflate(R.menu.large_picture_top_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -188,23 +184,19 @@ public class LargeImage extends AppCompatActivity {
             onBackPressed();
             return true;
         }
-
         ImageView largeImage = mViewPagerAdapter.getImageView();
         if (item.getItemId() == R.id.menu_SetWallpaper) {
-            // TODO: set image as wallpaper here
             try {
-                // set the wallpaper by calling the setResource function and
-                // passing the drawable file
-                //Glide.with(this).asBitmap().load(pictureFiles[currentPosition[0]].getAbsolutePath())
+                // set the wallpaper by calling the setResource function and passing the drawable file
+                // Glide.with(this).asBitmap().load(pictureFiles[currentPosition[0]].getAbsolutePath())
                 wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()));
             } catch (IOException e) {
-                // here the errors can be logged instead of printStackTrace
-                e.printStackTrace();
+                // e.printStackTrace();
+                Log.e("Error set as wallpaper: ", e.getMessage());
             }
             Toast.makeText(this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
         }
         if (item.getItemId() == R.id.menu_SetLockscreen) {
-            // TODO: set image as lockscreen here
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     wallpaperManager.setBitmap(viewToBitmap(largeImage, largeImage.getWidth(),largeImage.getHeight()), null, true, WallpaperManager.FLAG_LOCK); //For Lock screen
@@ -213,53 +205,84 @@ public class LargeImage extends AppCompatActivity {
                     Toast.makeText(this, "Lock screen wallpaper not supported", Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+                Log.e("Error set as lockscreen: ", e.getMessage());
             }
 
         }
         if (item.getItemId() == R.id.menu_ViewInfo) {
-            // TODO: show image info here
-            Toast.makeText(this, "View Info", Toast.LENGTH_SHORT).show();
+            File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
+
+            View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
+            TextView filename = pictureInfoView.findViewById(R.id.info_filename);
+            TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
+            TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
+            TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
+            filename.setText(currentFile.getName());
+            filepath.setText(currentFile.getAbsolutePath());
+            lastModified.setText(sdf.format(currentFile.lastModified()));
+            filesize.setText(Math.round(currentFile.length() * 1.0 / 1000) + " KB");
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+            dialog.setView(pictureInfoView);
+            dialog.create().show();
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            Toast.makeText(this, albumsFragment.getAlbums().size() + " item(s).", Toast.LENGTH_SHORT).show();
+            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
     private void addPictureToAlbum() {
         View addToAlbumView = LayoutInflater.from(this).inflate(R.layout.choose_album_form, null);
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
-        ArrayList<String> albums = albumsFragment.getAlbums();
-        ArrayAdapter<String> albumDefaultAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albums);
-        chooseAlbumListView.setAdapter(albumDefaultAdapter);
-        chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_multiple_choice, albums);
+        chooseAlbumListView.setAdapter(adapter);
+        /*chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
+                String albumName = albums.get(i);
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
+                    Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LargeImage.this, "Error: Cannot Add To Selected Album", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        });*/
 
-        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this);
+        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
         addToAlbumDialog.setView(addToAlbumView);
+        ArrayList<String> chosen = new ArrayList<String>();
 
         addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                for (int index = 0; index < chooseAlbumListView.getCount(); ++index) {
+                    if (chooseAlbumListView.isItemChecked(index))
+                        chosen.add(chooseAlbumListView.getItemAtPosition(index).toString());
+                }
+                for (String s: chosen) {
+                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(s, picturePath);
+                }
+                Toast.makeText(LargeImage.this, "OK", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                Toast.makeText(LargeImage.this, "CANCELED", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.create();
         addToAlbumDialog.show();
-
     }
     private void changeTheme(boolean isChecked) {
         if (isChecked) {

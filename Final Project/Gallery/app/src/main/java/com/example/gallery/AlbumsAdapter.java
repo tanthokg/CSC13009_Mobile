@@ -1,5 +1,6 @@
 package com.example.gallery;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -14,8 +15,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
@@ -61,6 +67,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         ImageView albumThumbnail;
         TextView albumName, albumItemCount;
         ImageView albumItemMenu;
+        MaterialCardView albumItemCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -68,6 +75,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             albumName = itemView.findViewById(R.id.albumName);
             albumItemCount = itemView.findViewById(R.id.albumItemCount);
             albumItemMenu = itemView.findViewById(R.id.albumItemMenu);
+            albumItemCard = itemView.findViewById(R.id.albumItemCard);
 
             albumItemMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -75,12 +83,18 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
                     showAlbumPopupMenu(albumItemMenu);
                 }
             });
+            albumItemCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG", albums.get(getAdapterPosition()));
+                }
+            });
         }
         
         private void showAlbumPopupMenu(View itemView) {
             String currentAlbum = albums.get(getAdapterPosition());
             PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
-            popupMenu.inflate(R.menu.album_item_menu);
+            popupMenu.inflate(R.menu.album_menu);
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -94,6 +108,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
                 }
             });
             popupMenu.show();
+
         }
 
         private void handleEditAlbumItem(View itemView) {
@@ -140,11 +155,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    if (AlbumUtility.getInstance(context).deleteAlbum(albums.get(position))) {
+                        albums.remove(position);
+                        notifyItemRemoved(position);
+                        Toast.makeText(context, "Album " + position + " Deleted!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to delete this album!", Toast.LENGTH_SHORT).show();
 
-                    AlbumUtility.getInstance(context).deleteAlbum(albums.get(position));
-                    albums.remove(position);
-                    notifyItemRemoved(position);
-                    Toast.makeText(context, "Album " + position + " Deleted", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {

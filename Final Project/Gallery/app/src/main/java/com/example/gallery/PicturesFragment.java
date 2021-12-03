@@ -2,25 +2,33 @@ package com.example.gallery;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.DialogFragment;
+import androidx.core.content.FileProvider;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -31,31 +39,37 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView picturesRecView;
-    private TextView txtMsg;
     private File[] allFiles;
     private File[] pictureFiles;
-    private final int spanCount = 4;
+    private int spanCount = 4;
+    ArrayList<String> paths;
+
+    PicturesAdapter picturesAdapter;
+    private ActionMode actionMode;
+    ArrayList<File> message_models = new ArrayList<>();
 
     Context context;
     String pathFolder;
+    String type;
     private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
     MainActivity main;
 
-    public static PicturesFragment getInstance(Context context, String pathFolder)
-    {
-        return new PicturesFragment(context, pathFolder);
+    public static PicturesFragment getInstance(Context context, String pathFolder, String type) {
+        return new PicturesFragment(context, pathFolder, type);
     }
 
-    PicturesFragment(Context context, String pathFolder) {
+    PicturesFragment(Context context, String pathFolder, String type) {
         this.context = context;
         this.pathFolder = pathFolder;
+        this.type = type;
     }
 
     @Override
@@ -84,11 +98,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
-        /*((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((MainActivity)context).getSupportActionBar().setHomeButtonEnabled(true);*/
 
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
-        txtMsg = picturesFragment.findViewById(R.id.txtMsg);
 
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
         btnUpload = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUpload_PicturesFragment);
@@ -141,18 +152,18 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         });
 
-        readPicturesFolder();
+        if (type.equals("FOLDER")) {
+            readPicturesInFolder();
+            implementClickListener();
+        }
+        if (type.equals("ALBUM")) {
+            readPicturesInAlbum();
+        }
         return picturesFragment;
     }
 
-    void readPicturesFolder() {
+    void readPicturesInFolder() {
         try {
-            /*// Get path to external storage: /storage/emulated/0
-            String absolutePathToSDCard = Environment.getExternalStorageDirectory().getAbsolutePath();
-            // Path to Pictures folder: /storage/emulated/0/Pictures/
-            String pathToPicturesFolder = absolutePathToSDCard + "/Pictures/";
-            txtMsg.append("Path: " + pathToPicturesFolder + "\n");*/
-
             File pictureFile = new File(pathFolder);
             FilenameFilter filter = new FilenameFilter() {
                 @Override
@@ -162,26 +173,31 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             };
             allFiles = pictureFile.listFiles();
             pictureFiles = pictureFile.listFiles(filter);
-            txtMsg.append( "Exist: " + pictureFile.exists() + ". Is Directory: " + pictureFile.isDirectory()
-                    + ". Can Read: " + pictureFile.canRead() + "\n");
-            if (pictureFiles == null)
-                txtMsg.append("NULL");
-            else {
-                txtMsg.append("Picture/Item: " + pictureFiles.length + "/" + allFiles.length + "\n");
-                // Load gallery with current path
-                loadGallery(pathFolder);
-            }
+            paths = new ArrayList<String>();
+                for (File file : pictureFiles)
+                    paths.add(file.getAbsolutePath());
+                showAllPictures(paths);
         }
         catch (Exception e) {
-            txtMsg.append(e.getMessage());
+            Log.e("Error", e.getMessage());
         }
     }
 
-    void loadGallery(String pathToPicturesFolder) {
-        // The idea was to send a string path to the adapter, not a File object
-        // The adapter will then create everything we need from the provided path
+    void readPicturesInAlbum() {
+        AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
+        if (null != data) {
+            paths = data.getPicturePaths();
+        } else {
+            paths = new ArrayList<String>();
+        }
+        showAllPictures(paths);
+    }
+
+    void showAllPictures(ArrayList<String> paths) {
+        // Send a string path to the adapter. The adapter will create everything from the provided path
         // This implementation is not permanent
-        PicturesAdapter picturesAdapter = new PicturesAdapter(context, pathToPicturesFolder);
+        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
+        picturesAdapter = new PicturesAdapter(context, paths, spanCount);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
@@ -242,7 +258,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } catch (Exception e) {
             Log.e("Error to save image! ", e.getMessage());
         }
-        readPicturesFolder();
+        readPicturesInFolder();
     }
 
     @Override
@@ -260,8 +276,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onResume() {
         super.onResume();
         // Update pictures view when LargeImage activity is finished
-        txtMsg.setText("");
-        readPicturesFolder();
+        if (type.equals("FOLDER")) {
+            readPicturesInFolder();
+        }
+        if (type.equals("ALBUM")) {
+            readPicturesInAlbum();
+        }
     }
 
     @Override
@@ -272,7 +292,169 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     // call the up-key back on Action Bar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        main.onMsgFromFragToMain("PICTURES-FLAG", "Turn back folder");
+        if (item.getItemId() == R.id.btnChangeFormatDisplay) {
+            if (4 == spanCount) {
+                item.setIcon(R.drawable.ic_sharp_grid_view_24);
+                spanCount = 3;
+            }
+            else if (3 == spanCount) {
+                item.setIcon(R.drawable.ic_sharp_view_list_24);
+                spanCount = 2;
+            }
+            else if (2 == spanCount) {
+                item.setIcon(R.drawable.ic_sharp_view_comfy_24);
+                spanCount = 1;
+            }
+            else {
+                item.setIcon(R.drawable.ic_sharp_view_module_24);
+                spanCount = 4;
+            }
+            showAllPictures(paths);
+        }
+        else {
+            String request = "";
+            if (type.equals("FOLDER")) request = "Turn back folder";
+            if (type.equals("ALBUM")) request = "Turn back album";
+            main.onMsgFromFragToMain("PICTURES-FLAG", request);
+        }
         return true;
+    }
+
+    private void implementClickListener() {
+        picturesRecView.addOnItemTouchListener(new RecyclerTouchListener(context, picturesRecView, new RecyclerClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //If ActionMode not null select item
+                if (actionMode != null)
+                    onListItemSelect(position);
+                else
+                    showLargePicture(pathFolder, position);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                //Select item on long click
+                main.bottomNavigationView.setVisibility(View.GONE);
+                onListItemSelect(position);
+            }
+        }));
+    }
+
+    //List item select method
+    private void onListItemSelect(int position) {
+        //Toggle the selection
+        picturesAdapter.toggleSelection(position);
+        //Check if any items are already selected or not
+        boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;
+        // there are some selected items, start the actionMode
+        if (hasCheckedItems && actionMode == null) {
+            actionMode = ((AppCompatActivity) getActivity()).
+                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, message_models));
+        } else if (!hasCheckedItems && actionMode != null) {
+            // there no selected items, finish the actionMode
+            actionMode.finish();
+        }
+
+        if (actionMode != null)
+            //set action mode title on item selection
+            actionMode.setTitle(picturesAdapter.getSelectedCount() + " selected");
+    }
+
+    //Set action mode null after use
+    public void setNullToActionMode() {
+        if (actionMode != null)
+            actionMode = null;
+    }
+
+    private void showLargePicture(String pathToPicturesFolder, int itemPosition) {
+        Intent intent = new Intent(context, LargeImage.class);
+        // Send the folder path and the current position to the destination activity
+        intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
+        intent.putExtra("itemPosition", itemPosition);
+        context.startActivity(intent);
+    }
+
+    // Inflate button to change how many columns of images are displayed
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.picture_top_menu, menu);
+    }
+
+    // Delete multiple Images in PicturesFragments
+    public void deleteMulti() {
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();//Get selected ids
+        ArrayList<String> path = new ArrayList<String>();
+
+        // Get paths of selected images
+        for (int index = (selected.size() - 1); index >= 0; index--) {
+            if (selected.valueAt(index)) {
+                //If current id is selected remove the item via key
+                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
+            }
+        }
+
+        // Start deleting all image selected
+        androidx.appcompat.app.AlertDialog.Builder confirmDialog =
+                new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AlertDialog);
+        confirmDialog.setMessage("Are you sure to delete these image?");
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                for (int index = 0; index < path.size(); index++) {
+                    File a = new File(path.get(index));
+                    a.delete();
+                    callScanIntent(context,path.get(index));
+                }
+                Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
+                picturesAdapter.notifyDataSetChanged();
+                onResume();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        confirmDialog.create();
+        confirmDialog.show();
+    }
+
+    public void  callScanIntent(Context context, String path) {
+        MediaScannerConnection.scanFile(context,
+                new String[] { path }, null,null);
+    }
+
+    // Share multiple Images in PicturesFragments
+    public void shareMulti() {
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> path = new ArrayList<String>();
+
+        // Get paths of selected images
+        for (int index = (selected.size() - 1); index >= 0; index--) {
+            if (selected.valueAt(index)) {
+                //If current id is selected remove the item via key
+                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
+            }
+        }
+
+        try {
+            ArrayList<Uri> imageUris = new ArrayList<Uri>();
+            for (int i = 0; i < path.size(); i++) {
+                File file = new File(path.get(i));
+                Uri photoURI = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".provider", file);
+                imageUris.add(photoURI);
+            }
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.setType("image/jpg");
+            startActivity(Intent.createChooser(shareIntent, "Share images via"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

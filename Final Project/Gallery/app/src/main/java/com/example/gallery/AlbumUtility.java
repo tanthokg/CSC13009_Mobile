@@ -6,18 +6,24 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class AlbumUtility {
     private SharedPreferences sharedPreferences;
     private static AlbumUtility instance;
     private static final String ALL_ALBUM_KEY = "album_list";
+    private static final String ALL_ALBUM_DATA_KEY = "album_data";
 
     private AlbumUtility(Context context) {
         sharedPreferences = context.getSharedPreferences("albums_database", Context.MODE_PRIVATE);
         if (getAllAlbums() == null) {
-            initData();
+            initAlbums();
+        }
+        if (getAllAlbumData() == null) {
+            initAlbumData();
         }
     }
 
@@ -33,6 +39,11 @@ public class AlbumUtility {
         return gson.fromJson(sharedPreferences.getString(ALL_ALBUM_KEY, null), type);
     }
 
+    public ArrayList<AlbumData> getAllAlbumData() {
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<AlbumData>>(){}.getType();
+        return gson.fromJson(sharedPreferences.getString(ALL_ALBUM_DATA_KEY, null), type);
+    }
 
     public void setAllAlbums(ArrayList<String> albums) {
         Gson gson = new Gson();
@@ -42,7 +53,7 @@ public class AlbumUtility {
         editor.apply();
     }
 
-    private void initData() {
+    private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Cats");
         albums.add("Dogs");
@@ -55,17 +66,47 @@ public class AlbumUtility {
         editor.apply();
     }
 
+    private void initAlbumData() {
+        ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(albumData));
+        editor.apply();
+    }
+
     public boolean addNewAlbum(String albumName) {
         ArrayList<String> albums = getAllAlbums();
         if (albums != null)
             if (albums.add(albumName)) {
-                Gson gson = new Gson();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove(ALL_ALBUM_KEY);
-                editor.putString(ALL_ALBUM_KEY, gson.toJson(albums));
-                editor.apply();
+                setAllAlbums(albums);
                 return true;
             }
+        return false;
+    }
+
+    public boolean addPictureToAlbum(String albumName, String picturePath) {
+        ArrayList<AlbumData> data = getAllAlbumData();
+        if (null != data) {
+            AlbumData selectedAlbum = findDataByAlbumName(albumName);
+            if (selectedAlbum == null) {
+                ArrayList<String> paths = new ArrayList<String>();
+                paths.add(picturePath);
+                AlbumData newData = new AlbumData(albumName, paths);
+                data.add(newData);
+            } else {
+                if (selectedAlbum.addNewPath(picturePath)){
+                    data.removeIf(d -> d.getAlbumName().equals(selectedAlbum.getAlbumName()));
+                    data.add(selectedAlbum);
+                }
+            }
+
+            Gson gson = new Gson();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove(ALL_ALBUM_DATA_KEY);
+            editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(data));
+            editor.apply();
+            return true;
+        }
         return false;
     }
 
@@ -83,5 +124,17 @@ public class AlbumUtility {
                         return true;
                     }
         return false;
+    }
+
+    public AlbumData findDataByAlbumName(String albumName) {
+        ArrayList<AlbumData> data = getAllAlbumData();
+
+        if (null != data) {
+            for (AlbumData d : data) {
+                if (d.getAlbumName().equals(albumName))
+                    return d;
+            }
+        }
+        return null;
     }
 }

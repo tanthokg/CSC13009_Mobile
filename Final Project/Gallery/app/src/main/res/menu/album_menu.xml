@@ -8,8 +8,4 @@
         android:id="@+id/deleteAlbum"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="Delete"/>
-    <item
-        android:id="@+id/shareAlbum"
-        android:icon="@drawable/ic_baseline_share_24"
-        android:title="Share"/>
 </menu>
