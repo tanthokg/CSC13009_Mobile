@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-<<<<<<< HEAD
     compileSdkVersion 28
     buildToolsVersion "31.0.0"
 

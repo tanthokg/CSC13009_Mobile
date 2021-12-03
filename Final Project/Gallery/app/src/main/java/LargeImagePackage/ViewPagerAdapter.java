@@ -45,25 +45,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         return drawableCache.get(key);
     }
 
-    static HashMap<String, Drawable> drawableCache = new HashMap<String, Drawable>();
-
-    static private Drawable getDrawable(String key) {
-
-        //Clear data when the memory is too large
-        if (drawableCache.size() >=  MAX_CACHE_SIZE) {
-            drawableCache.clear();
-        }
-
-        //If there isn't the drawable exists => store it
-        if (!drawableCache.containsKey(key))
-        {
-            drawableCache.put(key, Drawable.createFromPath(key));
-        }
-
-        return drawableCache.get(key);
-    }
-
-
     public ZoomableImageView getImageView() {return imageView; }
 
     // Viewpager Constructor
