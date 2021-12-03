@@ -92,6 +92,12 @@ public class LargeImage extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
+                if (item.getItemId() == R.id.editPicture) {
+                    Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
+                    editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+                    getApplicationContext().startActivity(editIntent);
+
+                }
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     LargeImage.this.deleteOnPath(path, bottomNavigationView);

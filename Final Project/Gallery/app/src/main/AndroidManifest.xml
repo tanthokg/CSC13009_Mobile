@@ -19,6 +19,8 @@
         <activity
             android:name=".LargeImage"
             android:exported="false"/>
+        <activity android:name=".EditImageActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
