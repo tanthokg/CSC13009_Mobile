@@ -20,10 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 public class FilterFragment extends Fragment {
     RecyclerView filterRecView;
     Context context;
-    int[] filters = { 1, 2, 3, 4, 5, 6, 7, 8};
+    Bitmap bitmap;
+    String[] filters = { "No Effect", "Auto", "Cream", "Forest", "Cozy", "Blossom", "Evergreen", "Grayscale", "Sharpen", "Vintage"};
 
-    FilterFragment(Context context) {
+    FilterFragment(Context context, Bitmap bitmap) {
         this.context = context;
+        this.bitmap = bitmap;
     }
 
     @Nullable
@@ -31,7 +33,7 @@ public class FilterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View filterFragment = inflater.inflate(R.layout.filter_image_fragment, container, false);
         filterRecView = (RecyclerView) filterFragment.findViewById(R.id.filterRecView);
-        FilterAdapter adapter = new FilterAdapter(filters, context);
+        FilterAdapter adapter = new FilterAdapter(filters, context, bitmap);
         filterRecView.setAdapter(adapter);
         filterRecView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         return filterFragment;

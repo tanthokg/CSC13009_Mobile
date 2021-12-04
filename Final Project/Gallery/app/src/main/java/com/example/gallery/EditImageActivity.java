@@ -14,9 +14,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.effect.EffectFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -24,11 +27,14 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 public class EditImageActivity extends AppCompatActivity implements EditCallbacks{
 
     ImageView imgEdit;
     FilterFragment filterFragment;
-
+    Bitmap currentBitmap;
     String pathPictureFile;
 
     @Override
@@ -37,15 +43,15 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_image_activity);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         imgEdit = (ImageView) findViewById(R.id.imgEdit);
         pathPictureFile = intent.getStringExtra("pathToPictureFolder");
         Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
-        filterFragment = new FilterFragment(this);
+        filterFragment = new FilterFragment(this, BitmapFactory.decodeFile(pathPictureFile));
 
         getSupportFragmentManager().beginTransaction().replace(R.id.editFragment, filterFragment).commit();
-
-        setFilter(0.22, 0.5, 1);
     }
 
     private void changeTheme(boolean isChecked) {
@@ -68,48 +74,53 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
     }
 
     @Override
-    public void onMsgFromFragToEdit(String sender, String request) {
-
+    public void onMsgFromFragToEdit(String sender, Bitmap request) {
+        switch (sender) {
+            case "FILTER-FLAG":
+                Glide.with(this).asBitmap().load(request).into(imgEdit);
+                currentBitmap = request;
+                break;
+            default:
+                break;
+        }
     }
 
-    public void setFilter(double red, double green, double blue) {
-        try {
-            Bitmap bmp = BitmapFactory.decodeFile(pathPictureFile);
-            Bitmap newBmp = bmp.copy(bmp.getConfig(), true);
-            /*for (int i = 0; i < bmp.getWidth(); i++) {
-                for (int j = 0; j < bmp.getHeight(); j++) {
-                    int p = bmp.getPixel(i, j);
-                    int r = Color.red(p);
-                    int g = Color.green(p);
-                    int b = Color.blue(p);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        return true;
+    }
 
-                    int intensity = (r + g + b) / 3;
-                    *//*r = (int) red * r;
-                    g = (int) green * g;
-                    b = (int) blue * b;*//*
-                    r = intensity;
-                    g = intensity;
-                    b = intensity;
-                    bmp.setPixel(i, j, Color.argb(Color.alpha(p), r, g, b));
-                }
-            }*/
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.set(new float[]{
-                    0.33f, 0.33f, 0.33f, 0, 0,
-                    0.33f, 0.33f, 0.33f, 0, 0,
-                    0.33f, 0.33f, 0.33f, 0, 0,
-                    0, 0, 0, 1, 0
-            });
-            Paint paint = new Paint();
-            paint.setColorFilter(new ColorMatrixColorFilter(matrix));
-            Canvas canvas = new Canvas(newBmp);
-            Glide.with(this).load(newBmp).into(imgEdit);
-            canvas.drawBitmap(newBmp,0, 0, paint);
-            /*Glide.with(this).load(newBmp).into(imgEdit);*/
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (R.id.menuReset == id) {
+            Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
+            return true;
         }
-        catch (Exception e) {
-            Log.e("Error in filter image", e.getMessage());
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        if (R.id.menuSave == id) {
+            saveImage(currentBitmap);
+        }
+        if (android.R.id.home == id) {
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    private void saveImage(Bitmap bitmap) {
+        String pathFile = pathPictureFile.substring(0, pathPictureFile.lastIndexOf("/"));
+        File pictureFile = new File(pathFile, bitmap.toString() + ".jpg");
+        FileOutputStream output = null;
+        try {
+            output = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+            output.flush();
+            output.close();
+            Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("Error to save image in edit ", e.getMessage());
         }
     }
 }

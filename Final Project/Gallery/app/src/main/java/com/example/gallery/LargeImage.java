@@ -95,6 +95,7 @@ public class LargeImage extends AppCompatActivity {
                 if (item.getItemId() == R.id.editPicture) {
                     Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
                     editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+                    editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(editIntent);
 
                 }

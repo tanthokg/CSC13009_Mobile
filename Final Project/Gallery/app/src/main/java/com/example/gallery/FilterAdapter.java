@@ -15,13 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 
-public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
-    int[] filters;
-    Context context;
+import java.util.ArrayList;
 
-    FilterAdapter(int[] filters, Context context) {
+public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
+    String[] filters;
+    Context context;
+    Bitmap bitmap;
+
+    FilterAdapter(String[] filters, Context context, Bitmap bitmap) {
         this.filters = filters;
         this.context = context;
+        this.bitmap = bitmap;
     }
 
     @NonNull
@@ -33,11 +37,15 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        FilterUtility filterUtility = new FilterUtility();
         holder.filterName.setText(String.valueOf(filters[position]));
+        Bitmap newBitmap = filterUtility.setFilter(bitmap, holder.filterName.getText().toString());
+        Glide.with(context).asBitmap().load(newBitmap).into(holder.filterThumbnail);
+
         holder.filterThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", newBitmap);
             }
         });
     }
