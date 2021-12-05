@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,6 +35,9 @@ import java.io.FileOutputStream;
 public class EditImageActivity extends AppCompatActivity implements EditCallbacks{
 
     ImageView imgEdit;
+    BottomNavigationView bottomNavEdit;
+    Fragment currentFragment;
+    RotateFragment rotateFragment;
     FilterFragment filterFragment;
     Bitmap currentBitmap;
     String pathPictureFile;
@@ -49,9 +54,37 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         imgEdit = (ImageView) findViewById(R.id.imgEdit);
         pathPictureFile = intent.getStringExtra("pathToPictureFolder");
         Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
-        filterFragment = new FilterFragment(this, BitmapFactory.decodeFile(pathPictureFile));
+        currentBitmap = BitmapFactory.decodeFile(pathPictureFile);
+        filterFragment = new FilterFragment(this, currentBitmap);
+        rotateFragment = new RotateFragment(this, currentBitmap);
+        currentFragment = rotateFragment;
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.editFragment, currentFragment)
+                .commit();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.editFragment, filterFragment).commit();
+        bottomNavEdit = (BottomNavigationView) findViewById(R.id.bottomNavEdit);
+        bottomNavEdit.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (R.id.nav_rotate == id) {
+                    currentFragment = rotateFragment;
+                }
+                if (R.id.nav_filter == id) {
+                    currentFragment = filterFragment;
+                }
+                if (currentFragment != null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.editFragment, currentFragment)
+                            .commit();
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     private void changeTheme(boolean isChecked) {
@@ -79,7 +112,12 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             case "FILTER-FLAG":
                 Glide.with(this).asBitmap().load(request).into(imgEdit);
                 currentBitmap = request;
+                rotateFragment.onMsgFromMainToFrag(request);
                 break;
+            case "ROTATE-FLAG":
+                Glide.with(this).asBitmap().load(request).into(imgEdit);
+                currentBitmap = request;
+                filterFragment.onMsgFromMainToFrag(request);
             default:
                 break;
         }
@@ -97,6 +135,8 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
 
         if (R.id.menuReset == id) {
             Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
+            rotateFragment.onMsgFromMainToFrag(null);
+            filterFragment.onMsgFromMainToFrag(null);
             return true;
         }
         if (R.id.menuSave == id) {

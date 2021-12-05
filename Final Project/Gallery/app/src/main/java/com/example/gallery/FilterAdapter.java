@@ -20,12 +20,13 @@ import java.util.ArrayList;
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
     String[] filters;
     Context context;
-    Bitmap bitmap;
+    Bitmap orginalBmp, editBmp;
 
-    FilterAdapter(String[] filters, Context context, Bitmap bitmap) {
+    FilterAdapter(String[] filters, Context context, Bitmap originalBmp, Bitmap editBmp) {
         this.filters = filters;
         this.context = context;
-        this.bitmap = bitmap;
+        this.orginalBmp = originalBmp;
+        this.editBmp = editBmp;
     }
 
     @NonNull
@@ -39,8 +40,8 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FilterUtility filterUtility = new FilterUtility();
         holder.filterName.setText(String.valueOf(filters[position]));
-        Bitmap newBitmap = filterUtility.setFilter(bitmap, holder.filterName.getText().toString());
-        Glide.with(context).asBitmap().load(newBitmap).into(holder.filterThumbnail);
+        Bitmap newBitmap = filterUtility.setFilter(editBmp, holder.filterName.getText().toString());
+        Glide.with(context).asBitmap().load(filterUtility.setFilter(orginalBmp, holder.filterName.getText().toString())).into(holder.filterThumbnail);
 
         holder.filterThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
