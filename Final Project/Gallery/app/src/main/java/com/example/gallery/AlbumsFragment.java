@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class AlbumsFragment extends Fragment {
         View albumsFragment = inflater.inflate(R.layout.albums_fragment, container, false);
 
         albumRecView = albumsFragment.findViewById(R.id.albumsRecView);
-        albumsAdapter = new AlbumsAdapter(albums);
+        albumsAdapter = new AlbumsAdapter(context, albums);
         albumRecView.setAdapter(albumsAdapter);
         albumRecView.setLayoutManager(new LinearLayoutManager(albumsFragment.getContext()));
         btnAdd = (FloatingActionButton) albumsFragment.findViewById(R.id.btnAdd_AlbumsFragment);
@@ -71,6 +72,22 @@ public class AlbumsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 addNewAlbum();
+            }
+        });
+
+        MaterialCardView albumFav = albumsFragment.findViewById(R.id.albumFavorite);
+        MaterialCardView albumTrashed = albumsFragment.findViewById(R.id.albumTrashed);
+
+        albumFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        albumTrashed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 

@@ -26,8 +26,10 @@ import java.util.ArrayList;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
     protected ArrayList<String> albums;
+    private Context context;
 
-    public AlbumsAdapter(ArrayList<String> albums) {
+    public AlbumsAdapter(Context context, ArrayList<String> albums) {
+        this.context = context;
         this.albums = albums;
     }
 
@@ -54,8 +56,10 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.albumName.setText(albums.get(position));
-        holder.albumItemCount.setText(Integer.toString(position));
+        String currentAlbum = albums.get(position);
+        int albumItemCount = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum).getPicturePaths().size();
+        holder.albumName.setText(currentAlbum);
+        holder.albumItemCount.setText(""+albumItemCount);
     }
 
     @Override
@@ -86,7 +90,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             albumItemCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG", albums.get(getAdapterPosition()));
+                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG",
+                            albums.get(getAdapterPosition()));
                 }
             });
         }
