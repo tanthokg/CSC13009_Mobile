@@ -50,6 +50,7 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albums = AlbumUtility.getInstance(context).getAllAlbums();
+        albums.removeIf(album -> album.equals("FAV"));
 
         ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)context).getSupportActionBar().setTitle("Gallery");

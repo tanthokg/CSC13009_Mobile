@@ -64,6 +64,7 @@ public class AlbumUtility {
 
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
+        albums.add("FAV");
         albums.add("Cats");
         albums.add("Dogs");
         albums.add("Food");
@@ -77,6 +78,12 @@ public class AlbumUtility {
 
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
+        albumData.add(new AlbumData("FAV", new ArrayList<String>()));
+        albumData.add(new AlbumData("Cats", new ArrayList<String>()));
+        albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
+        albumData.add(new AlbumData("Food", new ArrayList<String>()));
+        albumData.add(new AlbumData("Holiday", new ArrayList<String>()));
+        albumData.add(new AlbumData("Parties", new ArrayList<String>()));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(albumData));
@@ -85,9 +92,11 @@ public class AlbumUtility {
 
     public boolean addNewAlbum(String albumName) {
         ArrayList<String> albums = getAllAlbums();
-        if (albums != null)
-            if (albums.add(albumName)) {
+        ArrayList<AlbumData> data = getAllAlbumData();
+        if (albums != null && data != null)
+            if (albums.add(albumName) && data.add(new AlbumData(albumName, new ArrayList<String>()))) {
                 setAllAlbums(albums);
+                setAllAlbumData(data);
                 return true;
             }
         return false;
@@ -97,18 +106,12 @@ public class AlbumUtility {
         ArrayList<AlbumData> data = getAllAlbumData();
         if (null != data) {
             AlbumData selectedAlbum = findDataByAlbumName(albumName);
-            if (selectedAlbum == null) {
-                ArrayList<String> paths = new ArrayList<String>();
-                paths.add(picturePath);
-                AlbumData newData = new AlbumData(albumName, paths);
-                data.add(newData);
-            } else {
+            if (selectedAlbum != null) {
                 if (selectedAlbum.addNewPath(picturePath)){
                     data.removeIf(d -> d.getAlbumName().equals(selectedAlbum.getAlbumName()));
                     data.add(selectedAlbum);
                 }
             }
-
             setAllAlbumData(data);
             return true;
         }
@@ -117,11 +120,14 @@ public class AlbumUtility {
 
     public boolean deleteAlbum(String albumName) {
         ArrayList<String> albums = getAllAlbums();
+        ArrayList<AlbumData> data = getAllAlbumData();
         if (albums != null)
             for (String album: albums)
                 if (album.equals(albumName))
                     if (albums.remove(album)) {
                         setAllAlbums(albums);
+                        data.removeIf(d->d.getAlbumName().equals(albumName));
+                        setAllAlbumData(data);
                         return true;
                     }
         return false;

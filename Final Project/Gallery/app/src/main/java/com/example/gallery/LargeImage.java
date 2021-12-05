@@ -280,6 +280,7 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
+        albums.removeIf(album -> album.equals("FAV"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
