@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nav_rotate"
+        android:icon="@drawable/ic_outline_rotate_left_24"
+        android:title="Rotate"/>
+    <item
+        android:id="@+id/nav_filter"
+        android:icon="@drawable/ic_outline_filter_hdr_24"
+        android:title="Filter"/>
+</menu>

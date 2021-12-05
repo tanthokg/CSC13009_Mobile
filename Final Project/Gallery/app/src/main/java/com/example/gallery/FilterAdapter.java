@@ -15,13 +15,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 
-public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
-    int[] filters;
-    Context context;
+import java.util.ArrayList;
 
-    FilterAdapter(int[] filters, Context context) {
+public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
+    String[] filters;
+    Context context;
+    Bitmap orginalBmp, editBmp;
+
+    FilterAdapter(String[] filters, Context context, Bitmap originalBmp, Bitmap editBmp) {
         this.filters = filters;
         this.context = context;
+        this.orginalBmp = originalBmp;
+        this.editBmp = editBmp;
     }
 
     @NonNull
@@ -33,11 +38,15 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        FilterUtility filterUtility = new FilterUtility();
         holder.filterName.setText(String.valueOf(filters[position]));
+        Bitmap newBitmap = filterUtility.setFilter(editBmp, holder.filterName.getText().toString());
+        Glide.with(context).asBitmap().load(filterUtility.setFilter(orginalBmp, holder.filterName.getText().toString())).into(holder.filterThumbnail);
+
         holder.filterThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", newBitmap);
             }
         });
     }
