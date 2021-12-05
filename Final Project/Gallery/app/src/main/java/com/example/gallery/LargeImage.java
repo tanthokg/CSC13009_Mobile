@@ -100,6 +100,8 @@ public class LargeImage extends AppCompatActivity {
         mViewPager.setCurrentItem(currentPosition);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+        if (type.equals("ALBUM"))
+            bottomNavigationView.findViewById(R.id.addPictureToFav).setVisibility(View.GONE);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -208,7 +210,6 @@ public class LargeImage extends AppCompatActivity {
                 new String[] { path }, null,null);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -282,18 +283,6 @@ public class LargeImage extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
-        /*chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String albumName = albums.get(i);
-                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
-                    Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(LargeImage.this, "Error: Cannot Add To Selected Album", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
 
         AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
         addToAlbumDialog.setView(addToAlbumView);

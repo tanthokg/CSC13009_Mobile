@@ -23,6 +23,7 @@ import com.google.android.material.card.MaterialCardView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
     protected ArrayList<String> albums;
@@ -59,7 +60,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         String currentAlbum = albums.get(position);
         int albumItemCount = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum).getPicturePaths().size();
         holder.albumName.setText(currentAlbum);
-        holder.albumItemCount.setText(""+albumItemCount);
+        holder.albumItemCount.setText(String.format(Locale.ROOT, "%d item(s)",albumItemCount));
     }
 
     @Override

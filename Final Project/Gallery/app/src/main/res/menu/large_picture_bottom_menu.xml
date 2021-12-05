@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_baseline_edit_24"
         android:title="Edit"/>
     <item
+        android:id="@+id/addPictureToFav"
+        android:icon="@drawable/ic_baseline_favorite_border_24"
+        android:title="Add To Favorite"/>
+    <item
         android:id="@+id/deletePicture"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="Delete"/>

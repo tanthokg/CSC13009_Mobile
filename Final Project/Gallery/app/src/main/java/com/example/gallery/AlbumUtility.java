@@ -54,6 +54,14 @@ public class AlbumUtility {
         editor.apply();
     }
 
+    public void setAllAlbumData(ArrayList<AlbumData> data) {
+        Gson gson = new Gson();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(ALL_ALBUM_DATA_KEY);
+        editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(data));
+        editor.apply();
+    }
+
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Cats");
@@ -101,11 +109,7 @@ public class AlbumUtility {
                 }
             }
 
-            Gson gson = new Gson();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove(ALL_ALBUM_DATA_KEY);
-            editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(data));
-            editor.apply();
+            setAllAlbumData(data);
             return true;
         }
         return false;
@@ -117,18 +121,13 @@ public class AlbumUtility {
             for (String album: albums)
                 if (album.equals(albumName))
                     if (albums.remove(album)) {
-                        Gson gson = new Gson();
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.remove(ALL_ALBUM_KEY);
-                        editor.putString(ALL_ALBUM_KEY, gson.toJson(albums));
-                        editor.apply();
+                        setAllAlbums(albums);
                         return true;
                     }
         return false;
     }
 
     public boolean deletePictureInAlbum(String albumName, String picturePath) {
-        // TODO: delete a picture in album
         // Get all album data
         ArrayList<AlbumData> data = getAllAlbumData();
         // Get AlbumData object matching the name
@@ -136,11 +135,6 @@ public class AlbumUtility {
         if (albumData != null) {
             // Remove required path in AlbumData object
             ArrayList<String> paths = albumData.getPicturePaths();
-            /*for (int i = 0; i < paths.size(); ++i) {
-                if (paths.get(i).equals(picturePath)) {
-                    paths.remove(i);
-                }
-            }*/
             paths.removeIf(s -> s.equals(picturePath));
             // Set new paths for AlbumData object
             albumData.setPicturePaths(paths);
@@ -150,11 +144,7 @@ public class AlbumUtility {
             data.add(albumData);
 
             // Apply changes to shared preferences
-            Gson gson = new Gson();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove(ALL_ALBUM_DATA_KEY);
-            editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(data));
-            editor.apply();
+            setAllAlbumData(data);
             return true;
         }
         return false;
