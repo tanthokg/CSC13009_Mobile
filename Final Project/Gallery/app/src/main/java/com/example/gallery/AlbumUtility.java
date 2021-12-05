@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 public class AlbumUtility {
     private SharedPreferences sharedPreferences;
@@ -128,6 +129,34 @@ public class AlbumUtility {
 
     public boolean deletePictureInAlbum(String albumName, String picturePath) {
         // TODO: delete a picture in album
+        // Get all album data
+        ArrayList<AlbumData> data = getAllAlbumData();
+        // Get AlbumData object matching the name
+        AlbumData albumData = findDataByAlbumName(albumName);
+        if (albumData != null) {
+            // Remove required path in AlbumData object
+            ArrayList<String> paths = albumData.getPicturePaths();
+            /*for (int i = 0; i < paths.size(); ++i) {
+                if (paths.get(i).equals(picturePath)) {
+                    paths.remove(i);
+                }
+            }*/
+            paths.removeIf(s -> s.equals(picturePath));
+            // Set new paths for AlbumData object
+            albumData.setPicturePaths(paths);
+            // Remove that AlbumData in total album data
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            // Add modified AlbumData object to data
+            data.add(albumData);
+
+            // Apply changes to shared preferences
+            Gson gson = new Gson();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove(ALL_ALBUM_DATA_KEY);
+            editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(data));
+            editor.apply();
+            return true;
+        }
         return false;
     }
 

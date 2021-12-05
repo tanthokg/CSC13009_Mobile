@@ -31,7 +31,7 @@
     </style>
 
     <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Dialog.Alert">
-        <item name="buttonBarPositiveButtonStyle">@style/Text</item>
+        <item name="buttonBarButtonStyle">@style/Text</item>
     </style>
 
     <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">

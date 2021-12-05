@@ -1,13 +1,13 @@
 package com.example.gallery;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -84,7 +83,6 @@ public class LargeImage extends AppCompatActivity {
             });
         }
         if (type.equals("ALBUM")) {
-            // TODO: show pictures in album
             String albumName = intent.getStringExtra("pathToPicturesFolder");
             AlbumData albumData = AlbumUtility.getInstance(this).findDataByAlbumName(albumName);
             ArrayList<String> picturePaths = albumData.getPicturePaths();
@@ -108,11 +106,14 @@ public class LargeImage extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.deleteOnPath(path, bottomNavigationView);
+                    if (type.equals("FOLDER"))
+                        deleteOnDeviceByPath(path, bottomNavigationView);
+                    if (type.equals("ALBUM"))
+                        deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
                 }
                 if (item.getItemId() == R.id.sharePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.shareOnPath(path)    ;
+                    LargeImage.this.shareOnPath(path);
                 }
 
                 // Use addToBackStack to return the previous fragment when the Back button is pressed
@@ -127,11 +128,10 @@ public class LargeImage extends AppCompatActivity {
         });
     }
 
-    private void deleteOnPath(String path, View bottomNav)
+    private void deleteOnDeviceByPath(String path, View bottomNav)
     {
-        androidx.appcompat.app.AlertDialog.Builder confirmDialog =
-                new androidx.appcompat.app.AlertDialog.Builder(bottomNav.getContext(), R.style.AlertDialog);
-        confirmDialog.setMessage("Are you sure to delete this image?");
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(bottomNav.getContext(), R.style.AlertDialog);
+        confirmDialog.setMessage("Are you sure to remove this picture from device?");
         confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -150,6 +150,31 @@ public class LargeImage extends AppCompatActivity {
 
         confirmDialog.create();
         confirmDialog.show();
+    }
+
+    private void deleteOnAlbumByPath(String albumName, String picturePath) {
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+
+        // confirmDialog.setMessage("Are you sure to remove this picture from album " + albumName + "?");
+        confirmDialog.setMessage("Are you sure to remove this picture from album?");
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).deletePictureInAlbum(albumName, picturePath)) {
+                    Toast.makeText(LargeImage.this, "Picture removed from album", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else
+                    Toast.makeText(LargeImage.this, "Cannot remove this from album", Toast.LENGTH_SHORT).show();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        confirmDialog.create().show();
     }
 
     private void shareOnPath(String path) {
@@ -270,7 +295,7 @@ public class LargeImage extends AppCompatActivity {
             }
         });*/
 
-        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
+        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
         addToAlbumDialog.setView(addToAlbumView);
         ArrayList<String> chosen = new ArrayList<String>();
 
