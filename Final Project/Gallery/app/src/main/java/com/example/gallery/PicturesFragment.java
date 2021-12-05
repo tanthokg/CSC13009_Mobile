@@ -154,11 +154,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
         if (type.equals("FOLDER")) {
             readPicturesInFolder();
-            implementClickListener();
         }
         if (type.equals("ALBUM")) {
             readPicturesInAlbum();
         }
+        implementClickListener();
         return picturesFragment;
     }
 
@@ -187,6 +187,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
         if (null != data) {
             paths = data.getPicturePaths();
+            Toast.makeText(context, "Album Item Count: " + paths.size(), Toast.LENGTH_SHORT).show();
         } else {
             paths = new ArrayList<String>();
         }
@@ -371,6 +372,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // Send the folder path and the current position to the destination activity
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
+        intent.putExtra("itemType", type);
+        // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }
 

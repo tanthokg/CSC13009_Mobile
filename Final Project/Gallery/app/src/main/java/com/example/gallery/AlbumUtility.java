@@ -126,15 +126,17 @@ public class AlbumUtility {
         return false;
     }
 
+    public boolean deletePictureInAlbum(String albumName, String picturePath) {
+        // TODO: delete a picture in album
+        return false;
+    }
+
     public AlbumData findDataByAlbumName(String albumName) {
         ArrayList<AlbumData> data = getAllAlbumData();
-
-        if (null != data) {
-            for (AlbumData d : data) {
+        if (null != data)
+            for (AlbumData d : data)
                 if (d.getAlbumName().equals(albumName))
                     return d;
-            }
-        }
         return null;
     }
 }

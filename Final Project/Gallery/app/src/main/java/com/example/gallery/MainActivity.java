@@ -191,12 +191,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 }
                 break;
             case "ALBUM-FLAG":
-                // todo: open album item view here
                 try {
                     picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
                     selectedFragment = picturesFragment;
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
-                    Toast.makeText(MainActivity.this, "PictureFragment Loaded!", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
                 }

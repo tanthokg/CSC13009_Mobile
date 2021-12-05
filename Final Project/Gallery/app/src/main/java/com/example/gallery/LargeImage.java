@@ -49,12 +49,12 @@ import LargeImagePackage.ViewPagerAdapter;
 import LargeImagePackage.ZoomableViewPager;
 
 public class LargeImage extends AppCompatActivity {
-
     File pictureFile;
     File[] pictureFiles;
     ZoomableViewPager mViewPager;
     ViewPagerAdapter mViewPagerAdapter;
     int currentPosition;
+    String type;
     private WallpaperManager wallpaperManager;
 
     @Override
@@ -72,15 +72,29 @@ public class LargeImage extends AppCompatActivity {
         currentPosition = intent.getIntExtra("itemPosition", -1);
 
         // Create a File object from the received path
-        pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
-
-        // Create an array contains all files in the folder above
-        pictureFiles = pictureFile.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+        type = intent.getStringExtra("itemType");
+        if (type.equals("FOLDER")) {
+            pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
+            // Create an array contains all files in the folder above
+            pictureFiles = pictureFile.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+                }
+            });
+        }
+        if (type.equals("ALBUM")) {
+            // TODO: show pictures in album
+            String albumName = intent.getStringExtra("pathToPicturesFolder");
+            AlbumData albumData = AlbumUtility.getInstance(this).findDataByAlbumName(albumName);
+            ArrayList<String> picturePaths = albumData.getPicturePaths();
+            int i = 0;
+            pictureFiles = new File [picturePaths.size()];
+            for (String path : picturePaths) {
+                pictureFiles[i] = new File(path);
+                i++;
             }
-        });
+        }
 
         mViewPager = (ZoomableViewPager)findViewById(R.id.viewPagerMain);
         mViewPagerAdapter = new ViewPagerAdapter(this, pictureFiles);
