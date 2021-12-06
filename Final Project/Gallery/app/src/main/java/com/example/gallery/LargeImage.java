@@ -135,6 +135,7 @@ public class LargeImage extends AppCompatActivity {
                 File a = new File(path);
                 a.delete();
                 callScanIntent(getApplicationContext(),path);
+                AlbumUtility.getInstance(LargeImage.this).deletePictureInAllAlbums(path);
                 Toast.makeText(getApplicationContext(),"Image Deleted",Toast.LENGTH_SHORT).show();
                 finish();
             }

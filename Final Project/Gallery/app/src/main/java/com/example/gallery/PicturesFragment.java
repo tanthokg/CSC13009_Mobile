@@ -409,6 +409,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                     for (int index = 0; index < paths.size(); index++) {
                         File a = new File(paths.get(index));
                         a.delete();
+                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
                         callScanIntent(context,paths.get(index));
                     }
                     Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
@@ -438,8 +439,9 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     // Delete every item in the list we had before
-                    for (String path : paths)
+                    for (String path : paths) {
                         AlbumUtility.getInstance(context).deletePictureInAlbum(pathFolder, path);
+                    }
 
                     Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
                     onResume();
