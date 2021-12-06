@@ -62,6 +62,17 @@ public class AlbumUtility {
         editor.apply();
     }
 
+    public void editAlbumName(String oldName, String newName) {
+        ArrayList<AlbumData> data = getAllAlbumData();
+        if (data != null) {
+            for (AlbumData d: data) {
+                if (d.getAlbumName().equals(oldName))
+                    d.setAlbumName(newName);
+            }
+            setAllAlbumData(data);
+        }
+    }
+
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Favorite");

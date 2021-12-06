@@ -57,6 +57,7 @@ public class LargeImage extends AppCompatActivity {
     String type;
     private WallpaperManager wallpaperManager;
     private BottomNavigationView bottomNavigationView;
+    boolean isFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +110,7 @@ public class LargeImage extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                boolean isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
+                isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
                 if (isFavorite)
                     bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
                 else
@@ -123,6 +124,11 @@ public class LargeImage extends AppCompatActivity {
 
         if (type.equals("ALBUM"))
             bottomNavigationView.findViewById(R.id.editPicture).setVisibility(View.GONE);
+        String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
+        if (isFavorite)
+            bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -266,27 +272,12 @@ public class LargeImage extends AppCompatActivity {
 
         }
         if (item.getItemId() == R.id.menu_ViewInfo) {
-            File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
-
-            View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
-            TextView filename = pictureInfoView.findViewById(R.id.info_filename);
-            TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
-            TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
-            TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
-            filename.setText(currentFile.getName());
-            filepath.setText(currentFile.getAbsolutePath());
-            lastModified.setText(sdf.format(currentFile.lastModified()));
-            filesize.setText(Math.round(currentFile.length() * 1.0 / 1000) + " KB");
-
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
-            dialog.setView(pictureInfoView);
-            dialog.create().show();
+            showCurrentPictureInfo();
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            /*String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();*/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -343,6 +334,32 @@ public class LargeImage extends AppCompatActivity {
             else
                 Toast.makeText(LargeImage.this, "Cannot add to favorite", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showCurrentPictureInfo() {
+        File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
+
+        View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
+        TextView filename = pictureInfoView.findViewById(R.id.info_filename);
+        TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
+        TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
+        TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
+        filename.setText(currentFile.getName());
+        filepath.setText(currentFile.getAbsolutePath());
+        lastModified.setText(sdf.format(currentFile.lastModified()));
+
+        long fileSizeNumber = Math.round(currentFile.length()*1.0/1000);
+        String fileSizeResult;
+        if (fileSizeNumber > 2000)
+            fileSizeResult = String.format(Locale.ROOT, "%.2f MB", fileSizeNumber*1.0/1000);
+        else
+            fileSizeResult = String.format(Locale.ROOT, "%d KB", fileSizeNumber);
+        filesize.setText(fileSizeResult);
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setView(pictureInfoView);
+        dialog.create().show();
     }
 
     private void changeTheme(boolean isChecked) {
