@@ -178,4 +178,15 @@ public class AlbumUtility {
                     return d;
         return null;
     }
+
+    public boolean checkPictureInFavorite(String picturePath) {
+        AlbumData data = findDataByAlbumName("Favorite");
+        if (data != null) {
+            ArrayList<String> paths = data.getPicturePaths();
+            for(String path: paths)
+                if (path.equals(picturePath))
+                    return true;
+        }
+        return false;
+    }
 }

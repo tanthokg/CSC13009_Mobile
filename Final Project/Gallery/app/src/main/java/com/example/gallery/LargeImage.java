@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
@@ -55,6 +56,7 @@ public class LargeImage extends AppCompatActivity {
     int currentPosition;
     String type;
     private WallpaperManager wallpaperManager;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,12 +96,31 @@ public class LargeImage extends AppCompatActivity {
             }
         }
 
+        bottomNavigationView = findViewById(R.id.bottomNavBar);
         mViewPager = (ZoomableViewPager)findViewById(R.id.viewPagerMain);
         mViewPagerAdapter = new ViewPagerAdapter(this, pictureFiles);
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setCurrentItem(currentPosition);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+            @Override
+            public void onPageSelected(int position) {
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                boolean isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
+                if (isFavorite)
+                    bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+                else
+                    bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_border_24);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         if (type.equals("ALBUM"))
             bottomNavigationView.findViewById(R.id.editPicture).setVisibility(View.GONE);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -311,10 +332,17 @@ public class LargeImage extends AppCompatActivity {
     private void addPictureToFavorite() {
         String albumName = "Favorite";
         String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-        if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath))
-            Toast.makeText(LargeImage.this, "Added To Favorite", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(LargeImage.this, "Cannot Add To Favorite", Toast.LENGTH_SHORT).show();
+        boolean isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
+        if (isFavorite) {
+            Toast.makeText(this, "This picture is already in Favorite", Toast.LENGTH_SHORT).show();
+        } else {
+            if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
+                bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+                Toast.makeText(LargeImage.this, "Added To Favorite", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(LargeImage.this, "Cannot Add To Favorite", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void changeTheme(boolean isChecked) {
