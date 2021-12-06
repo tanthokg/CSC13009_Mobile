@@ -64,7 +64,7 @@ public class AlbumUtility {
 
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
-        albums.add("FAV");
+        albums.add("Favorite");
         albums.add("Cats");
         albums.add("Dogs");
         albums.add("Food");
@@ -78,7 +78,7 @@ public class AlbumUtility {
 
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
-        albumData.add(new AlbumData("FAV", new ArrayList<String>()));
+        albumData.add(new AlbumData("Favorite", new ArrayList<String>()));
         albumData.add(new AlbumData("Cats", new ArrayList<String>()));
         albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
         albumData.add(new AlbumData("Food", new ArrayList<String>()));
@@ -121,12 +121,12 @@ public class AlbumUtility {
     public boolean deleteAlbum(String albumName) {
         ArrayList<String> albums = getAllAlbums();
         ArrayList<AlbumData> data = getAllAlbumData();
-        if (albums != null)
+        if (albums != null && data != null)
             for (String album: albums)
                 if (album.equals(albumName))
                     if (albums.remove(album)) {
-                        setAllAlbums(albums);
                         data.removeIf(d->d.getAlbumName().equals(albumName));
+                        setAllAlbums(albums);
                         setAllAlbumData(data);
                         return true;
                     }

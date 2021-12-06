@@ -101,11 +101,10 @@ public class LargeImage extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
         if (type.equals("ALBUM"))
-            bottomNavigationView.findViewById(R.id.addPictureToFav).setVisibility(View.GONE);
+            bottomNavigationView.findViewById(R.id.editPicture).setVisibility(View.GONE);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     if (type.equals("FOLDER"))
@@ -117,14 +116,10 @@ public class LargeImage extends AppCompatActivity {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     LargeImage.this.shareOnPath(path);
                 }
+                if (item.getItemId() == R.id.addPictureToFav) {
+                    addPictureToFavorite();
+                }
 
-                // Use addToBackStack to return the previous fragment when the Back button is pressed
-                // Checking null was just a precaution
-                if (selectedFragment != null)
-                    LargeImage.this.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragmentHolder, selectedFragment)
-                            .commit();
                 return true;
             }
         });
@@ -157,7 +152,6 @@ public class LargeImage extends AppCompatActivity {
     private void deleteOnAlbumByPath(String albumName, String picturePath) {
         AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
 
-        // confirmDialog.setMessage("Are you sure to remove this picture from album " + albumName + "?");
         confirmDialog.setMessage("Are you sure to remove this picture from album?");
         confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
@@ -280,7 +274,7 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
-        albums.removeIf(album -> album.equals("FAV"));
+        albums.removeIf(album -> album.equals("Favorite"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
@@ -312,6 +306,16 @@ public class LargeImage extends AppCompatActivity {
         addToAlbumDialog.create();
         addToAlbumDialog.show();
     }
+
+    private void addPictureToFavorite() {
+        String albumName = "Favorite";
+        String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath))
+            Toast.makeText(LargeImage.this, "Added To Favorite", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(LargeImage.this, "Cannot Add To Favorite", Toast.LENGTH_SHORT).show();
+    }
+
     private void changeTheme(boolean isChecked) {
         if (isChecked) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

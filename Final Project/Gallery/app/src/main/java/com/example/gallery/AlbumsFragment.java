@@ -50,7 +50,7 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("FAV"));
+        albums.removeIf(album -> album.equals("Favorite"));
 
         ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)context).getSupportActionBar().setTitle("Gallery");
@@ -82,13 +82,13 @@ public class AlbumsFragment extends Fragment {
         albumFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ((MainActivity)context).onMsgFromFragToMain("ALBUM-FLAG", "Favorite");
             }
         });
         albumTrashed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Toast.makeText(context, "Nothing for now", Toast.LENGTH_SHORT).show();
             }
         });
 
