@@ -188,6 +188,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
         if (null != data) {
             paths = data.getPicturePaths();
+            pictureFiles = new File[paths.size()];
+            int i = 0;
+            for (String path : paths) {
+                pictureFiles[i] = new File(path);
+                i++;
+            }
         } else {
             paths = new ArrayList<String>();
         }
@@ -390,16 +396,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();
         ArrayList<String> paths = new ArrayList<String>();
 
+        // Get paths of selected images. If current id is selected, add it to a list
+        for (int i = 0; i < selected.size(); ++i)
+            if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
+
         // Start deleting all image selected
         if (type.equals("FOLDER")) {
-            // Get paths of selected images
-            for (int index = (selected.size() - 1); index >= 0; index--) {
-                if (selected.valueAt(index)) {
-                    // If current id is selected, add it to a list
-                    paths.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
-                }
-            }
-
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
             confirmDialog.setMessage("Are you sure to delete these image?");
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -426,13 +428,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
 
         if (type.equals("ALBUM")) {
-            // Get all picture paths of this album
-            ArrayList<String> data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder).getPicturePaths();
-            // If current id is selected, add it to a list
-            for (int i = 0; i < selected.size(); ++i)
-                if (selected.valueAt(i)) paths.add(data.get(selected.keyAt(i)));
-            // Toast.makeText(context, paths.toString(), Toast.LENGTH_SHORT).show();
-
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
             confirmDialog.setMessage("Are you sure to remove these image from this album?");
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -455,7 +450,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             confirmDialog.create();
             confirmDialog.show();
         }
-
     }
 
     public void  callScanIntent(Context context, String path) {

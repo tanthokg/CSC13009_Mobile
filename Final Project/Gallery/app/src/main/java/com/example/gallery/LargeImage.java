@@ -316,7 +316,7 @@ public class LargeImage extends AppCompatActivity {
                 for (String s: chosen) {
                     AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(s, picturePath);
                 }
-                Toast.makeText(LargeImage.this, "OK", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LargeImage.this, "Added to selected albums", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -338,10 +338,10 @@ public class LargeImage extends AppCompatActivity {
         } else {
             if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
                 bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
-                Toast.makeText(LargeImage.this, "Added To Favorite", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LargeImage.this, "Added to favorite", Toast.LENGTH_SHORT).show();
             }
             else
-                Toast.makeText(LargeImage.this, "Cannot Add To Favorite", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LargeImage.this, "Cannot add to favorite", Toast.LENGTH_SHORT).show();
         }
     }
 
