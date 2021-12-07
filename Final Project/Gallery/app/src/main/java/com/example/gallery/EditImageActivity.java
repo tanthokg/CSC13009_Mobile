@@ -158,7 +158,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
             output.flush();
             output.close();
-            Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Saved to " + pathFile, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e("Error to save image in edit ", e.getMessage());
         }

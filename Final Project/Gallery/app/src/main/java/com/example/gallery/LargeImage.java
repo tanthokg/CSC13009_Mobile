@@ -112,9 +112,9 @@ public class LargeImage extends AppCompatActivity {
                 String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                 isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
                 if (isFavorite)
-                    bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+                    bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
                 else
-                    bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_border_24);
+                    bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_border_24);
             }
 
             @Override
@@ -122,23 +122,19 @@ public class LargeImage extends AppCompatActivity {
             }
         });
 
-        if (type.equals("ALBUM"))
-            bottomNavigationView.findViewById(R.id.editPicture).setVisibility(View.GONE);
         String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
         isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
         if (isFavorite)
-            bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+            bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.editPicture) {
                     Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
                     editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
                     editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(editIntent);
-
                 }
 
                 if (item.getItemId() == R.id.deletePicture) {
@@ -148,10 +144,12 @@ public class LargeImage extends AppCompatActivity {
                     if (type.equals("ALBUM"))
                         deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
                 }
+
                 if (item.getItemId() == R.id.sharePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.shareOnPath(path);
+                    shareOnPath(path);
                 }
+
                 if (item.getItemId() == R.id.addPictureToFav) {
                     addPictureToFavorite();
                 }
@@ -337,7 +335,7 @@ public class LargeImage extends AppCompatActivity {
             Toast.makeText(this, "This picture is already in Favorite", Toast.LENGTH_SHORT).show();
         } else {
             if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
-                bottomNavigationView.getMenu().getItem(2).setIcon(R.drawable.ic_baseline_favorite_24);
+                bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
                 Toast.makeText(LargeImage.this, "Added to favorite", Toast.LENGTH_SHORT).show();
             }
             else
