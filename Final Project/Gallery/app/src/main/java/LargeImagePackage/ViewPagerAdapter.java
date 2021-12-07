@@ -2,6 +2,7 @@ package LargeImagePackage;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,31 +72,26 @@ public class ViewPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
-        // inflating the item.xml
+        // Inflating the item.xml
         View itemView = mLayoutInflater.inflate(R.layout.large_picture_full, container, false);
 
-        // referencing the image view from the item.xml file
+        // Referencing the image view from the item.xml file
         ZoomableImageView view = itemView.findViewById(R.id.largePictureFull);
 
-        // setting the image in the imageView
+        // Set the image in the imageView
         view.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
-        // LargeImage.currentPosition = position;
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
 
         return itemView;
     }
 
-
     @Override
     public void setPrimaryItem (ViewGroup container, int position, Object object){
         super.setPrimaryItem(container, position, object);
         imageView = ((View)object).findViewById(R.id.largePictureFull);
         imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
-
     }
-
-
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)

@@ -22,8 +22,8 @@
     </style>
 
     <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
-        <item name="buttonBarPositiveButtonStyle">@style/TextColor</item>
         <item name="android:backgroundTint">#121212</item>
+        <item name="buttonBarButtonStyle">@style/TextColor</item>
     </style>
 
     <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">

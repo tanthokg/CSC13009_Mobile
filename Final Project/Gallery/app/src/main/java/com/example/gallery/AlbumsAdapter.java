@@ -23,11 +23,14 @@ import com.google.android.material.card.MaterialCardView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
     protected ArrayList<String> albums;
+    private Context context;
 
-    public AlbumsAdapter(ArrayList<String> albums) {
+    public AlbumsAdapter(Context context, ArrayList<String> albums) {
+        this.context = context;
         this.albums = albums;
     }
 
@@ -54,8 +57,10 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.albumName.setText(albums.get(position));
-        holder.albumItemCount.setText(Integer.toString(position));
+        String currentAlbum = albums.get(position);
+        int albumItemCount = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum).getPicturePaths().size();
+        holder.albumName.setText(currentAlbum);
+        holder.albumItemCount.setText(String.format(Locale.ROOT, "%d item(s)",albumItemCount));
     }
 
     @Override
@@ -86,7 +91,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             albumItemCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG", albums.get(getAdapterPosition()));
+                    ((MainActivity)itemView.getContext()).onMsgFromFragToMain("ALBUM-FLAG",
+                            albums.get(getAdapterPosition()));
                 }
             });
         }
@@ -113,6 +119,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
 
         private void handleEditAlbumItem(View itemView) {
             int position = getAdapterPosition();
+            String oldAlbumName = albums.get(position);
             Context context = itemView.getContext();
 
             View view = LayoutInflater.from(itemView.getContext()).inflate(R.layout.add_album_form, null);
@@ -122,16 +129,18 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             AlertDialog.Builder editDialog = new AlertDialog.Builder(itemView.getContext(), R.style.AlertDialog);
             editDialog.setView(view);
             txtFormTitle.setText("Edit Album Name");
-            editText.setText(albums.get(position));
+            editText.setText(oldAlbumName);
 
             editDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String newAlbumName = editText.getText().toString();
                     albums.set(position, newAlbumName);
+                    // Apply changes to database
                     AlbumUtility.getInstance(context).setAllAlbums(albums);
+                    AlbumUtility.getInstance(context).editAlbumName(oldAlbumName, newAlbumName);
                     notifyItemChanged(position);
-                    Toast.makeText(context, newAlbumName, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Renamed to " + newAlbumName, Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
