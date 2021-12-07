@@ -25,24 +25,10 @@
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnUpload_PicturesFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnAdd_PicturesFragment"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/ic_outline_file_upload_24"
-        android:tooltipText="Upload"
-        android:visibility="invisible"
-        app:backgroundTint="?attr/colorOnPrimary"
-        app:fabSize="mini"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.SmallComponent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCamera_PicturesFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/btnUpload_PicturesFragment"
+        android:layout_above="@id/btnAdd_PicturesFragment"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"
         android:src="@drawable/ic_outline_photo_camera_24"

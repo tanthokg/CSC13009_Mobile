@@ -57,7 +57,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     Context context;
     String pathFolder;
     String type;
-    private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
+    private FloatingActionButton btnAdd, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
@@ -103,7 +103,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
 
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
-        btnUpload = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUpload_PicturesFragment);
         btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
         btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
 
@@ -212,13 +211,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     void setAnimationButton(boolean isPressed) {
         if (isPressed) {
             btnAdd.setImageResource(R.drawable.ic_round_add_24);
-            btnUpload.startAnimation(menuFABHide);
             btnCamera.startAnimation(menuFABHide);
             btnUrl.startAnimation(menuFABHide);
         }
         else {
             btnAdd.setImageResource(R.drawable.ic_round_close_24);
-            btnUpload.startAnimation(menuFABShow);
             btnCamera.startAnimation(menuFABShow);
             btnUrl.startAnimation(menuFABShow);
         }
@@ -226,12 +223,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     void setVisibilityButton(boolean isPressed) {
         if (isPressed) {
-            btnUpload.setVisibility(FloatingActionButton.INVISIBLE);
             btnCamera.setVisibility(FloatingActionButton.INVISIBLE);
             btnUrl.setVisibility(FloatingActionButton.INVISIBLE);
         }
         else {
-            btnUpload.setVisibility(FloatingActionButton.VISIBLE);
             btnCamera.setVisibility(FloatingActionButton.VISIBLE);
             btnUrl.setVisibility(FloatingActionButton.VISIBLE);
         }
