@@ -66,12 +66,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             selectedFragment = settingsFragment;
             darkButtonIsPressed = false;
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentHolder, selectedFragment)
-                .commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
 
-        //bottomNavigationView = findViewById(R.id.bottomNavBar);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (R.id.nav_pictures == itemId) {
