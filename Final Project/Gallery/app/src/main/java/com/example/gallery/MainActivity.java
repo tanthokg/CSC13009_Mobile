@@ -26,18 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
-    /*private final int[] images = {
-        R.drawable.avatar01,
-        R.drawable.avatar02,
-        R.drawable.avatar03,
-        R.drawable.avatar04,
-        R.drawable.avatar05,
-        R.drawable.avatar06,
-        R.drawable.avatar07,
-        R.drawable.avatar08,
-        R.drawable.avatar09,
-        R.drawable.avatar10
-    };*/
+
     public FoldersFragment foldersFragment;
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
@@ -56,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA, Manifest.permission.INTERNET}, 1);
+    }
 
+    private void initiateApp() {
         actionBar = getSupportActionBar();
         actionBar.setIcon(R.drawable.picture);
         actionBar.setDisplayUseLogoEnabled(true);
@@ -107,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         if (requestCode == 1) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initiateApp();
                 Toast.makeText(MainActivity.this, "Permission granted!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(MainActivity.this, "Permission denied!", Toast.LENGTH_SHORT).show();
