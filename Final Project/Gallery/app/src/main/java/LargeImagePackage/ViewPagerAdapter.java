@@ -1,7 +1,8 @@
 package LargeImagePackage;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 
+import com.bumptech.glide.Glide;
 import com.example.gallery.R;
 
 import java.io.File;
@@ -27,22 +29,22 @@ public class ViewPagerAdapter extends PagerAdapter {
     File[] pictureFiles;
     LayoutInflater mLayoutInflater;
     ZoomableImageView imageView;
-    static HashMap<String, Drawable> drawableCache = new HashMap<String, Drawable>();
+    static HashMap<String, Bitmap> bitmapCache = new HashMap<String, Bitmap>();
 
-    static private Drawable getDrawable(String key) {
+    static private Bitmap getBitmap(String key) {
 
         //Clear data when the memory is too large
-        if (drawableCache.size() >=  MAX_CACHE_SIZE) {
-            drawableCache.clear();
+        if (bitmapCache.size() >=  MAX_CACHE_SIZE) {
+            bitmapCache.clear();
         }
 
         //If there isn't the drawable exists => store it
-        if (!drawableCache.containsKey(key))
+        if (!bitmapCache.containsKey(key))
         {
-            drawableCache.put(key, Drawable.createFromPath(key));
+            bitmapCache.put(key, BitmapFactory.decodeFile(key));
         }
 
-        return drawableCache.get(key);
+        return bitmapCache.get(key);
     }
 
     public ZoomableImageView getImageView() {return imageView; }
@@ -76,7 +78,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         ZoomableImageView view = itemView.findViewById(R.id.largePictureFull);
 
         // setting the image in the imageView
-        view.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
+        Glide.with(context).asBitmap()
+                .load(getBitmap(pictureFiles[position].getAbsolutePath())).into(view);
+        //view.setImageDrawable(getDrawable());
         // LargeImage.currentPosition = position;
 
         // Adding the View
@@ -91,8 +95,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         super.setPrimaryItem(container, position, object);
 
         imageView = ((View)object).findViewById(R.id.largePictureFull);
-        imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
-
+        Glide.with(context).asBitmap()
+                .load(getBitmap(pictureFiles[position].getAbsolutePath())).into(imageView);
+        //imageView.setImageDrawable(getBitmap(pictureFiles[position].getAbsolutePath()));
     }
 
 

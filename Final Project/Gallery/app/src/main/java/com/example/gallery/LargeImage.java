@@ -45,10 +45,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+//import LargeImagePackage.EditPictureActivity;
 import LargeImagePackage.ViewPagerAdapter;
 import LargeImagePackage.ZoomableViewPager;
 
 public class LargeImage extends AppCompatActivity {
+
+    public static final String EDIT_MSG = "EditPath";
 
     File pictureFile;
     File[] pictureFiles;
@@ -93,6 +96,11 @@ public class LargeImage extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
 
+                if (item.getItemId() == R.id.editPicture) {
+                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                    LargeImage.this.editOnPath(path);
+                }
+
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     LargeImage.this.deleteOnPath(path, bottomNavigationView);
@@ -112,6 +120,12 @@ public class LargeImage extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void editOnPath(String path) {
+        //Intent intent = new Intent(this, EditPictureActivity.class);
+      //  intent.putExtra(EDIT_MSG, path);
+       // startActivity(intent);
     }
 
     private void deleteOnPath(String path, View bottomNav)
