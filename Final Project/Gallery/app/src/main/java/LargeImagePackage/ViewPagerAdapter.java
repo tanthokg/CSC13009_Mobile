@@ -1,8 +1,10 @@
 package LargeImagePackage;
 
 import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +72,8 @@ public class ViewPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
-        // inflating the item.xml
+        // Inflating the item.xml
         View itemView = mLayoutInflater.inflate(R.layout.large_picture_full, container, false);
-
-        // referencing the image view from the item.xml file
 
         ZoomableImageView view = itemView.findViewById(R.id.largePictureFull);
 
@@ -83,16 +83,17 @@ public class ViewPagerAdapter extends PagerAdapter {
         //view.setImageDrawable(getDrawable());
         // LargeImage.currentPosition = position;
 
+
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);
 
         return itemView;
     }
 
-
     @Override
     public void setPrimaryItem (ViewGroup container, int position, Object object){
         super.setPrimaryItem(container, position, object);
+<<<<<<< HEAD
 
         imageView = ((View)object).findViewById(R.id.largePictureFull);
         Glide.with(context).asBitmap()
@@ -101,6 +102,12 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
 
+=======
+        imageView = ((View)object).findViewById(R.id.largePictureFull);
+        imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
+    }
+
+>>>>>>> f57d3e689e84281c905902f4733fc80001f4ea5e
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
     {

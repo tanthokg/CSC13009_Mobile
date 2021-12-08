@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 
@@ -56,7 +57,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     Context context;
     String pathFolder;
     String type;
-    private FloatingActionButton btnAdd, btnUpload, btnCamera, btnUrl;
+    private FloatingActionButton btnAdd, btnCamera, btnUrl;
     private boolean addIsPressed;
     private Animation menuFABShow, menuFABHide;
     private final int CAMERA_CAPTURED = 100;
@@ -102,7 +103,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
 
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
-        btnUpload = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUpload_PicturesFragment);
         btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
         btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
 
@@ -154,11 +154,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
         if (type.equals("FOLDER")) {
             readPicturesInFolder();
-            implementClickListener();
         }
         if (type.equals("ALBUM")) {
             readPicturesInAlbum();
         }
+        implementClickListener();
         return picturesFragment;
     }
 
@@ -187,6 +187,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
         if (null != data) {
             paths = data.getPicturePaths();
+            pictureFiles = new File[paths.size()];
+            int i = 0;
+            for (String path : paths) {
+                pictureFiles[i] = new File(path);
+                i++;
+            }
         } else {
             paths = new ArrayList<String>();
         }
@@ -205,13 +211,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     void setAnimationButton(boolean isPressed) {
         if (isPressed) {
             btnAdd.setImageResource(R.drawable.ic_round_add_24);
-            btnUpload.startAnimation(menuFABHide);
             btnCamera.startAnimation(menuFABHide);
             btnUrl.startAnimation(menuFABHide);
         }
         else {
             btnAdd.setImageResource(R.drawable.ic_round_close_24);
-            btnUpload.startAnimation(menuFABShow);
             btnCamera.startAnimation(menuFABShow);
             btnUrl.startAnimation(menuFABShow);
         }
@@ -219,12 +223,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     void setVisibilityButton(boolean isPressed) {
         if (isPressed) {
-            btnUpload.setVisibility(FloatingActionButton.INVISIBLE);
             btnCamera.setVisibility(FloatingActionButton.INVISIBLE);
             btnUrl.setVisibility(FloatingActionButton.INVISIBLE);
         }
         else {
-            btnUpload.setVisibility(FloatingActionButton.VISIBLE);
             btnCamera.setVisibility(FloatingActionButton.VISIBLE);
             btnUrl.setVisibility(FloatingActionButton.VISIBLE);
         }
@@ -371,11 +373,12 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // Send the folder path and the current position to the destination activity
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
+        intent.putExtra("itemType", type);
+        // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }
 
     // Inflate button to change how many columns of images are displayed
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -384,47 +387,68 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     // Delete multiple Images in PicturesFragments
     public void deleteMulti() {
-        SparseBooleanArray selected = picturesAdapter.getSelectedIds();//Get selected ids
-        ArrayList<String> path = new ArrayList<String>();
+        //Get selected ids
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> paths = new ArrayList<String>();
 
-        // Get paths of selected images
-        for (int index = (selected.size() - 1); index >= 0; index--) {
-            if (selected.valueAt(index)) {
-                //If current id is selected remove the item via key
-                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
-            }
-        }
+        // Get paths of selected images. If current id is selected, add it to a list
+        for (int i = 0; i < selected.size(); ++i)
+            if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
 
         // Start deleting all image selected
-        androidx.appcompat.app.AlertDialog.Builder confirmDialog =
-                new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AlertDialog);
-        confirmDialog.setMessage("Are you sure to delete these image?");
-        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                for (int index = 0; index < path.size(); index++) {
-                    File a = new File(path.get(index));
-                    a.delete();
-                    callScanIntent(context,path.get(index));
+        if (type.equals("FOLDER")) {
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+            confirmDialog.setMessage("Are you sure to delete these image?");
+            confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Delete every item in the list we had before
+                    for (int index = 0; index < paths.size(); index++) {
+                        File a = new File(paths.get(index));
+                        a.delete();
+                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
+                        callScanIntent(context,paths.get(index));
+                    }
+                    Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
+                    onResume();
                 }
-                Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
-                picturesAdapter.notifyDataSetChanged();
-                onResume();
-            }
-        });
-        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
+            });
+            confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            confirmDialog.create();
+            confirmDialog.show();
+        }
 
-        confirmDialog.create();
-        confirmDialog.show();
+        if (type.equals("ALBUM")) {
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+            confirmDialog.setMessage("Are you sure to remove these image from this album?");
+            confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Delete every item in the list we had before
+                    for (String path : paths) {
+                        AlbumUtility.getInstance(context).deletePictureInAlbum(pathFolder, path);
+                    }
+
+                    Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
+                    onResume();
+                }
+            });
+            confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            confirmDialog.create();
+            confirmDialog.show();
+        }
     }
 
     public void  callScanIntent(Context context, String path) {
-        MediaScannerConnection.scanFile(context,
-                new String[] { path }, null,null);
+        MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
     }
 
     // Share multiple Images in PicturesFragments

@@ -1,13 +1,14 @@
 package com.example.gallery;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -51,14 +51,15 @@ import LargeImagePackage.ZoomableViewPager;
 
 public class LargeImage extends AppCompatActivity {
 
-    public static final String EDIT_MSG = "EditPath";
-
     File pictureFile;
     File[] pictureFiles;
     ZoomableViewPager mViewPager;
     ViewPagerAdapter mViewPagerAdapter;
     int currentPosition;
+    String type;
     private WallpaperManager wallpaperManager;
+    private BottomNavigationView bottomNavigationView;
+    boolean isFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,70 +76,105 @@ public class LargeImage extends AppCompatActivity {
         currentPosition = intent.getIntExtra("itemPosition", -1);
 
         // Create a File object from the received path
-        pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
-
-        // Create an array contains all files in the folder above
-        pictureFiles = pictureFile.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+        type = intent.getStringExtra("itemType");
+        if (type.equals("FOLDER")) {
+            pictureFile = new File(intent.getStringExtra("pathToPicturesFolder"));
+            // Create an array contains all files in the folder above
+            pictureFiles = pictureFile.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+                }
+            });
+        }
+        if (type.equals("ALBUM")) {
+            String albumName = intent.getStringExtra("pathToPicturesFolder");
+            AlbumData albumData = AlbumUtility.getInstance(this).findDataByAlbumName(albumName);
+            ArrayList<String> picturePaths = albumData.getPicturePaths();
+            int i = 0;
+            pictureFiles = new File [picturePaths.size()];
+            for (String path : picturePaths) {
+                pictureFiles[i] = new File(path);
+                i++;
             }
-        });
+        }
 
+        bottomNavigationView = findViewById(R.id.bottomNavBar);
         mViewPager = (ZoomableViewPager)findViewById(R.id.viewPagerMain);
         mViewPagerAdapter = new ViewPagerAdapter(this, pictureFiles);
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setCurrentItem(currentPosition);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
+            @Override
+            public void onPageSelected(int position) {
+                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
+                if (isFavorite)
+                    bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
+                else
+                    bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_border_24);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
+        if (isFavorite)
+            bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
 
                 if (item.getItemId() == R.id.editPicture) {
-                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.editOnPath(path);
+                    Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
+                    editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+                    editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(editIntent);
+
                 }
 
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.deleteOnPath(path, bottomNavigationView);
-                }
-                if (item.getItemId() == R.id.sharePicture) {
-                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    LargeImage.this.shareOnPath(path)    ;
+                    if (type.equals("FOLDER"))
+                        deleteOnDeviceByPath(path, bottomNavigationView);
+                    if (type.equals("ALBUM"))
+                        deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
                 }
 
-                // Use addToBackStack to return the previous fragment when the Back button is pressed
-                // Checking null was just a precaution
-                if (selectedFragment != null)
-                    LargeImage.this.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragmentHolder, selectedFragment)
-                            .commit();
+                if (item.getItemId() == R.id.sharePicture) {
+                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                    shareOnPath(path);
+                }
+
+                if (item.getItemId() == R.id.addPictureToFav) {
+                    addPictureToFavorite();
+                }
+
                 return true;
             }
         });
     }
 
-    private void editOnPath(String path) {
-        //Intent intent = new Intent(this, EditPictureActivity.class);
-      //  intent.putExtra(EDIT_MSG, path);
-       // startActivity(intent);
-    }
 
-    private void deleteOnPath(String path, View bottomNav)
+    private void deleteOnDeviceByPath(String path, View bottomNav)
     {
-        androidx.appcompat.app.AlertDialog.Builder confirmDialog =
-                new androidx.appcompat.app.AlertDialog.Builder(bottomNav.getContext(), R.style.AlertDialog);
-        confirmDialog.setMessage("Are you sure to delete this image?");
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(bottomNav.getContext(), R.style.AlertDialog);
+        confirmDialog.setMessage("Are you sure to remove this picture from device?");
         confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 File a = new File(path);
                 a.delete();
                 callScanIntent(getApplicationContext(),path);
+                AlbumUtility.getInstance(LargeImage.this).deletePictureInAllAlbums(path);
                 Toast.makeText(getApplicationContext(),"Image Deleted",Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -151,6 +187,30 @@ public class LargeImage extends AppCompatActivity {
 
         confirmDialog.create();
         confirmDialog.show();
+    }
+
+    private void deleteOnAlbumByPath(String albumName, String picturePath) {
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+
+        confirmDialog.setMessage("Are you sure to remove this picture from album?");
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).deletePictureInAlbum(albumName, picturePath)) {
+                    Toast.makeText(LargeImage.this, "Picture removed from album", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else
+                    Toast.makeText(LargeImage.this, "Cannot remove this from album", Toast.LENGTH_SHORT).show();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        confirmDialog.create().show();
     }
 
     private void shareOnPath(String path) {
@@ -183,7 +243,6 @@ public class LargeImage extends AppCompatActivity {
         MediaScannerConnection.scanFile(context,
                 new String[] { path }, null,null);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -225,27 +284,12 @@ public class LargeImage extends AppCompatActivity {
 
         }
         if (item.getItemId() == R.id.menu_ViewInfo) {
-            File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
-
-            View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
-            TextView filename = pictureInfoView.findViewById(R.id.info_filename);
-            TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
-            TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
-            TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
-            filename.setText(currentFile.getName());
-            filepath.setText(currentFile.getAbsolutePath());
-            lastModified.setText(sdf.format(currentFile.lastModified()));
-            filesize.setText(Math.round(currentFile.length() * 1.0 / 1000) + " KB");
-
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
-            dialog.setView(pictureInfoView);
-            dialog.create().show();
+            showCurrentPictureInfo();
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            /*String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();*/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -255,23 +299,12 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
+        albums.removeIf(album -> album.equals("Favorite"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
-        /*chooseAlbumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String albumName = albums.get(i);
-                String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
-                    Toast.makeText(LargeImage.this, albums.get(i) + " chosen", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(LargeImage.this, "Error: Cannot Add To Selected Album", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
 
-        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
+        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(this, R.style.AlertDialog);
         addToAlbumDialog.setView(addToAlbumView);
         ArrayList<String> chosen = new ArrayList<String>();
 
@@ -286,7 +319,7 @@ public class LargeImage extends AppCompatActivity {
                 for (String s: chosen) {
                     AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(s, picturePath);
                 }
-                Toast.makeText(LargeImage.this, "OK", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LargeImage.this, "Added to selected albums", Toast.LENGTH_SHORT).show();
             }
         });
         addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -298,6 +331,49 @@ public class LargeImage extends AppCompatActivity {
         addToAlbumDialog.create();
         addToAlbumDialog.show();
     }
+
+    private void addPictureToFavorite() {
+        String albumName = "Favorite";
+        String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        boolean isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
+        if (isFavorite) {
+            Toast.makeText(this, "This picture is already in Favorite", Toast.LENGTH_SHORT).show();
+        } else {
+            if (AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum(albumName, picturePath)) {
+                bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
+                Toast.makeText(LargeImage.this, "Added to favorite", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(LargeImage.this, "Cannot add to favorite", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showCurrentPictureInfo() {
+        File currentFile = new File(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ROOT);
+
+        View pictureInfoView = LayoutInflater.from(this).inflate(R.layout.picture_info, null);
+        TextView filename = pictureInfoView.findViewById(R.id.info_filename);
+        TextView filepath = pictureInfoView.findViewById(R.id.info_filepath);
+        TextView lastModified = pictureInfoView.findViewById(R.id.info_lastModified);
+        TextView filesize = pictureInfoView.findViewById(R.id.info_filesize);
+        filename.setText(currentFile.getName());
+        filepath.setText(currentFile.getAbsolutePath());
+        lastModified.setText(sdf.format(currentFile.lastModified()));
+
+        long fileSizeNumber = Math.round(currentFile.length()*1.0/1000);
+        String fileSizeResult;
+        if (fileSizeNumber > 2000)
+            fileSizeResult = String.format(Locale.ROOT, "%.2f MB", fileSizeNumber*1.0/1000);
+        else
+            fileSizeResult = String.format(Locale.ROOT, "%d KB", fileSizeNumber);
+        filesize.setText(fileSizeResult);
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setView(pictureInfoView);
+        dialog.create().show();
+    }
+
     private void changeTheme(boolean isChecked) {
         if (isChecked) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

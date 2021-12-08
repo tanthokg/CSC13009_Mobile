@@ -18,9 +18,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:itemIconSize="28dp"
-        app:itemIconTint="@drawable/selected_icon"
+        app:itemIconTint="?attr/colorOnSecondary"
         app:itemTextColor="?attr/colorOnSecondary"
-        app:labelVisibilityMode="auto"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/large_picture_bottom_menu"/>
 
 </RelativeLayout>

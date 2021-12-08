@@ -7,7 +7,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="110dp"
         android:id="@+id/folderItem"
         android:layout_centerInParent="true"
         android:src="@drawable/ic_baseline_folder_24_dark_mode"/>
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/txtFolderPath"
         android:layout_below="@id/folderItem"
-        android:textSize="15dp"
+        android:textSize="18sp"
         android:gravity="center"/>
 
 </RelativeLayout>

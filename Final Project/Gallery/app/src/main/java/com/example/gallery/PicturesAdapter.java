@@ -27,7 +27,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
     private SparseBooleanArray mSelectedItemsIds;
 
     private ArrayList<String> paths;
-    private static int spanCount;
+    private final int spanCount;
 
     public PicturesAdapter(Context context, ArrayList<String> paths, int spanCount) {
         this.context = context;
@@ -98,7 +98,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         return paths.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageItem;
         private CheckBox checkbox;
         private TextView txtNameImage;
@@ -126,7 +126,6 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         }
         notifyItemChanged(position);
     }
-
 
     //Remove selected selections
     public void removeSelection() {

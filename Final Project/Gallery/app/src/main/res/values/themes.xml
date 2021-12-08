@@ -4,6 +4,7 @@
         <!-- Primary brand color. -->
         <!--<item name="colorPrimary">@color/purple_500</item>-->
         <item name="colorPrimary">@color/white</item>
+        <!--<item name="colorPrimary">@color/white</item>-->
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -31,7 +32,7 @@
     </style>
 
     <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Dialog.Alert">
-        <item name="buttonBarPositiveButtonStyle">@style/Text</item>
+        <item name="buttonBarButtonStyle">@style/Text</item>
     </style>
 
     <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">

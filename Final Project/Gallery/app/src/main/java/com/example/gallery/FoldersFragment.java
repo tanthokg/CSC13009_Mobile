@@ -54,11 +54,21 @@ public class FoldersFragment extends Fragment {
 
         String sdPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
         File sdFile = new File(sdPath);
-        File[] foldersSd = sdFile.listFiles();
+        File[] foldersSd = sdFile.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return !s.startsWith(".");
+            }
+        });
 
         String dcimPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
         File dcimFile = new File(dcimPath);
-        File[] foldersDCIM = dcimFile.listFiles();
+        File[] foldersDCIM = dcimFile.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return !s.startsWith(".");
+            }
+        });
 
         try {
             folderPaths.add(sdFile.getAbsolutePath());
