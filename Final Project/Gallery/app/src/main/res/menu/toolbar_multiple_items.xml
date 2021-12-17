@@ -11,4 +11,14 @@
         android:icon="@drawable/ic_baseline_share_24"
         android:title="Share"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/selectall"
+        android:icon="@drawable/ic_baseline_select_all_24"
+        android:title="Select All"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/addtoalbum"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:title="Add To Album"
+        app:showAsAction="always"/>
 </menu>
