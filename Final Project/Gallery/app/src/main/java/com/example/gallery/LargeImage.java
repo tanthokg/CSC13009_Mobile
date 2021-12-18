@@ -81,7 +81,8 @@ public class LargeImage extends AppCompatActivity {
             pictureFiles = pictureFile.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.toLowerCase(Locale.ROOT).endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+                    return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
+                            (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
                 }
             });
         }
@@ -139,8 +140,13 @@ public class LargeImage extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    if (type.equals("FOLDER"))
-                        deleteOnDeviceByPath(path, bottomNavigationView);
+                    if (type.equals("FOLDER")) {
+                        if (moveToTrashMode())
+                            moveToTrash(path);
+                        else
+                            deleteOnDeviceByPath(path, bottomNavigationView);
+
+                    }
                     if (type.equals("ALBUM"))
                         deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
                 }
@@ -206,6 +212,11 @@ public class LargeImage extends AppCompatActivity {
             }
         });
         confirmDialog.create().show();
+    }
+
+    private void moveToTrash(String picturePath) {
+        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
+        Toast.makeText(this, directory.getAbsolutePath(), Toast.LENGTH_SHORT).show();
     }
 
     private void shareOnPath(String path) {
@@ -395,5 +406,7 @@ public class LargeImage extends AppCompatActivity {
         return bm;
     }
 
-
+    private boolean moveToTrashMode() {
+        return true;
+    }
 }

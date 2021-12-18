@@ -168,7 +168,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+                    return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
+                            (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
                 }
             };
             allFiles = pictureFile.listFiles();
