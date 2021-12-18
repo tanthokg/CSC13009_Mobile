@@ -34,6 +34,7 @@ public class FilterFragment extends Fragment implements FragmentCallbacks {
         adapter = new FilterAdapter(filters, context, originalBmp, editBmp);
         filterRecView.setAdapter(adapter);
         filterRecView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+
         return filterFragment;
     }
 
