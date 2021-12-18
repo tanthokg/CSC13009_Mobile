@@ -253,10 +253,10 @@ public class LargeImage extends AppCompatActivity {
                 File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
                 File from = new File(directory, currentFilename);
                 File to = new File(directory, newFilename);
+
+                AlbumUtility.getInstance(LargeImage.this).deletePictureInAllAlbums(from.getAbsolutePath());
                 if (from.renameTo(to)) {
-                    String newPath = to.getAbsolutePath();
-                    AlbumUtility.getInstance(LargeImage.this).deletePictureInAllAlbums(newPath);
-                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum("Trashed", newPath);
+                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum("Trashed", to.getAbsolutePath());
                     Toast.makeText(LargeImage.this, "Moved to Trashed", Toast.LENGTH_SHORT).show();
                     finish();
                 } else
@@ -392,7 +392,7 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite"));
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
