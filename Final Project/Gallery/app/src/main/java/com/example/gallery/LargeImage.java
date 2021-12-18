@@ -22,6 +22,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -215,8 +216,33 @@ public class LargeImage extends AppCompatActivity {
     }
 
     private void moveToTrash(String picturePath) {
-        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-        Toast.makeText(this, directory.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setMessage("Are you sure to remove this picture to Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                String newFilename = ".trashed" + currentFilename;
+                File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
+                File from = new File(directory, currentFilename);
+                File to = new File(directory, newFilename);
+                if (from.renameTo(to)) {
+                    String newPath = to.getAbsolutePath();
+                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum("Trashed", newPath);
+                    Toast.makeText(LargeImage.this, newPath, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else Toast.makeText(LargeImage.this, "Error: Cannot rename file", Toast.LENGTH_SHORT).show();
+            }});
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.create().show();
+        /*Toast.makeText(this, "Directory: " + directory.getAbsolutePath() +
+                "\nFilename: " + currentFilename, Toast.LENGTH_SHORT).show();*/
     }
 
     private void shareOnPath(String path) {

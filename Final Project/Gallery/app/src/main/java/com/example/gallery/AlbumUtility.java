@@ -76,6 +76,7 @@ public class AlbumUtility {
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Favorite");
+        albums.add("Trashed");
         albums.add("Cats");
         albums.add("Dogs");
         albums.add("Food");
@@ -90,6 +91,7 @@ public class AlbumUtility {
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
         albumData.add(new AlbumData("Favorite", new ArrayList<String>()));
+        albumData.add(new AlbumData("Trashed", new ArrayList<String>()));
         albumData.add(new AlbumData("Cats", new ArrayList<String>()));
         albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
         albumData.add(new AlbumData("Food", new ArrayList<String>()));
