@@ -142,4 +142,16 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
     public SparseBooleanArray getSelectedIds() {
         return mSelectedItemsIds;
     }
+
+    //Select all
+    public void selectAll() {
+        mSelectedItemsIds.clear();
+
+        for (int i = 0; i < paths.size(); i++) {
+            mSelectedItemsIds.put(i, true);
+            notifyItemChanged(i);
+        }
+        //mSelectedItemsIds.size(paths.size());
+        notifyDataSetChanged();
+    }
 }

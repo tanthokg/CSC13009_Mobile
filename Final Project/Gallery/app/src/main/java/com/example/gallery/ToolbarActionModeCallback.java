@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.view.ActionMode;
 
@@ -47,6 +48,17 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
         {
             //Share Multiple Images
             ((MainActivity)context).picturesFragment.shareMulti();
+            mode.finish();
+            ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
+        }
+        else if (item.getItemId() == R.id.selectall)
+        {
+            Toast.makeText(context.getApplicationContext(), "Select all", Toast.LENGTH_SHORT).show();
+            ((MainActivity)context).picturesFragment.selectAll();
+        }
+        else if (item.getItemId() == R.id.addtoalbum)
+        {
+            ((MainActivity)context).picturesFragment.addToAlbum();
             mode.finish();
             ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
