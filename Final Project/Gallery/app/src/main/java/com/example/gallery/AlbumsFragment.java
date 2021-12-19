@@ -50,7 +50,7 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite"));
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
 
         ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)context).getSupportActionBar().setTitle("Gallery");
@@ -76,19 +76,21 @@ public class AlbumsFragment extends Fragment {
             }
         });
 
-        MaterialCardView albumFav = albumsFragment.findViewById(R.id.albumFavorite);
+        MaterialCardView albumFavorite = albumsFragment.findViewById(R.id.albumFavorite);
         MaterialCardView albumTrashed = albumsFragment.findViewById(R.id.albumTrashed);
 
-        albumFav.setOnClickListener(new View.OnClickListener() {
+        albumFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((MainActivity)context).onMsgFromFragToMain("ALBUM-FLAG", "Favorite");
+                Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show();
             }
         });
         albumTrashed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Nothing for now", Toast.LENGTH_SHORT).show();
+                ((MainActivity)context).onMsgFromFragToMain("ALBUM-FLAG", "Trashed");
+                Toast.makeText(context, "Trashed", Toast.LENGTH_SHORT).show();
             }
         });
 

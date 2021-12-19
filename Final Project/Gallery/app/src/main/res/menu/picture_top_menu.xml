@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/btnChangeFormatDisplay"
         android:icon="@drawable/ic_sharp_view_module_24"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="View as"/>
+    <item android:id="@+id/emptyTrashed"
+        android:title="Empty Trashed"
+        app:showAsAction="never"/>
+    <item android:id="@+id/recoverAll"
+        android:title="Recover All"
+        app:showAsAction="never"/>
 </menu>

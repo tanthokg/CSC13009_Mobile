@@ -171,7 +171,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg");
+                    return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
+                            (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
                 }
             };
             allFiles = pictureFile.listFiles();
@@ -294,10 +295,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         saveImage(result);
     }
 
-    // call the up-key back on Action Bar
+    // Inflate button to change how many columns of images are displayed
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.picture_top_menu, menu);
+
+        if (!pathFolder.equals("Trashed")) {
+            menu.getItem(1).setVisible(false);
+            menu.getItem(2).setVisible(false);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.btnChangeFormatDisplay) {
+        int id = item.getItemId();
+        if (R.id.btnChangeFormatDisplay == id) {
             if (4 == spanCount) {
                 item.setIcon(R.drawable.ic_sharp_grid_view_24);
                 spanCount = 3;
@@ -315,6 +328,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 spanCount = 4;
             }
             showAllPictures(paths);
+        } else if (R.id.emptyTrashed == id) {
+            deleteAllInTrashed();
+        } else if (R.id.recoverAll == id) {
+            recoverAllInTrashed();
         }
         else {
             String request = "";
@@ -381,13 +398,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         context.startActivity(intent);
     }
 
-    // Inflate button to change how many columns of images are displayed
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.picture_top_menu, menu);
-    }
-
     // Delete multiple Images in PicturesFragments
     public void deleteMulti() {
         //Get selected ids
@@ -407,8 +417,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 public void onClick(DialogInterface dialogInterface, int i) {
                     // Delete every item in the list we had before
                     for (int index = 0; index < paths.size(); index++) {
-                        File a = new File(paths.get(index));
-                        a.delete();
+                        File file = new File(paths.get(index));
+                        file.delete();
                         AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
                         callScanIntent(context,paths.get(index));
                     }
@@ -450,7 +460,66 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
     }
 
-    public void  callScanIntent(Context context, String path) {
+    private void deleteAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Empty All Trashed Pictures?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Delete On Device
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                // Log.e("Paths", paths.toString());
+                for (String path : paths) {
+                    File file = new File(path);
+                    if (!file.delete())
+                        Log.e("Delete files in trashed: ", "Cannot Delete");
+                    callScanIntent(context, path);
+                }
+                // Delete In Trashed
+                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
+                onResume();
+                Toast.makeText(context, "Emptied Trashed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+    }
+
+    private void recoverAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Recover all pictures from Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                for (String path: paths) {
+                    String oldFilename = path.substring(path.lastIndexOf('/') + 1);
+                    String newFilename = oldFilename.replace(".trashed", "");
+                    File directory = new File(path.substring(0, path.lastIndexOf('/')));
+                    File from = new File(directory, oldFilename);
+                    File to = new File(directory, newFilename);
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
+
+                    if (!from.renameTo(to))
+                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(context, "All Pictures Has Been Recovered", Toast.LENGTH_SHORT).show();
+                onResume();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+    }
+
+    public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
     }
 

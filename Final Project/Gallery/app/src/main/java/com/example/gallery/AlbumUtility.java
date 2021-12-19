@@ -76,6 +76,7 @@ public class AlbumUtility {
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Favorite");
+        albums.add("Trashed");
         albums.add("Cats");
         albums.add("Dogs");
         albums.add("Food");
@@ -90,6 +91,7 @@ public class AlbumUtility {
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
         albumData.add(new AlbumData("Favorite", new ArrayList<String>()));
+        albumData.add(new AlbumData("Trashed", new ArrayList<String>()));
         albumData.add(new AlbumData("Cats", new ArrayList<String>()));
         albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
         albumData.add(new AlbumData("Food", new ArrayList<String>()));
@@ -161,6 +163,22 @@ public class AlbumUtility {
             data.add(albumData);
 
             // Apply changes to shared preferences
+            setAllAlbumData(data);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteAllPicturesInAlbum(String albumName) {
+        // Get AlbumData list and the AlbumData matching the name
+        ArrayList<AlbumData> data = getAllAlbumData();
+        AlbumData albumData = findDataByAlbumName(albumName);
+        if (data != null && albumData != null) {
+            // Empty the picturePaths
+            albumData.setPicturePaths(new ArrayList<String>());
+            // Add it to the data
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            data.add(albumData);
             setAllAlbumData(data);
             return true;
         }
