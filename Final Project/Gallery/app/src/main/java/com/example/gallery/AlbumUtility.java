@@ -169,6 +169,22 @@ public class AlbumUtility {
         return false;
     }
 
+    public boolean deleteAllPicturesInAlbum(String albumName) {
+        // Get AlbumData list and the AlbumData matching the name
+        ArrayList<AlbumData> data = getAllAlbumData();
+        AlbumData albumData = findDataByAlbumName(albumName);
+        if (data != null && albumData != null) {
+            // Empty the picturePaths
+            albumData.setPicturePaths(new ArrayList<String>());
+            // Add it to the data
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            data.add(albumData);
+            setAllAlbumData(data);
+            return true;
+        }
+        return false;
+    }
+
     public boolean deletePictureInAllAlbums(String picturePath) {
         ArrayList<AlbumData> data = getAllAlbumData();
         if (data != null) {

@@ -233,8 +233,7 @@ public class LargeImage extends AppCompatActivity {
                 int id = item.getItemId();
                 if (R.id.recoverPicture == id) {
                     recoverFromTrashed(path);
-                }
-                if (R.id.deletePicture == id) {
+                } else if (R.id.deletePicture == id) {
                     deleteOnDeviceByPath(path);
                     // Toast.makeText(LargeImage.this, "Picture Deleted", Toast.LENGTH_SHORT).show();
                 }
@@ -381,8 +380,6 @@ public class LargeImage extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
-            /*String result = AlbumUtility.getInstance(this).getAllAlbums().size() + " album(s)";
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();*/
         }
         return super.onOptionsItemSelected(item);
     }

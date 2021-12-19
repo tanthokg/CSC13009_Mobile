@@ -292,10 +292,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         saveImage(result);
     }
 
-    // call the up-key back on Action Bar
+    // Inflate button to change how many columns of images are displayed
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.picture_top_menu, menu);
+
+        if (!pathFolder.equals("Trashed")) {
+            menu.getItem(1).setVisible(false);
+            menu.getItem(2).setVisible(false);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.btnChangeFormatDisplay) {
+        int id = item.getItemId();
+        if (R.id.btnChangeFormatDisplay == id) {
             if (4 == spanCount) {
                 item.setIcon(R.drawable.ic_sharp_grid_view_24);
                 spanCount = 3;
@@ -313,6 +325,10 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 spanCount = 4;
             }
             showAllPictures(paths);
+        } else if (R.id.emptyTrashed == id) {
+            deleteAllInTrashed();
+        } else if (R.id.recoverAll == id) {
+            Toast.makeText(context, "Recovered All", Toast.LENGTH_SHORT).show();
         }
         else {
             String request = "";
@@ -379,13 +395,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         context.startActivity(intent);
     }
 
-    // Inflate button to change how many columns of images are displayed
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.picture_top_menu, menu);
-    }
-
     // Delete multiple Images in PicturesFragments
     public void deleteMulti() {
         //Get selected ids
@@ -405,8 +414,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 public void onClick(DialogInterface dialogInterface, int i) {
                     // Delete every item in the list we had before
                     for (int index = 0; index < paths.size(); index++) {
-                        File a = new File(paths.get(index));
-                        a.delete();
+                        File file = new File(paths.get(index));
+                        file.delete();
                         AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
                         callScanIntent(context,paths.get(index));
                     }
@@ -448,7 +457,37 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
     }
 
-    public void  callScanIntent(Context context, String path) {
+    private void deleteAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Empty All Trashed Pictures?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Delete On Device
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                Log.e("Paths", paths.toString());
+                for (String path : paths) {
+                    File file = new File(path);
+                    if (!file.delete())
+                        Log.e("Delete files in trashed: ", "Cannot Delete");
+                    callScanIntent(context, path);
+                }
+                // Delete In Trashed
+                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
+                onResume();
+                Toast.makeText(context, "Emptied Trashed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+
+    }
+
+    public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
     }
 
