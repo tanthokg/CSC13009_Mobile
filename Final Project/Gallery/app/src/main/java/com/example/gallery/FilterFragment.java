@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ public class FilterFragment extends Fragment implements FragmentCallbacks {
     Bitmap originalBmp, editBmp;
     FilterAdapter adapter;
     String[] filters = { "No Effect", "Auto", "Cream", "Forest", "Cozy", "Blossom", "Evergreen", "Grayscale", "Sharpen", "Vintage"};
+    ImageButton btnClearFilter, btnCheckFilter;
 
     FilterFragment(Context context, Bitmap bitmap) {
         this.context = context;
@@ -31,6 +33,23 @@ public class FilterFragment extends Fragment implements FragmentCallbacks {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View filterFragment = inflater.inflate(R.layout.filter_image_fragment, container, false);
         filterRecView = (RecyclerView) filterFragment.findViewById(R.id.filterRecView);
+        btnClearFilter = (ImageButton) filterFragment.findViewById(R.id.btnClearFilter);
+        btnCheckFilter = (ImageButton) filterFragment.findViewById(R.id.btnCheckFilter);
+
+        btnClearFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", "CLEAR", editBmp);
+            }
+        });
+
+        btnCheckFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", "SAVE", adapter.getCurrentBmp());
+            }
+        });
+
         adapter = new FilterAdapter(filters, context, originalBmp, editBmp);
         filterRecView.setAdapter(adapter);
         filterRecView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));

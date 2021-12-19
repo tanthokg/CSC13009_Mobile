@@ -21,13 +21,17 @@ import java.util.ArrayList;
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
     String[] filters;
     Context context;
-    Bitmap orginalBmp, editBmp;
+    Bitmap orginalBmp, editBmp, currentBmp;
 
     FilterAdapter(String[] filters, Context context, Bitmap originalBmp, Bitmap editBmp) {
         this.filters = filters;
         this.context = context;
         this.orginalBmp = originalBmp;
         this.editBmp = editBmp;
+    }
+
+    public Bitmap getCurrentBmp() {
+        return currentBmp;
     }
 
     @NonNull
@@ -41,13 +45,13 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FilterUtility filterUtility = new FilterUtility();
         holder.filterName.setText(String.valueOf(filters[position]));
-        Bitmap newBitmap = filterUtility.setFilter(editBmp, holder.filterName.getText().toString());
-        Glide.with(context).asBitmap().load(filterUtility.setFilter(orginalBmp, holder.filterName.getText().toString())).into(holder.filterThumbnail);
+        Glide.with(context).asBitmap().load(filterUtility.setFilter(editBmp, holder.filterName.getText().toString())).into(holder.filterThumbnail);
 
         holder.filterThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", newBitmap);
+                currentBmp = filterUtility.setFilter(editBmp, holder.filterName.getText().toString());
+                ((EditImageActivity) context).onMsgFromFragToEdit("FILTER-FLAG", "UPDATE", currentBmp);
             }
         });
     }

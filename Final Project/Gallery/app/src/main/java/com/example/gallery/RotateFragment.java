@@ -22,42 +22,63 @@ import com.google.android.material.slider.Slider;
 public class RotateFragment extends Fragment implements FragmentCallbacks {
 
     Slider rotateSlider;
-    ImageButton rotateSquare, flipBtn;
+    ImageButton rotateSquare, flipBtn, btnClearRotate, btnCheckRotate;
     TextView valueRotate;
-    Bitmap originalBmp, editBmp;
+    Bitmap originalBmp, editBmp, currentBmp;
     Context context;
     static int degree;
-    int squareAngel = 90;
 
     public RotateFragment(Context context, Bitmap originalBmp) {
         this.context = context;
         this.originalBmp = originalBmp;
         this.editBmp = originalBmp.copy(originalBmp.getConfig(), true);
-        this.degree = 0;
+        this.currentBmp = editBmp;
+        degree = 0;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rotateFragment = inflater.inflate(R.layout.rotate_fragment, container, false);
-        rotateSlider = rotateFragment.findViewById(R.id.slider_rotate);
-        valueRotate = rotateFragment.findViewById(R.id.valueRotate);
-        rotateSquare = rotateFragment.findViewById(R.id.rotate_square);
-        flipBtn = rotateFragment.findViewById(R.id.flipBtn);
+        rotateSlider = (Slider) rotateFragment.findViewById(R.id.slider_rotate);
+        valueRotate = (TextView) rotateFragment.findViewById(R.id.valueRotate);
+        rotateSquare = (ImageButton) rotateFragment.findViewById(R.id.rotate_square);
+        flipBtn = (ImageButton) rotateFragment.findViewById(R.id.flipBtn);
+        btnClearRotate = (ImageButton) rotateFragment.findViewById(R.id.btnClearRotate);
+        btnCheckRotate = (ImageButton) rotateFragment.findViewById(R.id.btnCheckRotate);
 
         rotateSquare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editBmp = rotate(90 + degree);
-                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", editBmp);
+                currentBmp = rotate(90 + degree);
+                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", "UPDATE", currentBmp);
             }
         });
 
         flipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editBmp = flip();
-                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", editBmp);
+                currentBmp = flip();
+                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", "UPDATE", currentBmp);
+            }
+        });
+
+        btnClearRotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rotateSlider.setValue(0);
+                valueRotate.setText("0");
+                currentBmp = editBmp;
+                degree = 0;
+                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", "CLEAR", editBmp);
+            }
+        });
+
+        btnCheckRotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                degree = 0;
+                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", "SAVE", currentBmp);
             }
         });
 
@@ -75,8 +96,8 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                editBmp = rotate((int) slider.getValue());
-                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", editBmp);
+                currentBmp = rotate((int) slider.getValue());
+                ((EditImageActivity) context).onMsgFromFragToEdit("ROTATE-FLAG", "UPDATE", currentBmp);
             }
         });
 
@@ -85,27 +106,23 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
 
     @Override
     public void onMsgFromMainToFrag(Bitmap result) {
+        rotateSlider.setValue(0);
+        valueRotate.setText("0");
+        degree = 0;
         if (null == result) {
-            // TODO: not change display
-            rotateSlider.setValue(0);
-            valueRotate.setText("0");
             editBmp = originalBmp;
-            degree = 0;
+            currentBmp = originalBmp;
         }
         else {
             editBmp = result;
+            currentBmp = result;
         }
     }
 
     // TODO: 90 + 90 = 180 -> rotate 180 -> not changed
     private Bitmap rotate(int value) {
-        /*Matrix matrix = new Matrix();
-        matrix.postRotate(value - degree);
-        currentValue = value;
-        return Bitmap.createBitmap(editBmp, 0, 0, editBmp.getWidth(), editBmp.getHeight(), matrix, true);*/
-
-        int width = originalBmp.getWidth();
-        int height = originalBmp.getHeight();
+        int width = editBmp.getWidth();
+        int height = editBmp.getHeight();
 
         // Set width and height of rotated bitmap
         int newWidth = width, newHeight = height;
@@ -130,12 +147,12 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
         Matrix matrix = new Matrix();
         float px = rect.exactCenterX();
         float py = rect.exactCenterY();
-        matrix.postTranslate(-editBmp.getWidth()/2, -editBmp.getHeight()/2);
+        matrix.postTranslate((float) (-currentBmp.getWidth()/2), (float) (-currentBmp.getHeight()/2));
         matrix.postRotate(value - degree);
         // Save current angle
         degree = value;
         matrix.postTranslate(px, py);
-        canvas.drawBitmap(editBmp, matrix, new Paint( Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG ));
+        canvas.drawBitmap(currentBmp, matrix, new Paint( Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG ));
         matrix.reset();
 
         return rotatedBitmap;
@@ -145,6 +162,6 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
         Matrix matrix = new Matrix();
         matrix.postScale(-1, 1);
         degree = degree * -1;
-        return Bitmap.createBitmap(editBmp, 0, 0, editBmp.getWidth(), editBmp.getHeight(), matrix, true);
+        return Bitmap.createBitmap(currentBmp, 0, 0, currentBmp.getWidth(), currentBmp.getHeight(), matrix, true);
     }
 }
