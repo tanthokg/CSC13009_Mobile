@@ -187,7 +187,7 @@ public class LargeImage extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Picture Deleted", Toast.LENGTH_SHORT).show();
                     finish();
                 } else
-                    Toast.makeText(getApplicationContext(), "Error when delete image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Error: Cannot Delete On Device", Toast.LENGTH_SHORT).show();
             }
         });
         confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -235,7 +235,8 @@ public class LargeImage extends AppCompatActivity {
                     recoverFromTrashed(path);
                 }
                 if (R.id.deletePicture == id) {
-                    Toast.makeText(LargeImage.this, "Picture Deleted", Toast.LENGTH_SHORT).show();
+                    deleteOnDeviceByPath(path);
+                    // Toast.makeText(LargeImage.this, "Picture Deleted", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
@@ -284,12 +285,11 @@ public class LargeImage extends AppCompatActivity {
                 File from = new File(directory, currentFilename);
                 File to = new File(directory, newFilename);
                 AlbumUtility.getInstance(LargeImage.this).deletePictureInAlbum("Trashed", from.getAbsolutePath());
-
                 if (from.renameTo(to)) {
                     Toast.makeText(LargeImage.this, "Picture Recover", Toast.LENGTH_SHORT).show();
                     finish();
                 } else
-                    Toast.makeText(LargeImage.this, "Error: Cannot rename file", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LargeImage.this, "Error: Cannot Recover", Toast.LENGTH_SHORT).show();
             }
         });
         dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
