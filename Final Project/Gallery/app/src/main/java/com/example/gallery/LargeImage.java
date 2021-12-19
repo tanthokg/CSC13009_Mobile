@@ -278,10 +278,10 @@ public class LargeImage extends AppCompatActivity {
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-                String newFilename = currentFilename.replace(".trashed", "");
+                String oldFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+                String newFilename = oldFilename.replace(".trashed", "");
                 File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-                File from = new File(directory, currentFilename);
+                File from = new File(directory, oldFilename);
                 File to = new File(directory, newFilename);
                 AlbumUtility.getInstance(LargeImage.this).deletePictureInAlbum("Trashed", from.getAbsolutePath());
                 if (from.renameTo(to)) {

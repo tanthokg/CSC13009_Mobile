@@ -328,7 +328,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } else if (R.id.emptyTrashed == id) {
             deleteAllInTrashed();
         } else if (R.id.recoverAll == id) {
-            Toast.makeText(context, "Recovered All", Toast.LENGTH_SHORT).show();
+            recoverAllInTrashed();
         }
         else {
             String request = "";
@@ -465,7 +465,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Delete On Device
                 ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
-                Log.e("Paths", paths.toString());
+                // Log.e("Paths", paths.toString());
                 for (String path : paths) {
                     File file = new File(path);
                     if (!file.delete())
@@ -484,7 +484,36 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         });
         dialog.create().show();
+    }
 
+    private void recoverAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Recover all pictures from Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                for (String path: paths) {
+                    String oldFilename = path.substring(path.lastIndexOf('/') + 1);
+                    String newFilename = oldFilename.replace(".trashed", "");
+                    File directory = new File(path.substring(0, path.lastIndexOf('/')));
+                    File from = new File(directory, oldFilename);
+                    File to = new File(directory, newFilename);
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
+
+                    if (!from.renameTo(to))
+                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(context, "All Pictures Has Been Recovered", Toast.LENGTH_SHORT).show();
+                onResume();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
     }
 
     public void callScanIntent(Context context, String path) {
