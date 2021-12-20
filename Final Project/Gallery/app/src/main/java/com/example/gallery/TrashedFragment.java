@@ -19,10 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,15 +28,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-
 import androidx.core.content.FileProvider;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.internal.GsonBuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +41,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class PicturesFragment extends Fragment implements FragmentCallbacks{
+public class TrashedFragment extends Fragment {
     private RecyclerView picturesRecView;
     private File[] allFiles;
     private File[] pictureFiles;
@@ -57,23 +52,20 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private ActionMode actionMode;
     ArrayList<File> message_models = new ArrayList<>();
 
-    Context context;
-    String pathFolder;
-    String type;
-    private FloatingActionButton btnAdd, btnCamera, btnUrl;
-    private boolean addIsPressed;
-    private Animation menuFABShow, menuFABHide;
-    private final int CAMERA_CAPTURED = 100;
+    private final Context context;
+    private final String pathFolder;
+    private final String type;
+
     MainActivity main;
 
-    public static PicturesFragment getInstance(Context context, String pathFolder, String type) {
-        return new PicturesFragment(context, pathFolder, type);
+    public static TrashedFragment getInstance(Context context) {
+        return new TrashedFragment(context);
     }
 
-    PicturesFragment(Context context, String pathFolder, String type) {
+    TrashedFragment(Context context) {
         this.context = context;
-        this.pathFolder = pathFolder;
-        this.type = type;
+        this.pathFolder = "Trashed";
+        this.type = "ALBUM";
     }
 
     @Override
@@ -105,62 +97,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
 
-        btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
-        btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
-        btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
-
-        menuFABShow = AnimationUtils.loadAnimation(context, R.anim.menu_button_show);
-        menuFABHide = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_bottom_hide);
-
-        addIsPressed = false;
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAnimationButton(addIsPressed);
-                setVisibilityButton(addIsPressed);
-                addIsPressed = !addIsPressed;
-            }
-        });
-
-        picturesRecView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
-                    btnAdd.show();
-                }
-                if (RecyclerView.SCROLL_STATE_DRAGGING == newState) {
-                    if (addIsPressed) {
-                        setAnimationButton(addIsPressed);
-                        setVisibilityButton(addIsPressed);
-                        addIsPressed = !addIsPressed;
-                    }
-                    btnAdd.hide();
-                }
-            }
-        });
-
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openCamera();
-            }
-        });
-
-        btnUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                main.onMsgFromFragToMain("PICTURES-FLAG", "Open Url Dialog");
-            }
-        });
-
-        if (type.equals("FOLDER")) {
-            readPicturesInFolder();
-        }
-        if (type.equals("ALBUM")) {
-            readPicturesInAlbum();
-        }
+        readPicturesInAlbum();
         implementClickListener();
         return picturesFragment;
     }
@@ -178,9 +115,9 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             allFiles = pictureFile.listFiles();
             pictureFiles = pictureFile.listFiles(filter);
             paths = new ArrayList<String>();
-                for (File file : pictureFiles)
-                    paths.add(file.getAbsolutePath());
-                showAllPictures(paths);
+            for (File file : pictureFiles)
+                paths.add(file.getAbsolutePath());
+            showAllPictures(paths);
         }
         catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -212,87 +149,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
     }
 
-    void setAnimationButton(boolean isPressed) {
-        if (isPressed) {
-            btnAdd.setImageResource(R.drawable.ic_round_add_24);
-            btnCamera.startAnimation(menuFABHide);
-            btnUrl.startAnimation(menuFABHide);
-        }
-        else {
-            btnAdd.setImageResource(R.drawable.ic_round_close_24);
-            btnCamera.startAnimation(menuFABShow);
-            btnUrl.startAnimation(menuFABShow);
-        }
-    }
-
-    void setVisibilityButton(boolean isPressed) {
-        if (isPressed) {
-            btnCamera.setVisibility(FloatingActionButton.INVISIBLE);
-            btnUrl.setVisibility(FloatingActionButton.INVISIBLE);
-        }
-        else {
-            btnCamera.setVisibility(FloatingActionButton.VISIBLE);
-            btnUrl.setVisibility(FloatingActionButton.VISIBLE);
-        }
-    }
-
-    void openCamera() {
-        try {
-            Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            getActivity().startActivityFromFragment(this, takePhotoIntent, CAMERA_CAPTURED);
-        }
-        catch (Exception e) {
-            Log.e("Error to open camera! ", e.getMessage());
-        }
-    }
-
-    private File getFolderDirectory() {
-        File pictureDirectory = new File(pathFolder);
-        if (!pictureDirectory.exists())
-            pictureDirectory.mkdirs();
-        return pictureDirectory;
-    }
-
-    void saveImage(Bitmap bitmap) {
-        File pictureFile = new File(getFolderDirectory(), bitmap.toString() + ".jpg");
-        FileOutputStream output = null;
-        try {
-            output = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-            output.flush();
-            output.close();
-        } catch (Exception e) {
-            Log.e("Error to save image! ", e.getMessage());
-        }
-        readPicturesInFolder();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CAMERA_CAPTURED) {
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                saveImage(bitmap);
-            }
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         // Update pictures view when LargeImage activity is finished
-        if (type.equals("FOLDER")) {
-            readPicturesInFolder();
-        }
-        if (type.equals("ALBUM")) {
-            readPicturesInAlbum();
-        }
-    }
-
-    @Override
-    public void onMsgFromMainToFrag(Bitmap result) {
-        saveImage(result);
+        readPicturesInAlbum();
     }
 
     // Inflate button to change how many columns of images are displayed
@@ -300,8 +161,11 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
-        menu.getItem(1).setVisible(false);
-        menu.getItem(2).setVisible(false);
+
+        if (!pathFolder.equals("Trashed")) {
+            menu.getItem(1).setVisible(false);
+            menu.getItem(2).setVisible(false);
+        }
     }
 
     @Override
@@ -325,10 +189,13 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 spanCount = 4;
             }
             showAllPictures(paths);
-        } else {
-            String request = "";
-            if (type.equals("FOLDER")) request = "Turn back folder";
-            if (type.equals("ALBUM")) request = "Turn back album";
+        } else if (R.id.emptyTrashed == id) {
+            deleteAllInTrashed();
+        } else if (R.id.recoverAll == id) {
+            recoverAllInTrashed();
+        }
+        else {
+            String request = "Turn back album";
             main.onMsgFromFragToMain("PICTURES-FLAG", request);
         }
         return true;
@@ -452,6 +319,64 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
     }
 
+    private void deleteAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Empty All Trashed Pictures?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Delete On Device
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                // Log.e("Paths", paths.toString());
+                for (String path : paths) {
+                    File file = new File(path);
+                    if (!file.delete())
+                        Log.e("Delete files in trashed: ", "Cannot Delete");
+                    callScanIntent(context, path);
+                }
+                // Delete In Trashed
+                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
+                onResume();
+                Toast.makeText(context, "Emptied Trashed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+    }
+
+    private void recoverAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Recover all pictures from Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
+                for (String path: paths) {
+                    String oldFilename = path.substring(path.lastIndexOf('/') + 1);
+                    String newFilename = oldFilename.replace(".trashed", "");
+                    File directory = new File(path.substring(0, path.lastIndexOf('/')));
+                    File from = new File(directory, oldFilename);
+                    File to = new File(directory, newFilename);
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
+
+                    if (!from.renameTo(to))
+                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(context, "All Pictures Has Been Recovered", Toast.LENGTH_SHORT).show();
+                onResume();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+    }
 
     public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
