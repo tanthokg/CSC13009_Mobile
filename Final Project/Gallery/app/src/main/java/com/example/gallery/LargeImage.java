@@ -90,7 +90,7 @@ public class LargeImage extends AppCompatActivity {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     // If in folder, either move to trash or remove permanently
                     if (type.equals("FOLDER")) {
-                        if (moveToTrashMode())
+                        if (AppConfig.getInstance(LargeImage.this).getTrashMode())
                             moveToTrash(path);
                         else
                             deleteOnDeviceByPath(path);

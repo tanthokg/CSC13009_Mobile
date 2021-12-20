@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         picturesFragment = null;
         trashedFragment = null;
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
-        settingsFragment = SettingsFragment.getInstance(MainActivity.this);
+        settingsFragment = SettingsFragment.getInstance();
         if (!darkButtonIsPressed) {
             selectedFragment = foldersFragment;
         }

@@ -17,16 +17,14 @@ public class AppConfig {
 
     private AppConfig(Context context) {
         sharedPreferences = context.getSharedPreferences("app_config", Context.MODE_PRIVATE);
-        if (!getDarkMode() || !getTrashMode())
-            initConfig();
     }
 
-    private void initConfig() {
+   /* private void initConfig() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(DARK_MODE, false);
         editor.putBoolean(TRASH_MODE, false);
         editor.apply();
-    }
+    }*/
 
     public boolean getDarkMode() {
         return sharedPreferences.getBoolean(DARK_MODE, false);

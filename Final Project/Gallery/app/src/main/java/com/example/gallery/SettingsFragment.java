@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,16 +17,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsFragment extends Fragment {
-    private final Context context;
-    SwitchMaterial darkModeSwitch;
-    MainActivity main;
+    private SwitchMaterial darkModeSwitch, trashModeSwitch;
+    private MainActivity main;
 
-    public static SettingsFragment getInstance(Context context) {
-        return new SettingsFragment(context);
-    }
-
-    private SettingsFragment(Context context) {
-        this.context = context;
+    public static SettingsFragment getInstance() {
+        return new SettingsFragment();
     }
 
     @Override
@@ -50,21 +46,31 @@ public class SettingsFragment extends Fragment {
         View settingsFragment = inflater.inflate(R.layout.settings_fragment, container, false);
 
         darkModeSwitch = (SwitchMaterial) settingsFragment.findViewById(R.id.sDarkMode);
-        SharedPreferences preferencesContainer = context.getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        trashModeSwitch = (SwitchMaterial) settingsFragment.findViewById(R.id.sTrashMode);
+
+        SharedPreferences preferencesContainer = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
         boolean switchChecked = false;
         if (preferencesContainer != null && preferencesContainer.contains("switch mode"))
             switchChecked = preferencesContainer.getBoolean("switch mode", false);
         darkModeSwitch.setChecked(switchChecked);
+        trashModeSwitch.setChecked(AppConfig.getInstance(getContext()).getTrashMode());
 
         darkModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                AppConfig.getInstance(context).setDarkMode(isChecked);
-                /*SharedPreferences preferences = context.getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+                //AppConfig.getInstance(context).setDarkMode(isChecked);
+                SharedPreferences preferences = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("switch mode", isChecked);
-                editor.commit();*/
+                editor.commit();
                 main.onMsgFromFragToMain("SETTING-FLAG", String.valueOf(isChecked));
+            }
+        });
+        trashModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                AppConfig.getInstance(getContext()).setTrashMode(isChecked);
+                Toast.makeText(getContext(), "Trash Mode: " + (isChecked?"ON":"OFF"), Toast.LENGTH_SHORT).show();
             }
         });
 
