@@ -56,6 +56,7 @@ public class TrashedFragment extends Fragment {
     private final String pathFolder;
     private final String type;
 
+    private FloatingActionButton btnAdd;
     MainActivity main;
 
     public static TrashedFragment getInstance(Context context) {
@@ -95,6 +96,8 @@ public class TrashedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
 
+        btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
+        if (type.equals("ALBUM")) btnAdd.setVisibility(View.GONE);
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
 
         readPicturesInAlbum();

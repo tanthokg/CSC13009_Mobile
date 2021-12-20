@@ -108,6 +108,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
         btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
         btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
+        if (type.equals("ALBUM")) btnAdd.setVisibility(View.GONE);
 
         menuFABShow = AnimationUtils.loadAnimation(context, R.anim.menu_button_show);
         menuFABHide = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_bottom_hide);
@@ -451,7 +452,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             confirmDialog.show();
         }
     }
-
 
     public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
