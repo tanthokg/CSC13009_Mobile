@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         picturesFragment = null;
         trashedFragment = null;
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
-        settingsFragment = SettingsFragment.getInstance();
+        settingsFragment = SettingsFragment.getInstance(MainActivity.this);
         if (!darkButtonIsPressed) {
             selectedFragment = foldersFragment;
         }
@@ -162,9 +162,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 break;
             case "SETTING-FLAG":
                 try {
-                    boolean theme = Boolean.parseBoolean(request);
+                    boolean isDarkMode = Boolean.parseBoolean(request);
                     darkButtonIsPressed = true;
-                    changeTheme(theme);
+                    changeTheme(isDarkMode);
                 }
                 catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't set dark mode!", Toast.LENGTH_SHORT).show();
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private void changeTheme(boolean isChecked) {
         SharedPreferences preferences = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("current fragment", "setting fragment");
+        // editor.putString("current fragment", "setting fragment");
 
         if (isChecked) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

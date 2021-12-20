@@ -218,8 +218,8 @@ public class TrashedFragment extends Fragment {
             @Override
             public void onLongClick(View view, int position) {
                 //Select item on long click
-                main.bottomNavigationView.setVisibility(View.GONE);
-                onListItemSelect(position);
+                /*main.bottomNavigationView.setVisibility(View.GONE);
+                onListItemSelect(position);*/
             }
         }));
     }

@@ -1,9 +1,8 @@
 package com.example.gallery;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,20 +11,22 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsFragment extends Fragment {
-    public static SettingsFragment getInstance()
-    {
-        return new SettingsFragment();
+    private final Context context;
+    SwitchMaterial darkModeSwitch;
+    MainActivity main;
+
+    public static SettingsFragment getInstance(Context context) {
+        return new SettingsFragment(context);
     }
 
-    SwitchMaterial darkMode;
-    MainActivity main;
+    private SettingsFragment(Context context) {
+        this.context = context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,21 +49,21 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View settingsFragment = inflater.inflate(R.layout.settings_fragment, container, false);
 
-        darkMode = (SwitchMaterial) settingsFragment.findViewById(R.id.sDarkMode);
-        SharedPreferences preferencesContainer = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        darkModeSwitch = (SwitchMaterial) settingsFragment.findViewById(R.id.sDarkMode);
+        SharedPreferences preferencesContainer = context.getSharedPreferences("app theme", Activity.MODE_PRIVATE);
         boolean switchChecked = false;
         if (preferencesContainer != null && preferencesContainer.contains("switch mode"))
             switchChecked = preferencesContainer.getBoolean("switch mode", false);
-        darkMode.setChecked(switchChecked);
+        darkModeSwitch.setChecked(switchChecked);
 
-        darkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        darkModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences preferences = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+                AppConfig.getInstance(context).setDarkMode(isChecked);
+                /*SharedPreferences preferences = context.getSharedPreferences("app theme", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("switch mode", isChecked);
-                editor.commit();
-
+                editor.commit();*/
                 main.onMsgFromFragToMain("SETTING-FLAG", String.valueOf(isChecked));
             }
         });
