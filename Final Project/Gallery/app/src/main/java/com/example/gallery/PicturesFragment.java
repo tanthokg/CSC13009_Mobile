@@ -404,18 +404,28 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // Start deleting all image selected
         if (type.equals("FOLDER")) {
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-            confirmDialog.setMessage("Are you sure to delete these image?");
+            String message = AppConfig.getInstance(context).getTrashMode() ? "Are you sure to move these images to Trashed?"
+                    : "Are you sure to delete these images?";
+            confirmDialog.setMessage(message);
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    // Delete every item in the list we had before
-                    for (int index = 0; index < paths.size(); index++) {
-                        File file = new File(paths.get(index));
-                        file.delete();
-                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
-                        callScanIntent(context,paths.get(index));
+                    // Delete/Move to trash all items in the list
+                    if (AppConfig.getInstance(context).getTrashMode()) {
+                        for (String path: paths) {
+                            AlbumUtility.getInstance(context).addToTrashed(path);
+                            callScanIntent(context,path);
+                        }
+                        Toast.makeText(context,"Pictures Moved To Trashed",Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (String path: paths) {
+                            File file = new File(path);
+                            file.delete();
+                            AlbumUtility.getInstance(context).deletePictureInAllAlbums(path);
+                            callScanIntent(context,path);
+                        }
+                        Toast.makeText(context,"Pictures Deleted On Device",Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
                     onResume();
                 }
             });
@@ -424,8 +434,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 public void onClick(DialogInterface dialogInterface, int i) {
                 }
             });
-            confirmDialog.create();
-            confirmDialog.show();
+            confirmDialog.create().show();
         }
 
         if (type.equals("ALBUM")) {
@@ -511,7 +520,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite"));
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
@@ -542,7 +551,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 Toast.makeText(context, "CANCELED", Toast.LENGTH_SHORT).show();
             }
         });
-        addToAlbumDialog.create();
-        addToAlbumDialog.show();
+        addToAlbumDialog.create().show();
     }
 }

@@ -248,18 +248,11 @@ public class LargeImage extends AppCompatActivity {
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-                String newFilename = ".trashed" + currentFilename;
-                File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-                File from = new File(directory, currentFilename);
-                File to = new File(directory, newFilename);
-
-                AlbumUtility.getInstance(LargeImage.this).deletePictureInAllAlbums(from.getAbsolutePath());
-                if (from.renameTo(to)) {
-                    AlbumUtility.getInstance(LargeImage.this).addPictureToAlbum("Trashed", to.getAbsolutePath());
+                if (AlbumUtility.getInstance(LargeImage.this).addToTrashed(picturePath)) {
                     Toast.makeText(LargeImage.this, "Moved to Trashed", Toast.LENGTH_SHORT).show();
                     finish();
-                } else
+                }
+                else
                     Toast.makeText(LargeImage.this, "Error: Cannot rename file", Toast.LENGTH_SHORT).show();
             }
         });
@@ -278,13 +271,7 @@ public class LargeImage extends AppCompatActivity {
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String oldFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-                String newFilename = oldFilename.replace(".trashed", "");
-                File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-                File from = new File(directory, oldFilename);
-                File to = new File(directory, newFilename);
-                AlbumUtility.getInstance(LargeImage.this).deletePictureInAlbum("Trashed", from.getAbsolutePath());
-                if (from.renameTo(to)) {
+                if (AlbumUtility.getInstance(LargeImage.this).recoverFromTrashed(picturePath)) {
                     Toast.makeText(LargeImage.this, "Picture Recover", Toast.LENGTH_SHORT).show();
                     finish();
                 } else
@@ -488,7 +475,4 @@ public class LargeImage extends AppCompatActivity {
         return bm;
     }
 
-    private boolean moveToTrashMode() {
-        return true;
-    }
 }
