@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public PicturesFragment picturesFragment;
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
-    public TrashedFragment trashedFragment;
     Fragment selectedFragment;
     ActionBar actionBar;
     BottomNavigationView bottomNavigationView;
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
         foldersFragment = FoldersFragment.getInstance(MainActivity.this);
         picturesFragment = null;
-        trashedFragment = null;
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
         if (!darkButtonIsPressed) {
@@ -182,13 +180,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 break;
             case "ALBUM-FLAG":
                 try {
-                    if (request.equals("Trashed")) {
-                        trashedFragment = TrashedFragment.getInstance(albumsFragment.getContext());
-                        selectedFragment = trashedFragment;
-                    } else {
-                        picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
-                        selectedFragment = picturesFragment;
-                    }
+                    picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
+                    selectedFragment = picturesFragment;
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
