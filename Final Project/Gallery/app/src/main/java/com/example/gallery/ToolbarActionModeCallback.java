@@ -37,15 +37,11 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
         {
             // Delete Multiple Images
             ((MainActivity)context).picturesFragment.deleteMulti();
-            mode.finish();
-            ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
         else if (item.getItemId() == R.id.share)
         {
             // Share Multiple Images
             ((MainActivity)context).picturesFragment.shareMulti();
-            mode.finish();
-            ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
         else if (item.getItemId() == R.id.selectAll)
         {
@@ -55,11 +51,8 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
         else if (item.getItemId() == R.id.addToAlbum)
         {
             ((MainActivity)context).picturesFragment.addToAlbum();
-            mode.finish();
-            ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
         }
-
-        return false;
+        return true;
     }
 
     @Override

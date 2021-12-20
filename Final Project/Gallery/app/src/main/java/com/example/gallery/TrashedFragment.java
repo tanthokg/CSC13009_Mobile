@@ -226,7 +226,7 @@ public class TrashedFragment extends Fragment {
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode((ActionMode.Callback) new TrashToolbarCallback(context, picturesAdapter));
+                    startSupportActionMode(new TrashToolbarCallback(context, picturesAdapter));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
@@ -280,6 +280,7 @@ public class TrashedFragment extends Fragment {
                 AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
                 onResume();
                 Toast.makeText(context, "Picture(s) Deleted On Device", Toast.LENGTH_SHORT).show();
+                actionMode.finish();
             }
         });
         dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -317,6 +318,7 @@ public class TrashedFragment extends Fragment {
                         Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
                 }
                 Toast.makeText(context, "Picture(s) Recovered", Toast.LENGTH_SHORT).show();
+                actionMode.finish();
                 onResume();
             }
         });

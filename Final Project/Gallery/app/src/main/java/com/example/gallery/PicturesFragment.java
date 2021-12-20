@@ -53,7 +53,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     PicturesAdapter picturesAdapter;
     private ActionMode actionMode;
-    ArrayList<File> message_models = new ArrayList<>();
 
     Context context;
     String pathFolder;
@@ -424,6 +423,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                         }
                         Toast.makeText(context,"Pictures Deleted On Device",Toast.LENGTH_SHORT).show();
                     }
+                    actionMode.finish();
                     onResume();
                 }
             });
@@ -447,6 +447,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                     }
 
                     Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
+                    actionMode.finish();
                     onResume();
                 }
             });
@@ -493,6 +494,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        actionMode.finish();
     }
 
     // Select all pictures
