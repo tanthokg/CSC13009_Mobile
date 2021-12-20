@@ -13,25 +13,21 @@ import java.util.ArrayList;
 
 public class ToolbarActionModeCallback implements ActionMode.Callback{
     private final Context context;
-    private PicturesAdapter picturesAdapter;
-    private ArrayList<File> message_models;
+    private final PicturesAdapter picturesAdapter;
 
-    public ToolbarActionModeCallback(Context context, PicturesAdapter picturesAdapter, ArrayList<File> message_models) {
+    public ToolbarActionModeCallback(Context context, PicturesAdapter picturesAdapter) {
         this.context = context;
         this.picturesAdapter = picturesAdapter;
-        this.message_models = message_models;
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        mode.getMenuInflater().inflate(R.menu.toolbar_multiple_items, menu);//Inflate the menu over action mode
+        mode.getMenuInflater().inflate(R.menu.toolbar_multiple_items, menu);
         return true;
     }
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        menu.findItem(R.id.delete).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
+        menu.findItem(R.id.recoverMulti).setVisible(false);
         return true;
     }
 

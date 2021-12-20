@@ -22,7 +22,6 @@ import android.view.animation.AnimationUtils;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,7 +37,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.internal.GsonBuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -364,7 +362,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, message_models));
+                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
