@@ -62,7 +62,7 @@ public class LargeImage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme(checkTheme());
+        changeTheme(AppConfig.getInstance(this).getDarkMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.large_picture_container);
         bottomNavigationView = findViewById(R.id.bottomNavBar);
@@ -458,14 +458,6 @@ public class LargeImage extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             setTheme(R.style.Theme_Gallery);
         }
-    }
-
-    private boolean checkTheme() {
-        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        boolean theme = false;
-        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
-            theme = preferencesContainer.getBoolean("dark mode", false);
-        return theme;
     }
 
     public static Bitmap viewToBitmap(View view, int width, int height) {

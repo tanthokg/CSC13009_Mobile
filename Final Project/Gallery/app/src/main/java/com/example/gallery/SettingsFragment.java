@@ -48,21 +48,13 @@ public class SettingsFragment extends Fragment {
         darkModeSwitch = (SwitchMaterial) settingsFragment.findViewById(R.id.sDarkMode);
         trashModeSwitch = (SwitchMaterial) settingsFragment.findViewById(R.id.sTrashMode);
 
-        SharedPreferences preferencesContainer = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        boolean switchChecked = false;
-        if (preferencesContainer != null && preferencesContainer.contains("switch mode"))
-            switchChecked = preferencesContainer.getBoolean("switch mode", false);
-        darkModeSwitch.setChecked(switchChecked);
+        darkModeSwitch.setChecked(AppConfig.getInstance(getContext()).getDarkMode());
         trashModeSwitch.setChecked(AppConfig.getInstance(getContext()).getTrashMode());
 
         darkModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //AppConfig.getInstance(context).setDarkMode(isChecked);
-                SharedPreferences preferences = getActivity().getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("switch mode", isChecked);
-                editor.commit();
+                AppConfig.getInstance(getContext()).setDarkMode(isChecked);
                 main.onMsgFromFragToMain("SETTING-FLAG", String.valueOf(isChecked));
             }
         });
