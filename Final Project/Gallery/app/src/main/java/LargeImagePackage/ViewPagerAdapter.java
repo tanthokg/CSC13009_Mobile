@@ -93,7 +93,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public void setPrimaryItem (ViewGroup container, int position, Object object){
         super.setPrimaryItem(container, position, object);
-<<<<<<< HEAD
 
         imageView = ((View)object).findViewById(R.id.largePictureFull);
         Glide.with(context).asBitmap()
@@ -102,12 +101,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
 
-=======
-        imageView = ((View)object).findViewById(R.id.largePictureFull);
-        imageView.setImageDrawable(getDrawable(pictureFiles[position].getAbsolutePath()));
-    }
-
->>>>>>> f57d3e689e84281c905902f4733fc80001f4ea5e
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
     {

@@ -43,6 +43,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import Helper.SortHelper;
+
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView picturesRecView;
     private File[] allFiles;
@@ -53,6 +55,16 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     PicturesAdapter picturesAdapter;
     private ActionMode actionMode;
     ArrayList<File> message_models = new ArrayList<>();
+
+    //sort utility attribute
+
+    //default is increase sort type
+    private SortHelper.SortType sortType
+            = SortHelper.SortType.INCREASE;
+
+    //default is sort by name
+    private SortHelper.SortCriteria sortCriteria
+            = SortHelper.SortCriteria.NAME;
 
     Context context;
     String pathFolder;
@@ -93,6 +105,15 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         int getPositionStartName = pathFolder.lastIndexOf("/");
         String nameFolder = pathFolder.substring(getPositionStartName + 1);
         ((MainActivity) getActivity()).getSupportActionBar().setTitle(nameFolder);
+    }
+
+    private void reupdateFilePaths() {
+        paths.clear();
+        for (File file : pictureFiles)
+        {
+            paths.add(file.getAbsolutePath());
+        }
+        showAllPictures(paths);
     }
 
     @Nullable
@@ -174,9 +195,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             allFiles = pictureFile.listFiles();
             pictureFiles = pictureFile.listFiles(filter);
             paths = new ArrayList<String>();
-                for (File file : pictureFiles)
-                    paths.add(file.getAbsolutePath());
-                showAllPictures(paths);
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
         }
         catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -196,7 +216,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } else {
             paths = new ArrayList<String>();
         }
-        showAllPictures(paths);
+        SortHelper.sort(pictureFiles, sortCriteria, sortType);
+        reupdateFilePaths();
     }
 
     void showAllPictures(ArrayList<String> paths) {
@@ -313,7 +334,35 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
             showAllPictures(paths);
         }
-        else {
+        else if (item.getItemId() == R.id.btnSort) { /*do nothing*/}
+        else if (item.getItemId() == R.id.sort_by) {/*do nothing*/}
+        else if (item.getItemId() == R.id.sort_type){ /*do nothing*/}
+        else if (item.getItemId() == R.id.sort_by_name){
+            sortCriteria = SortHelper.SortCriteria.NAME;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_by_last_modified_date) {
+            sortCriteria = SortHelper.SortCriteria.LAST_MODIFIED_DATE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_by_size) {
+            sortCriteria = SortHelper.SortCriteria.FILE_SIZE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_type_increase)  {
+            sortType = SortHelper.SortType.INCREASE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_type_decrease) {
+            sortType = SortHelper.SortType.DECREASE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else{
             String request = "";
             if (type.equals("FOLDER")) request = "Turn back folder";
             if (type.equals("ALBUM")) request = "Turn back album";
@@ -374,6 +423,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
         intent.putExtra("itemType", type);
+        intent.putExtra("sortCriteria", sortCriteria);
+        intent.putExtra("sortType", sortType);
         // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }

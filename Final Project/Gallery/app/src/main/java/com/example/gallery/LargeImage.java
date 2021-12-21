@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 //import LargeImagePackage.EditPictureActivity;
+import Helper.SortHelper;
 import LargeImagePackage.ViewPagerAdapter;
 import LargeImagePackage.ZoomableViewPager;
 
@@ -61,6 +62,10 @@ public class LargeImage extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     boolean isFavorite;
 
+    SortHelper.SortCriteria sortCriteria;
+    SortHelper.SortType sortType;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         changeTheme(checkTheme());
@@ -74,6 +79,10 @@ public class LargeImage extends AppCompatActivity {
 
         // Get current position from intent
         currentPosition = intent.getIntExtra("itemPosition", -1);
+
+        // Get current sort condition
+        sortCriteria = (SortHelper.SortCriteria) intent.getSerializableExtra("sortCriteria");
+        sortType = (SortHelper.SortType) intent.getSerializableExtra("sortType");
 
         // Create a File object from the received path
         type = intent.getStringExtra("itemType");
@@ -98,6 +107,9 @@ public class LargeImage extends AppCompatActivity {
                 i++;
             }
         }
+
+        //Sort with current condition
+        SortHelper.sort(pictureFiles, sortCriteria, sortType);
 
         bottomNavigationView = findViewById(R.id.bottomNavBar);
         mViewPager = (ZoomableViewPager)findViewById(R.id.viewPagerMain);
