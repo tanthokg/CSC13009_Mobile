@@ -354,9 +354,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     //List item select method
     private void onListItemSelect(int position) {
-        //Toggle the selection
+        // Toggle the selection then check if any items are already selected or not
         picturesAdapter.toggleSelection(position);
-        //Check if any items are already selected or not
         boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
@@ -413,7 +412,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                             AlbumUtility.getInstance(context).addToTrashed(path);
                             callScanIntent(context,path);
                         }
-                        Toast.makeText(context,"Pictures Moved To Trashed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,"Picture(s) Moved To Trashed",Toast.LENGTH_SHORT).show();
                     } else {
                         for (String path: paths) {
                             File file = new File(path);
@@ -421,7 +420,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                             AlbumUtility.getInstance(context).deletePictureInAllAlbums(path);
                             callScanIntent(context,path);
                         }
-                        Toast.makeText(context,"Pictures Deleted On Device",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,"Picture(s) Deleted On Device",Toast.LENGTH_SHORT).show();
                     }
                     actionMode.finish();
                     onResume();
@@ -446,7 +445,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                         AlbumUtility.getInstance(context).deletePictureInAlbum(pathFolder, path);
                     }
 
-                    Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Pictures(s) removed from album", Toast.LENGTH_SHORT).show();
                     actionMode.finish();
                     onResume();
                 }
@@ -542,6 +541,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                         AlbumUtility.getInstance(context).addPictureToAlbum(s, path);
                     }
                 }
+                actionMode.finish();
                 Toast.makeText(context, "Added to selected albums", Toast.LENGTH_SHORT).show();
             }
         });
