@@ -22,7 +22,6 @@ import android.view.animation.AnimationUtils;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,7 +37,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.internal.GsonBuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,7 +53,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     PicturesAdapter picturesAdapter;
     private ActionMode actionMode;
-    ArrayList<File> message_models = new ArrayList<>();
 
     Context context;
     String pathFolder;
@@ -108,6 +105,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
         btnCamera = (FloatingActionButton) picturesFragment.findViewById(R.id.btnCamera_PicturesFragment);
         btnUrl = (FloatingActionButton) picturesFragment.findViewById(R.id.btnUrl_PicturesFragment);
+        if (type.equals("ALBUM")) btnAdd.setVisibility(View.GONE);
 
         menuFABShow = AnimationUtils.loadAnimation(context, R.anim.menu_button_show);
         menuFABHide = AnimationUtils.loadAnimation(picturesFragment.getContext(), R.anim.menu_bottom_hide);
@@ -356,14 +354,13 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     //List item select method
     private void onListItemSelect(int position) {
-        //Toggle the selection
+        // Toggle the selection then check if any items are already selected or not
         picturesAdapter.toggleSelection(position);
-        //Check if any items are already selected or not
         boolean hasCheckedItems = picturesAdapter.getSelectedCount() > 0;
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, message_models));
+                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
@@ -403,18 +400,29 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // Start deleting all image selected
         if (type.equals("FOLDER")) {
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-            confirmDialog.setMessage("Are you sure to delete these image?");
+            String message = AppConfig.getInstance(context).getTrashMode() ? "Are you sure to move these images to Trashed?"
+                    : "Are you sure to delete these images?";
+            confirmDialog.setMessage(message);
             confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    // Delete every item in the list we had before
-                    for (int index = 0; index < paths.size(); index++) {
-                        File file = new File(paths.get(index));
-                        file.delete();
-                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
-                        callScanIntent(context,paths.get(index));
+                    // Delete/Move to trash all items in the list
+                    if (AppConfig.getInstance(context).getTrashMode()) {
+                        for (String path: paths) {
+                            AlbumUtility.getInstance(context).addToTrashed(path);
+                            callScanIntent(context,path);
+                        }
+                        Toast.makeText(context,"Picture(s) Moved To Trashed",Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (String path: paths) {
+                            File file = new File(path);
+                            file.delete();
+                            AlbumUtility.getInstance(context).deletePictureInAllAlbums(path);
+                            callScanIntent(context,path);
+                        }
+                        Toast.makeText(context,"Picture(s) Deleted On Device",Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
+                    actionMode.finish();
                     onResume();
                 }
             });
@@ -423,8 +431,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 public void onClick(DialogInterface dialogInterface, int i) {
                 }
             });
-            confirmDialog.create();
-            confirmDialog.show();
+            confirmDialog.create().show();
         }
 
         if (type.equals("ALBUM")) {
@@ -438,7 +445,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                         AlbumUtility.getInstance(context).deletePictureInAlbum(pathFolder, path);
                     }
 
-                    Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Pictures(s) removed from album", Toast.LENGTH_SHORT).show();
+                    actionMode.finish();
                     onResume();
                 }
             });
@@ -451,7 +459,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             confirmDialog.show();
         }
     }
-
 
     public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
@@ -486,6 +493,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        actionMode.finish();
     }
 
     // Select all pictures
@@ -511,7 +519,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite"));
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
@@ -533,6 +541,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                         AlbumUtility.getInstance(context).addPictureToAlbum(s, path);
                     }
                 }
+                actionMode.finish();
                 Toast.makeText(context, "Added to selected albums", Toast.LENGTH_SHORT).show();
             }
         });
@@ -542,7 +551,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 Toast.makeText(context, "CANCELED", Toast.LENGTH_SHORT).show();
             }
         });
-        addToAlbumDialog.create();
-        addToAlbumDialog.show();
+        addToAlbumDialog.create().show();
     }
 }

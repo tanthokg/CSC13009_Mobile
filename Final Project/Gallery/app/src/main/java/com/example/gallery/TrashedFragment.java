@@ -1,14 +1,11 @@
 package com.example.gallery;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -17,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -50,12 +44,12 @@ public class TrashedFragment extends Fragment {
 
     PicturesAdapter picturesAdapter;
     private ActionMode actionMode;
-    ArrayList<File> message_models = new ArrayList<>();
 
     private final Context context;
     private final String pathFolder;
     private final String type;
 
+    private FloatingActionButton btnAdd;
     MainActivity main;
 
     public static TrashedFragment getInstance(Context context) {
@@ -95,6 +89,8 @@ public class TrashedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View picturesFragment = inflater.inflate(R.layout.pictures_fragment, container, false);
 
+        btnAdd = (FloatingActionButton) picturesFragment.findViewById(R.id.btnAdd_PicturesFragment);
+        if (type.equals("ALBUM")) btnAdd.setVisibility(View.GONE);
         picturesRecView = picturesFragment.findViewById(R.id.picturesRecView);
 
         readPicturesInAlbum();
@@ -230,7 +226,7 @@ public class TrashedFragment extends Fragment {
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, message_models));
+                    startSupportActionMode(new TrashToolbarCallback(context, picturesAdapter));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
@@ -257,7 +253,7 @@ public class TrashedFragment extends Fragment {
         context.startActivity(intent);
     }
 
-    // Delete multiple Images in PicturesFragments
+    // Delete multiple images in TrashedFragment
     public void deleteMulti() {
         //Get selected ids
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();
@@ -268,66 +264,80 @@ public class TrashedFragment extends Fragment {
             if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
 
         // Start deleting all image selected
-        if (type.equals("FOLDER")) {
-            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-            confirmDialog.setMessage("Are you sure to delete these image?");
-            confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    // Delete every item in the list we had before
-                    for (int index = 0; index < paths.size(); index++) {
-                        File file = new File(paths.get(index));
-                        file.delete();
-                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(paths.get(index));
-                        callScanIntent(context,paths.get(index));
-                    }
-                    Toast.makeText(context,"Images Deleted",Toast.LENGTH_SHORT).show();
-                    onResume();
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Delete selected pictures on device?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Delete On Device
+                for (String path : paths) {
+                    File file = new File(path);
+                    if (!file.delete())
+                        Log.e("Delete files in trashed: ", "Cannot Delete");
+                    callScanIntent(context, path);
                 }
-            });
-            confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                }
-            });
-            confirmDialog.create();
-            confirmDialog.show();
-        }
-
-        if (type.equals("ALBUM")) {
-            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-            confirmDialog.setMessage("Are you sure to remove these image from this album?");
-            confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    // Delete every item in the list we had before
-                    for (String path : paths) {
-                        AlbumUtility.getInstance(context).deletePictureInAlbum(pathFolder, path);
-                    }
-
-                    Toast.makeText(context, "Item(s) removed from album", Toast.LENGTH_SHORT).show();
-                    onResume();
-                }
-            });
-            confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                }
-            });
-            confirmDialog.create();
-            confirmDialog.show();
-        }
+                // Delete In Trashed
+                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
+                onResume();
+                Toast.makeText(context, "Picture(s) Deleted On Device", Toast.LENGTH_SHORT).show();
+                actionMode.finish();
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
     }
 
-    private void deleteAllInTrashed() {
+    public void recoverMulti() {
+        //Get selected ids
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> paths = new ArrayList<String>();
+
+        // Get paths of selected images. If current id is selected, add it to a list
+        for (int i = 0; i < selected.size(); ++i)
+            if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
+
+        // Start deleting all image selected
         AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        dialog.setMessage("Empty All Trashed Pictures?");
+        dialog.setMessage("Recover selected pictures?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                for (String path: paths) {
+                    String oldFilename = path.substring(path.lastIndexOf('/') + 1);
+                    String newFilename = oldFilename.replace(".trashed", "");
+                    File directory = new File(path.substring(0, path.lastIndexOf('/')));
+                    File from = new File(directory, oldFilename);
+                    File to = new File(directory, newFilename);
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
+
+                    if (!from.renameTo(to))
+                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(context, "Picture(s) Recovered", Toast.LENGTH_SHORT).show();
+                actionMode.finish();
+                onResume();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.create().show();
+    }
+
+    public void deleteAllInTrashed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        dialog.setMessage("Empty Trash?");
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Delete On Device
                 ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
-                // Log.e("Paths", paths.toString());
                 for (String path : paths) {
                     File file = new File(path);
                     if (!file.delete())
@@ -348,7 +358,7 @@ public class TrashedFragment extends Fragment {
         dialog.create().show();
     }
 
-    private void recoverAllInTrashed() {
+    public void recoverAllInTrashed() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
         dialog.setMessage("Recover all pictures from Trashed?");
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -382,92 +392,9 @@ public class TrashedFragment extends Fragment {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
     }
 
-    // Share multiple Images in PicturesFragments
-    public void shareMulti() {
-        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
-        ArrayList<String> path = new ArrayList<String>();
-
-        // Get paths of selected images
-        for (int index = (selected.size() - 1); index >= 0; index--) {
-            if (selected.valueAt(index)) {
-                //If current id is selected remove the item via key
-                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
-            }
-        }
-
-        try {
-            ArrayList<Uri> imageUris = new ArrayList<Uri>();
-            for (int i = 0; i < path.size(); i++) {
-                File file = new File(path.get(i));
-                Uri photoURI = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".provider", file);
-                imageUris.add(photoURI);
-            }
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
-            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            shareIntent.setType("image/jpg");
-            startActivity(Intent.createChooser(shareIntent, "Share images via"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     // Select all pictures
     public void selectAll() {
         picturesAdapter.selectAll();
         actionMode.setTitle(paths.size() + " selected");
-    }
-
-    // add multiple images to album
-    public void addToAlbum() {
-        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
-        ArrayList<String> paths = new ArrayList<String>();
-
-        // Get paths of selected images
-        for (int index = 0; index < selected.size() ; index++) {
-            if (selected.valueAt(index)) {
-                //If current id is selected remove the item via key
-                paths.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
-            }
-        }
-
-        View addToAlbumView = LayoutInflater.from(context).inflate(R.layout.choose_album_form, null);
-        ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
-
-        ArrayList<String> albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_list_item_multiple_choice, albums);
-        chooseAlbumListView.setAdapter(adapter);
-
-        AlertDialog.Builder addToAlbumDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        addToAlbumDialog.setView(addToAlbumView);
-        ArrayList<String> chosen = new ArrayList<String>();
-
-        addToAlbumDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                //String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                for (int index = 0; index < chooseAlbumListView.getCount(); ++index) {
-                    if (chooseAlbumListView.isItemChecked(index))
-                        chosen.add(chooseAlbumListView.getItemAtPosition(index).toString());
-                }
-                for (String s: chosen) {
-                    for (String path:paths) {
-                        AlbumUtility.getInstance(context).addPictureToAlbum(s, path);
-                    }
-                }
-                Toast.makeText(context, "Added to selected albums", Toast.LENGTH_SHORT).show();
-            }
-        });
-        addToAlbumDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(context, "CANCELED", Toast.LENGTH_SHORT).show();
-            }
-        });
-        addToAlbumDialog.create();
-        addToAlbumDialog.show();
     }
 }
