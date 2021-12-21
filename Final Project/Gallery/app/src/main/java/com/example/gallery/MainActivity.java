@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme(checkTheme());
+        changeTheme(AppConfig.getInstance(this).getDarkMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -160,9 +160,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 break;
             case "SETTING-FLAG":
                 try {
-                    boolean theme = Boolean.parseBoolean(request);
+                    boolean isDarkMode = Boolean.parseBoolean(request);
                     darkButtonIsPressed = true;
-                    changeTheme(theme);
+                    changeTheme(isDarkMode);
                 }
                 catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't set dark mode!", Toast.LENGTH_SHORT).show();
@@ -193,29 +193,16 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     private void changeTheme(boolean isChecked) {
-        SharedPreferences preferences = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("current fragment", "setting fragment");
-
         if (isChecked) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Gallery_);
-            editor.putBoolean("dark mode", true);
+            AppConfig.getInstance(this).setDarkMode(true);
         }
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             setTheme(R.style.Theme_Gallery);
-            editor.putBoolean("dark mode", false);
+            AppConfig.getInstance(this).setDarkMode(false);
         }
-
-        editor.commit();
     }
 
-    private boolean checkTheme() {
-        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
-        boolean theme = false;
-        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
-            theme = preferencesContainer.getBoolean("dark mode", false);
-        return theme;
-    }
 }

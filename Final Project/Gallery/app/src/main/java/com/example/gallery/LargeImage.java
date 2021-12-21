@@ -68,7 +68,7 @@ public class LargeImage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme(checkTheme());
+        changeTheme(AppConfig.getInstance(this).getDarkMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.large_picture_container);
 
@@ -83,6 +83,35 @@ public class LargeImage extends AppCompatActivity {
         // Get current sort condition
         sortCriteria = (SortHelper.SortCriteria) intent.getSerializableExtra("sortCriteria");
         sortType = (SortHelper.SortType) intent.getSerializableExtra("sortType");
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.editPicture) {
+                    // Open a new activity for editing pictures
+                    Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
+                    editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+                    editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(editIntent);
+                }
+
+                if (item.getItemId() == R.id.deletePicture) {
+                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                    // If in folder, either move to trash or remove permanently
+                    if (type.equals("FOLDER")) {
+                        if (AppConfig.getInstance(LargeImage.this).getTrashMode())
+                            moveToTrash(path);
+                        else
+                            deleteOnDeviceByPath(path);
+                    }
+                    // If in album, remove it from album
+                    if (type.equals("ALBUM"))
+                        deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
+                }
+
+                if (item.getItemId() == R.id.sharePicture) {
+                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+                    shareOnPath(path);
+                }
 
         // Create a File object from the received path
         type = intent.getStringExtra("itemType");
@@ -140,39 +169,6 @@ public class LargeImage extends AppCompatActivity {
         isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
         if (isFavorite)
             bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
-
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                if (item.getItemId() == R.id.editPicture) {
-                    Intent editIntent = new Intent(getApplicationContext(), EditImageActivity.class);
-                    editIntent.putExtra("pathToPictureFolder", pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
-                    editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(editIntent);
-
-                }
-
-                if (item.getItemId() == R.id.deletePicture) {
-                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    if (type.equals("FOLDER"))
-                        deleteOnDeviceByPath(path, bottomNavigationView);
-                    if (type.equals("ALBUM"))
-                        deleteOnAlbumByPath(intent.getStringExtra("pathToPicturesFolder"), path);
-                }
-
-                if (item.getItemId() == R.id.sharePicture) {
-                    String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
-                    shareOnPath(path);
-                }
-
-                if (item.getItemId() == R.id.addPictureToFav) {
-                    addPictureToFavorite();
-                }
-
-                return true;
-            }
-        });
     }
 
 
@@ -223,6 +219,70 @@ public class LargeImage extends AppCompatActivity {
             }
         });
         confirmDialog.create().show();
+    }
+
+    private void inflateTrashedMenu() {
+        String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        bottomNavigationView.getMenu().clear();
+        bottomNavigationView.inflateMenu(R.menu.trashed_bottom_menu);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (R.id.recoverPicture == id) {
+                    recoverFromTrashed(path);
+                } else if (R.id.deletePicture == id) {
+                    deleteOnDeviceByPath(path);
+                    // Toast.makeText(LargeImage.this, "Picture Deleted", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
+    }
+
+    private void moveToTrash(String picturePath) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setMessage("Are you sure to move this picture to Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).addToTrashed(picturePath)) {
+                    Toast.makeText(LargeImage.this, "Moved to Trashed", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else
+                    Toast.makeText(LargeImage.this, "Error: Cannot rename file", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.create().show();
+    }
+
+    private void recoverFromTrashed(String picturePath) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setMessage("Recover this picture from Trashed?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).recoverFromTrashed(picturePath)) {
+                    Toast.makeText(LargeImage.this, "Picture Recover", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else
+                    Toast.makeText(LargeImage.this, "Error: Cannot Recover", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.create().show();
     }
 
     private void shareOnPath(String path) {
@@ -411,6 +471,5 @@ public class LargeImage extends AppCompatActivity {
         view.draw(canvas);
         return bm;
     }
-
 
 }
