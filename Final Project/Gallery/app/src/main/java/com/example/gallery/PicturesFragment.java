@@ -298,8 +298,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
-        menu.getItem(1).setVisible(false);
         menu.getItem(2).setVisible(false);
+        menu.getItem(3).setVisible(false);
     }
 
     @Override
@@ -323,6 +323,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 spanCount = 4;
             }
             showAllPictures(paths);
+        }
+        else if (R.id.btnslideshow == id )
+        {
+            if(paths.size() == 0)
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShow.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         } else {
             String request = "";
             if (type.equals("FOLDER")) request = "Turn back folder";

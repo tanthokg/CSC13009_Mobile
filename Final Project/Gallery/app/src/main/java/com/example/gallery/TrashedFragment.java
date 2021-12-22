@@ -159,8 +159,8 @@ public class TrashedFragment extends Fragment {
         inflater.inflate(R.menu.picture_top_menu, menu);
 
         if (!pathFolder.equals("Trashed")) {
-            menu.getItem(1).setVisible(false);
             menu.getItem(2).setVisible(false);
+            menu.getItem(3).setVisible(false);
         }
     }
 
@@ -189,6 +189,20 @@ public class TrashedFragment extends Fragment {
             deleteAllInTrashed();
         } else if (R.id.recoverAll == id) {
             recoverAllInTrashed();
+        } else if (R.id.btnslideshow == id ) {
+            if(paths.size() == 0)
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShow.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         }
         else {
             String request = "Turn back album";
