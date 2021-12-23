@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="bottom">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:id="@+id/valueRotate"
-        android:text="0"
         android:layout_margin="10dp"
         android:gravity="center"
         android:layout_gravity="center"
@@ -19,7 +20,8 @@
     <com.google.android.material.slider.Slider
         android:id="@+id/slider_rotate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:layout_gravity="center"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
@@ -52,5 +54,28 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btnClearRotate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:src="@drawable/ic_round_close_24" />
+
+        <ImageButton
+            android:id="@+id/btnCheckRotate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:src="@drawable/ic_baseline_check_24"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
 
 </LinearLayout>
