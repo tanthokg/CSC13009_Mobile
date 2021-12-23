@@ -103,11 +103,17 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
 
         return rotateFragment;
     }
+    @Override
+    public  void onResume()
+    {
+        super.onResume();
+        rotateSlider.setValue(0);
+        valueRotate.setText("0");
+    }
 
     @Override
     public void onMsgFromMainToFrag(Bitmap result) {
-        rotateSlider.setValue(0);
-        valueRotate.setText("0");
+
         degree = 0;
         if (null == result) {
             editBmp = originalBmp;

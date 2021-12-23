@@ -40,6 +40,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
     Fragment currentFragment;
     RotateFragment rotateFragment;
     FilterFragment filterFragment;
+    RoundedCornerFragment roundedCornerFragment;
     Bitmap currentBitmap;
     String pathPictureFile;
 
@@ -58,6 +59,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         currentBitmap = BitmapFactory.decodeFile(pathPictureFile);
         filterFragment = new FilterFragment(this, currentBitmap);
         rotateFragment = new RotateFragment(this, currentBitmap);
+        roundedCornerFragment = new RoundedCornerFragment(this,currentBitmap);
 
         bottomNavEdit = (BottomNavigationView) findViewById(R.id.bottomNavEdit);
         bottomNavEdit.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -66,6 +68,9 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
                 int id = item.getItemId();
                 if (R.id.nav_rotate == id) {
                     currentFragment = rotateFragment;
+                }
+                if (R.id.nav_rounded_corner == id) {
+                    currentFragment = roundedCornerFragment;
                 }
                 if (R.id.nav_filter == id) {
                     currentFragment = filterFragment;
@@ -129,7 +134,9 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             bottomNavEdit.setVisibility(View.VISIBLE);
             getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
             currentBitmap = bitmap;
+
             rotateFragment.onMsgFromMainToFrag(currentBitmap);
+            roundedCornerFragment.onMsgFromMainToFrag(currentBitmap);
             filterFragment.onMsgFromMainToFrag(currentBitmap);
         }
     }
@@ -147,6 +154,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         if (R.id.menuReset == id) {
             Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
             rotateFragment.onMsgFromMainToFrag(null);
+            roundedCornerFragment.onMsgFromMainToFrag(null);
             filterFragment.onMsgFromMainToFrag(null);
             return true;
         }

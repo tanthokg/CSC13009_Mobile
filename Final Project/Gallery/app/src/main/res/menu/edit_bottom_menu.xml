@@ -6,6 +6,10 @@
         android:icon="@drawable/ic_outline_rotate_left_24"
         android:title="Rotate"/>
     <item
+        android:id="@+id/nav_rounded_corner"
+        android:icon="@drawable/ic_baseline_rounded_corner_24"
+        android:title="Rounded Corner"/>
+    <item
         android:id="@+id/nav_filter"
         android:icon="@drawable/ic_outline_filter_hdr_24"
         android:title="Filter"/>

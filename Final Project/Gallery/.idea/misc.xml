@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/custom_preview.xml" value="0.1" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/drawable/add_icon.xml" value="0.3828125" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/drawable/album_icon.xml" value="0.3828125" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/drawable/home_icon.xml" value="0.3828125" />
@@ -102,6 +103,10 @@
         <entry key="..\:/Programming/Java_Mobile/PTPMDD/Gallery/app/src/main/res/layout/pictures_fragment.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Lenovo/Documents/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/pictures_item.xml" value="0.1" />
         <entry key="..\:/Users/Lenovo/Documents/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/toolbar_multiple_items.xml" value="0.12708333333333333" />
+        <entry key="app/src/main/res/drawable/ic_baseline_rounded_corner_24.xml" value="0.17239583333333333" />
+        <entry key="app/src/main/res/layout/rotate_fragment.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/rounded_corner_fragment.xml" value="0.12239583333333333" />
+        <entry key="app/src/main/res/menu/edit_bottom_menu.xml" value="0.12239583333333333" />
       </map>
     </option>
   </component>

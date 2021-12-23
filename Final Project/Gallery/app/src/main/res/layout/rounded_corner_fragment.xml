@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/valueRoundedCorner"
+        android:text="0"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_rounded_corner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:valueFrom="0.0"
+        android:valueTo="180.0"
+        android:value="0"
+        android:stepSize="1.0"
+        app:thumbColor="?attr/colorOnSecondary"
+        app:trackColor="@color/purple_500"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btnClearRounded"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:src="@drawable/ic_round_close_24" />
+
+        <ImageButton
+            android:id="@+id/btnCheckRounded"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:src="@drawable/ic_baseline_check_24"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
