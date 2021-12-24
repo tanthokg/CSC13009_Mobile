@@ -45,7 +45,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        changeTheme(AppConfig.getInstance(this).getDarkMode());
+        changeTheme(checkTheme());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_image_activity);
 
@@ -92,6 +92,14 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             setTheme(R.style.Theme_Gallery);
         }
+    }
+
+    private boolean checkTheme() {
+        SharedPreferences preferencesContainer = getSharedPreferences("app theme", Activity.MODE_PRIVATE);
+        boolean theme = false;
+        if (preferencesContainer != null && preferencesContainer.contains("dark mode"))
+            theme = preferencesContainer.getBoolean("dark mode", false);
+        return theme;
     }
 
     @Override

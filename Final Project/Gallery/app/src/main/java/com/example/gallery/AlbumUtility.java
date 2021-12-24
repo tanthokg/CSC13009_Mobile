@@ -2,12 +2,10 @@ package com.example.gallery;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -78,10 +76,11 @@ public class AlbumUtility {
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Favorite");
-        albums.add("Trashed");
-        albums.add("Animals");
+        albums.add("Cats");
+        albums.add("Dogs");
         albums.add("Food");
         albums.add("Holiday");
+        albums.add("Parties");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_KEY, gson.toJson(albums));
@@ -91,10 +90,11 @@ public class AlbumUtility {
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
         albumData.add(new AlbumData("Favorite", new ArrayList<String>()));
-        albumData.add(new AlbumData("Trashed", new ArrayList<String>()));
-        albumData.add(new AlbumData("Animals", new ArrayList<String>()));
+        albumData.add(new AlbumData("Cats", new ArrayList<String>()));
+        albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
         albumData.add(new AlbumData("Food", new ArrayList<String>()));
         albumData.add(new AlbumData("Holiday", new ArrayList<String>()));
+        albumData.add(new AlbumData("Parties", new ArrayList<String>()));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(albumData));
@@ -129,34 +129,6 @@ public class AlbumUtility {
         return false;
     }
 
-    public boolean addToTrashed(String picturePath) {
-        String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-        String newFilename = ".trashed" + currentFilename;
-
-        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-        File from = new File(directory, currentFilename);
-        File to = new File(directory, newFilename);
-
-        deletePictureInAllAlbums(from.getAbsolutePath());
-        if (from.renameTo(to)) {
-            addPictureToAlbum("Trashed", to.getAbsolutePath());
-            return true;
-        }
-        return false;
-    }
-
-    public boolean recoverFromTrashed(String picturePath) {
-        String oldFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
-        String newFilename = oldFilename.replace(".trashed", "");
-
-        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
-        File from = new File(directory, oldFilename);
-        File to = new File(directory, newFilename);
-        deletePictureInAlbum("Trashed", from.getAbsolutePath());
-
-        return from.renameTo(to);
-    }
-
     public boolean deleteAlbum(String albumName) {
         ArrayList<String> albums = getAllAlbums();
         ArrayList<AlbumData> data = getAllAlbumData();
@@ -189,22 +161,6 @@ public class AlbumUtility {
             data.add(albumData);
 
             // Apply changes to shared preferences
-            setAllAlbumData(data);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean deleteAllPicturesInAlbum(String albumName) {
-        // Get AlbumData list and the AlbumData matching the name
-        ArrayList<AlbumData> data = getAllAlbumData();
-        AlbumData albumData = findDataByAlbumName(albumName);
-        if (data != null && albumData != null) {
-            // Empty the picturePaths
-            albumData.setPicturePaths(new ArrayList<String>());
-            // Add it to the data
-            data.removeIf(d -> d.getAlbumName().equals(albumName));
-            data.add(albumData);
             setAllAlbumData(data);
             return true;
         }

@@ -24,7 +24,7 @@ import java.util.Locale;
 
 public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHolder> {
     private final Context context;
-    private SparseBooleanArray selectedItemsIds;
+    private SparseBooleanArray mSelectedItemsIds;
 
     private ArrayList<String> paths;
     private final int spanCount;
@@ -32,7 +32,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
     public PicturesAdapter(Context context, ArrayList<String> paths, int spanCount) {
         this.context = context;
         this.paths = paths;
-        selectedItemsIds = new SparseBooleanArray();
+        mSelectedItemsIds = new SparseBooleanArray();
         this.spanCount = spanCount;
     }
 
@@ -80,9 +80,9 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
         }
 
 
-        if(selectedItemsIds.get(position))
+        if(mSelectedItemsIds.get(position))
         {
-            holder.itemView.setBackgroundColor(0x9934B5E4);
+            holder.itemView.setBackgroundColor( 0x9934B5E4);
             holder.checkbox.setVisibility(View.VISIBLE);
             holder.checkbox.setChecked(true);
         }
@@ -119,39 +119,27 @@ public class PicturesAdapter extends RecyclerView.Adapter<PicturesAdapter.ViewHo
     }
 
     public void toggleSelection(int position) {
-        if (selectedItemsIds.get(position)) {
-            selectedItemsIds.delete(position);
+        if (mSelectedItemsIds.get(position)) {
+            mSelectedItemsIds.delete(position);
         } else {
-            selectedItemsIds.put(position, true);
+            mSelectedItemsIds.put(position, true);
         }
         notifyItemChanged(position);
     }
 
     //Remove selected selections
     public void removeSelection() {
-        selectedItemsIds.clear();
+        mSelectedItemsIds.clear();
         notifyDataSetChanged();
     }
 
     //Get total selected count
     public int getSelectedCount() {
-        return selectedItemsIds.size();
+        return mSelectedItemsIds.size();
     }
 
     //Return all selected ids
     public SparseBooleanArray getSelectedIds() {
-        return selectedItemsIds;
-    }
-
-    //Select all
-    public void selectAll() {
-        selectedItemsIds.clear();
-
-        for (int i = 0; i < paths.size(); i++) {
-            selectedItemsIds.put(i, true);
-            notifyItemChanged(i);
-        }
-        //mSelectedItemsIds.size(paths.size());
-        notifyDataSetChanged();
+        return mSelectedItemsIds;
     }
 }
