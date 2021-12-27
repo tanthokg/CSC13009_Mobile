@@ -2,15 +2,19 @@ package com.example.gallery;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class AlbumUtility {
     private SharedPreferences sharedPreferences;
@@ -76,11 +80,11 @@ public class AlbumUtility {
     private void initAlbums() {
         ArrayList<String> albums = new ArrayList<String>();
         albums.add("Favorite");
-        albums.add("Cats");
-        albums.add("Dogs");
+        albums.add("Trashed");
+        albums.add("Hide");
+        albums.add("Animals");
         albums.add("Food");
         albums.add("Holiday");
-        albums.add("Parties");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_KEY, gson.toJson(albums));
@@ -90,11 +94,11 @@ public class AlbumUtility {
     private void initAlbumData() {
         ArrayList<AlbumData> albumData = new ArrayList<AlbumData>();
         albumData.add(new AlbumData("Favorite", new ArrayList<String>()));
-        albumData.add(new AlbumData("Cats", new ArrayList<String>()));
-        albumData.add(new AlbumData("Dogs", new ArrayList<String>()));
+        albumData.add(new AlbumData("Trashed", new ArrayList<String>()));
+        albumData.add(new AlbumData("Hide", new ArrayList<String>()));
+        albumData.add(new AlbumData("Animals", new ArrayList<String>()));
         albumData.add(new AlbumData("Food", new ArrayList<String>()));
         albumData.add(new AlbumData("Holiday", new ArrayList<String>()));
-        albumData.add(new AlbumData("Parties", new ArrayList<String>()));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString(ALL_ALBUM_DATA_KEY, gson.toJson(albumData));
@@ -119,7 +123,15 @@ public class AlbumUtility {
             AlbumData selectedAlbum = findDataByAlbumName(albumName);
             if (selectedAlbum != null) {
                 if (selectedAlbum.addNewPath(picturePath)){
-                    data.removeIf(d -> d.getAlbumName().equals(selectedAlbum.getAlbumName()));
+                    //TODO:
+                    //data.removeIf(d -> d.getAlbumName().equals(selectedAlbum.getAlbumName()));
+                    Iterator<AlbumData> iter = data.iterator();
+                    while (iter.hasNext()) {
+                        AlbumData adata = iter.next();
+                        if (adata.getAlbumName().equals(selectedAlbum.getAlbumName())) {
+                           iter.remove();
+                        }
+                    }
                     data.add(selectedAlbum);
                 }
             }
@@ -127,6 +139,34 @@ public class AlbumUtility {
             return true;
         }
         return false;
+    }
+
+    public boolean addToTrashed(String picturePath) {
+        String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+        String newFilename = ".trashed" + currentFilename;
+
+        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
+        File from = new File(directory, currentFilename);
+        File to = new File(directory, newFilename);
+
+        deletePictureInAllAlbums(from.getAbsolutePath());
+        if (from.renameTo(to)) {
+            addPictureToAlbum("Trashed", to.getAbsolutePath());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean recoverFromTrashed(String picturePath) {
+        String oldFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+        String newFilename = oldFilename.replace(".trashed", "");
+
+        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
+        File from = new File(directory, oldFilename);
+        File to = new File(directory, newFilename);
+        deletePictureInAlbum("Trashed", from.getAbsolutePath());
+
+        return from.renameTo(to);
     }
 
     public boolean deleteAlbum(String albumName) {
@@ -150,13 +190,31 @@ public class AlbumUtility {
         // Get AlbumData object matching the name
         AlbumData albumData = findDataByAlbumName(albumName);
         if (albumData != null) {
+
+
             // Remove required path in AlbumData object
             ArrayList<String> paths = albumData.getPicturePaths();
-            paths.removeIf(s -> s.equals(picturePath));
+            //TODO:
+            //paths.removeIf(s -> s.equals(picturePath));
+            Iterator<String> iterPath = paths.iterator();
+            while (iterPath.hasNext()) {
+                String path = iterPath.next();
+                if (path.equals(picturePath)) {
+                    iterPath.remove();
+                }
+            }
             // Set new paths for AlbumData object
             albumData.setPicturePaths(paths);
             // Remove that AlbumData in total album data
-            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            //TODO:
+            //data.removeIf(d -> d.getAlbumName().equals(albumName));
+            Iterator<AlbumData> iterData = data.iterator();
+            while (iterData.hasNext()) {
+                AlbumData adata = iterData.next();
+                if (adata.getAlbumName().equals(albumName)) {
+                    iterData.remove();
+                }
+            }
             // Add modified AlbumData object to data
             data.add(albumData);
 
@@ -167,12 +225,36 @@ public class AlbumUtility {
         return false;
     }
 
+    public boolean deleteAllPicturesInAlbum(String albumName) {
+        // Get AlbumData list and the AlbumData matching the name
+        ArrayList<AlbumData> data = getAllAlbumData();
+        AlbumData albumData = findDataByAlbumName(albumName);
+        if (data != null && albumData != null) {
+            // Empty the picturePaths
+            albumData.setPicturePaths(new ArrayList<String>());
+            // Add it to the data
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            data.add(albumData);
+            setAllAlbumData(data);
+            return true;
+        }
+        return false;
+    }
+
     public boolean deletePictureInAllAlbums(String picturePath) {
         ArrayList<AlbumData> data = getAllAlbumData();
         if (data != null) {
             for(AlbumData d : data) {
+                //TODO:
                 ArrayList<String> paths = d.getPicturePaths();
-                paths.removeIf(path -> path.equals(picturePath));
+                Iterator<String> iter = paths.iterator();
+                while (iter.hasNext()) {
+                    String path = iter.next();
+                    if (path.equals(picturePath)) {
+                       paths.remove(path);
+                    }
+                }
+                //paths.removeIf(path -> path.equals(picturePath));
                 d.setPicturePaths(paths);
             }
             setAllAlbumData(data);
@@ -197,6 +279,63 @@ public class AlbumUtility {
             for(String path: paths)
                 if (path.equals(picturePath))
                     return true;
+        }
+        return false;
+    }
+
+    //Hide the picutre which has picturePath
+    public boolean hide(String picturePath) {
+        String currentFilename = picturePath.substring(picturePath.lastIndexOf('/') + 1);
+        String newFilename = ".hide" + currentFilename;
+
+        File directory = new File(picturePath.substring(0, picturePath.lastIndexOf('/')));
+        File from = new File(directory, currentFilename);
+        File to = new File(directory, newFilename);
+
+        deletePictureInAllAlbums(from.getAbsolutePath());
+        if (from.renameTo(to)) {
+            addPictureToAlbum("Hide", to.getAbsolutePath());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hidePictureInAlbum(String albumName, String picturePath) {
+        // Get all album data
+        ArrayList<AlbumData> data = getAllAlbumData();
+        // Get AlbumData object matching the name
+        AlbumData albumData = findDataByAlbumName(albumName);
+        if (albumData != null) {
+
+            // Remove required path in AlbumData object
+            ArrayList<String> paths = albumData.getPicturePaths();
+            //TODO:
+            //paths.removeIf(s -> s.equals(picturePath));
+            Iterator<String> iterPath = paths.iterator();
+            while (iterPath.hasNext()) {
+                String path = iterPath.next();
+                if (path.equals(picturePath)) {
+                    iterPath.remove();
+                }
+            }
+            // Set new paths for AlbumData object
+            albumData.setPicturePaths(paths);
+            // Remove that AlbumData in total album data
+            //TODO:
+            //data.removeIf(d -> d.getAlbumName().equals(albumName));
+            Iterator<AlbumData> iterData = data.iterator();
+            while (iterData.hasNext()) {
+                AlbumData adata = iterData.next();
+                if (adata.getAlbumName().equals(albumName)) {
+                    iterData.remove();
+                }
+            }
+            // Add modified AlbumData object to data
+            data.add(albumData);
+
+            // Apply changes to shared preferences
+            setAllAlbumData(data);
+            return true;
         }
         return false;
     }

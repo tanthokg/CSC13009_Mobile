@@ -8,14 +8,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.view.ActionMode;
 
-import java.io.File;
-import java.util.ArrayList;
-
-public class ToolbarActionModeCallback implements ActionMode.Callback{
+public class HideToolbarCallback implements ActionMode.Callback {
     private final Context context;
     private final PicturesAdapter picturesAdapter;
 
-    public ToolbarActionModeCallback(Context context, PicturesAdapter picturesAdapter) {
+    public HideToolbarCallback(Context context, PicturesAdapter picturesAdapter) {
         this.context = context;
         this.picturesAdapter = picturesAdapter;
     }
@@ -25,44 +22,43 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
         mode.getMenuInflater().inflate(R.menu.toolbar_multiple_items, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         menu.findItem(R.id.recoverMulti).setVisible(false);
+        menu.findItem(R.id.addToAlbum).setVisible(false);
         return true;
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        int id = item.getItemId();
         if(item.getItemId() == R.id.delete)
         {
             // Delete Multiple Images
-            ((MainActivity)context).picturesFragment.deleteMulti();
+            ((MainActivity)context).hideFragment.deleteMulti();
         }
         else if (item.getItemId() == R.id.hide) {
             //TODO:
-            ((MainActivity)context).picturesFragment.hideMulti();
+            ((MainActivity)context).hideFragment.unhideMulti();
         }
         else if (item.getItemId() == R.id.share)
         {
             // Share Multiple Images
-            ((MainActivity)context).picturesFragment.shareMulti();
+            ((MainActivity)context).hideFragment.shareMulti();
         }
         else if (item.getItemId() == R.id.selectAll)
         {
-            Toast.makeText(context.getApplicationContext(), "Select all", Toast.LENGTH_SHORT).show();
-            ((MainActivity)context).picturesFragment.selectAll();
+            ((MainActivity)context).hideFragment.selectAll();
         }
-        else if (item.getItemId() == R.id.addToAlbum)
-        {
-            ((MainActivity)context).picturesFragment.addToAlbum();
-        }
+
         return true;
     }
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         picturesAdapter.removeSelection();
-        ((MainActivity)context).picturesFragment.setNullToActionMode();
+        ((MainActivity)context).hideFragment.setNullToActionMode();
         ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
     }
 }

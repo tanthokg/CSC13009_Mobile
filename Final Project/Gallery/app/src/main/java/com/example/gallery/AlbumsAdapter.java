@@ -58,7 +58,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String currentAlbum = albums.get(position);
-        int albumItemCount = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum).getPicturePaths().size();
+        AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum);
+        int albumItemCount = 0;
+
+        if (null != data)
+        {
+            albumItemCount = data.getPicturePaths().size();
+        }
+        //int albumItemCount = AlbumUtility.getInstance(context).findDataByAlbumName(currentAlbum).getPicturePaths().size();
         holder.albumName.setText(currentAlbum);
         holder.albumItemCount.setText(String.format(Locale.ROOT, "%d item(s)",albumItemCount));
     }
