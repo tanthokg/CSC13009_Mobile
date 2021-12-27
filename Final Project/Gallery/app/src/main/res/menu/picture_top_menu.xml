@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_sharp_view_module_24"
         app:showAsAction="ifRoom"
         android:title="View as"/>
+    <item android:id="@+id/btnSlideshow"
+        android:icon="@drawable/ic_baseline_slideshow_24"
+        app:showAsAction="always"
+        android:title="Slide Show"/>
     <item android:id="@+id/emptyTrashed"
         android:title="Empty Trashed"
         app:showAsAction="never"/>

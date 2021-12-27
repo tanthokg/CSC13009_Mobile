@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -14,8 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,9 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class TrashedFragment extends Fragment {
     private RecyclerView picturesRecView;
@@ -98,28 +92,6 @@ public class TrashedFragment extends Fragment {
         return picturesFragment;
     }
 
-    void readPicturesInFolder() {
-        try {
-            File pictureFile = new File(pathFolder);
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File file, String s) {
-                    return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
-                            (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
-                }
-            };
-            allFiles = pictureFile.listFiles();
-            pictureFiles = pictureFile.listFiles(filter);
-            paths = new ArrayList<String>();
-            for (File file : pictureFiles)
-                paths.add(file.getAbsolutePath());
-            showAllPictures(paths);
-        }
-        catch (Exception e) {
-            Log.e("Error", e.getMessage());
-        }
-    }
-
     void readPicturesInAlbum() {
         AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
         if (null != data) {
@@ -137,9 +109,6 @@ public class TrashedFragment extends Fragment {
     }
 
     void showAllPictures(ArrayList<String> paths) {
-        // Send a string path to the adapter. The adapter will create everything from the provided path
-        // This implementation is not permanent
-        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
         picturesAdapter = new PicturesAdapter(context, paths, spanCount);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
@@ -148,7 +117,6 @@ public class TrashedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Update pictures view when LargeImage activity is finished
         readPicturesInAlbum();
     }
 
@@ -159,9 +127,11 @@ public class TrashedFragment extends Fragment {
         inflater.inflate(R.menu.picture_top_menu, menu);
 
         if (!pathFolder.equals("Trashed")) {
-            menu.getItem(1).setVisible(false);
             menu.getItem(2).setVisible(false);
+            menu.getItem(3).setVisible(false);
         }
+        if (pathFolder.equals("Trashed"))
+            menu.getItem(1).setVisible(false);
     }
 
     @Override
@@ -189,6 +159,20 @@ public class TrashedFragment extends Fragment {
             deleteAllInTrashed();
         } else if (R.id.recoverAll == id) {
             recoverAllInTrashed();
+        } else if (R.id.btnSlideshow == id ) {
+            if(paths.size() == 0)
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShow.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         }
         else {
             String request = "Turn back album";
