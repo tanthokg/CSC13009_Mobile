@@ -146,13 +146,6 @@ public class TrashedFragment extends Fragment {
     }
 
     void showAllPictures(ArrayList<String> paths) {
-        // Send a string path to the adapter. The adapter will create everything from the provided path
-        // This implementation is not permanent
-        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
-        showAllPictures(paths);
-    }
-
-    void showAllPictures(ArrayList<String> paths) {
         picturesAdapter = new PicturesAdapter(context, paths, spanCount);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));

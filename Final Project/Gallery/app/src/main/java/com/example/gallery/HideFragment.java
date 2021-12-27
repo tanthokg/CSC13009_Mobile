@@ -172,6 +172,7 @@ public class HideFragment extends Fragment {
         //Remove "Empty Trashed" option and "Recover All" option
         menu.getItem(1).setVisible(false);
         menu.getItem(2).setVisible(false);
+        menu.getItem(3).setVisible(false);
     }
 
     @Override

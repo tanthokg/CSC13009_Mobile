@@ -53,14 +53,14 @@ public class AlbumsFragment extends Fragment {
         albums = AlbumUtility.getInstance(context).getAllAlbums();
 
         ///TODO:
-        //albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
-        Iterator<String> iter = albums.iterator();
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
+        /*Iterator<String> iter = albums.iterator();
         while (iter.hasNext()) {
             String album = iter.next();
             if (album.equals("Favorite")||album.equals("Trashed")||album.equals("Hide")) {
                 iter.remove();
             }
-        }
+        }*/
 
         ((MainActivity)context).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)context).getSupportActionBar().setTitle("Gallery");

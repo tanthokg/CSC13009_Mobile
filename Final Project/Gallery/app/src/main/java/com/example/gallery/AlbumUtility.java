@@ -310,26 +310,26 @@ public class AlbumUtility {
             // Remove required path in AlbumData object
             ArrayList<String> paths = albumData.getPicturePaths();
             //TODO:
-            //paths.removeIf(s -> s.equals(picturePath));
-            Iterator<String> iterPath = paths.iterator();
+            paths.removeIf(s -> s.equals(picturePath));
+            /*Iterator<String> iterPath = paths.iterator();
             while (iterPath.hasNext()) {
                 String path = iterPath.next();
                 if (path.equals(picturePath)) {
                     iterPath.remove();
                 }
-            }
+            }*/
             // Set new paths for AlbumData object
             albumData.setPicturePaths(paths);
             // Remove that AlbumData in total album data
             //TODO:
-            //data.removeIf(d -> d.getAlbumName().equals(albumName));
-            Iterator<AlbumData> iterData = data.iterator();
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            /*Iterator<AlbumData> iterData = data.iterator();
             while (iterData.hasNext()) {
                 AlbumData adata = iterData.next();
                 if (adata.getAlbumName().equals(albumName)) {
                     iterData.remove();
                 }
-            }
+            }*/
             // Add modified AlbumData object to data
             data.add(albumData);
 
