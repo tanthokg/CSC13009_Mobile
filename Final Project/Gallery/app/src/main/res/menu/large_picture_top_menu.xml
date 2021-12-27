@@ -8,6 +8,7 @@
         android:title="Set as Lockscreen"/>
     <item
         android:id="@+id/menu_ViewInfo"
+        android:icon="@drawable/ic_baseline_info_24"
         android:title="View info"/>
     <item
         android:id="@+id/menu_AddToAlbum"
