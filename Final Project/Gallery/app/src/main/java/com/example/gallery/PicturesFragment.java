@@ -324,7 +324,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
             showAllPictures(paths);
         }
-        else if (R.id.btnslideshow == id )
+        else if (R.id.btnSlideshow == id )
         {
             if(paths.size() == 0)
             {
