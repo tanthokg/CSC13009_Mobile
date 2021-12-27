@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 
-import Helper.SortHelper;
-
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView picturesRecView;
     private File[] allFiles;
@@ -191,8 +189,9 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             allFiles = pictureFile.listFiles();
             pictureFiles = pictureFile.listFiles(filter);
             paths = new ArrayList<String>();
-            SortHelper.sort(pictureFiles, sortCriteria, sortType);
-            reupdateFilePaths();
+                for (File file : pictureFiles)
+                    paths.add(file.getAbsolutePath());
+                showAllPictures(paths);
         }
         catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -212,8 +211,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         } else {
             paths = new ArrayList<String>();
         }
-        SortHelper.sort(pictureFiles, sortCriteria, sortType);
-        reupdateFilePaths();
+        showAllPictures(paths);
     }
 
     void showAllPictures(ArrayList<String> paths) {
@@ -313,8 +311,8 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
-        menu.getItem(1).setVisible(false);
         menu.getItem(2).setVisible(false);
+        menu.getItem(3).setVisible(false);
     }
 
     @Override
@@ -364,7 +362,22 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             SortHelper.sort(pictureFiles, sortCriteria, sortType);
             reupdateFilePaths();
         }
-        else {
+        else if (R.id.btnSlideshow == id )
+        {
+            if(paths.size() == 0)
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShow.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
+        } else {
             String request = "";
             if (type.equals("FOLDER")) request = "Turn back folder";
             if (type.equals("ALBUM")) request = "Turn back album";
@@ -424,8 +437,6 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         intent.putExtra("pathToPicturesFolder", pathToPicturesFolder);
         intent.putExtra("itemPosition", itemPosition);
         intent.putExtra("itemType", type);
-        intent.putExtra("sortCriteria", sortCriteria);
-        intent.putExtra("sortType", sortType);
         // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }
@@ -609,6 +620,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         }
         //albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed") || album.equals("Hide"));
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);

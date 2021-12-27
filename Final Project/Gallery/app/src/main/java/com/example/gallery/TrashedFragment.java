@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -34,7 +33,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
-
 import Helper.SortHelper;
 
 public class TrashedFragment extends Fragment {
@@ -151,6 +149,10 @@ public class TrashedFragment extends Fragment {
         // Send a string path to the adapter. The adapter will create everything from the provided path
         // This implementation is not permanent
         // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
+        showAllPictures(paths);
+    }
+
+    void showAllPictures(ArrayList<String> paths) {
         picturesAdapter = new PicturesAdapter(context, paths, spanCount);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
@@ -159,6 +161,7 @@ public class TrashedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         // Update pictures view when LargeImage activity is finished
         readPicturesInAlbum();
     }
@@ -170,9 +173,11 @@ public class TrashedFragment extends Fragment {
         inflater.inflate(R.menu.picture_top_menu, menu);
 
         if (!pathFolder.equals("Trashed")) {
-            menu.getItem(1).setVisible(false);
             menu.getItem(2).setVisible(false);
+            menu.getItem(3).setVisible(false);
         }
+        if (pathFolder.equals("Trashed"))
+            menu.getItem(1).setVisible(false);
     }
 
     @Override
@@ -230,6 +235,20 @@ public class TrashedFragment extends Fragment {
         }
         else if (R.id.recoverAll == id) {
             recoverAllInTrashed();
+        } else if (R.id.btnSlideshow == id ) {
+            if(paths.size() == 0)
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShow.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         }
         else {
             String request = "Turn back album";
@@ -292,6 +311,7 @@ public class TrashedFragment extends Fragment {
         intent.putExtra("itemType", type);
         intent.putExtra("sortCriteria", sortCriteria);
         intent.putExtra("sortType", sortType);
+
         // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }

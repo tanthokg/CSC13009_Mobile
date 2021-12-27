@@ -51,6 +51,7 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albums = AlbumUtility.getInstance(context).getAllAlbums();
+
         ///TODO:
         //albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
         Iterator<String> iter = albums.iterator();

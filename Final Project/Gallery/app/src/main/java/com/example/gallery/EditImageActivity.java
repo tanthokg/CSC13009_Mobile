@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -57,11 +58,6 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         currentBitmap = BitmapFactory.decodeFile(pathPictureFile);
         filterFragment = new FilterFragment(this, currentBitmap);
         rotateFragment = new RotateFragment(this, currentBitmap);
-        currentFragment = rotateFragment;
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.editFragment, currentFragment)
-                .commit();
 
         bottomNavEdit = (BottomNavigationView) findViewById(R.id.bottomNavEdit);
         bottomNavEdit.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -79,12 +75,12 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
                             .beginTransaction()
                             .replace(R.id.editFragment, currentFragment)
                             .commit();
+                    bottomNavEdit.setVisibility(View.GONE);
                     return true;
                 }
                 return false;
             }
         });
-
     }
 
     private void changeTheme(boolean isChecked) {
@@ -99,19 +95,34 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
     }
 
     @Override
-    public void onMsgFromFragToEdit(String sender, Bitmap request) {
-        switch (sender) {
+    public void onMsgFromFragToEdit(String sender, String request, Bitmap bitmap) {
+        /*switch (sender) {
             case "FILTER-FLAG":
-                Glide.with(this).asBitmap().load(request).into(imgEdit);
-                currentBitmap = request;
-                rotateFragment.onMsgFromMainToFrag(request);
+                Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
+                currentBitmap = bitmap;
+                rotateFragment.onMsgFromMainToFrag(bitmap);
                 break;
             case "ROTATE-FLAG":
-                Glide.with(this).asBitmap().load(request).into(imgEdit);
-                currentBitmap = request;
-                filterFragment.onMsgFromMainToFrag(request);
+                Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
+                currentBitmap = bitmap;
+                filterFragment.onMsgFromMainToFrag(bitmap);
             default:
                 break;
+        }*/
+        if (request.equals("UPDATE")) {
+            Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
+        }
+        else if (request.equals("CLEAR")) {
+            Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
+            bottomNavEdit.setVisibility(View.VISIBLE);
+            getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
+        }
+        else if (request.equals("SAVE")) {
+            bottomNavEdit.setVisibility(View.VISIBLE);
+            getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
+            currentBitmap = bitmap;
+            rotateFragment.onMsgFromMainToFrag(currentBitmap);
+            filterFragment.onMsgFromMainToFrag(currentBitmap);
         }
     }
 

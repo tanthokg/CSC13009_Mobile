@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public SettingsFragment settingsFragment;
     public TrashedFragment trashedFragment;
     public HideFragment hideFragment;
+
     Fragment selectedFragment;
     ActionBar actionBar;
     BottomNavigationView bottomNavigationView;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         picturesFragment = null;
         trashedFragment = null;
         hideFragment = null;
+
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
         if (!darkButtonIsPressed) {

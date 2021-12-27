@@ -7,10 +7,20 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 
 public class FilterUtility {
+
     public Bitmap setFilter(Bitmap bitmap, String name) {
         Bitmap editedBitmap = bitmap.copy(bitmap.getConfig(), true);
         ColorMatrix colorMatrix = new ColorMatrix();
+        setColorMatrix(name, colorMatrix);
 
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+        Canvas canvas = new Canvas(editedBitmap);
+        canvas.drawBitmap(editedBitmap,0, 0, paint);
+        return editedBitmap;
+    }
+
+    private void setColorMatrix(String name, ColorMatrix colorMatrix) {
         switch (name) {
             case "No Effect":
                 setNoEffect(colorMatrix);
@@ -45,12 +55,6 @@ public class FilterUtility {
             default:
                 break;
         }
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-        Canvas canvas = new Canvas(editedBitmap);
-        canvas.drawBitmap(editedBitmap,0, 0, paint);
-        return editedBitmap;
     }
 
     private void setNoEffect(ColorMatrix colorMatrix) {

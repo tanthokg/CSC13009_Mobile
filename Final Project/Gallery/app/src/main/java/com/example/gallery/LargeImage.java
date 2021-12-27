@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import Helper.SortHelper;
+
 import LargeImagePackage.ViewPagerAdapter;
 import LargeImagePackage.ZoomableViewPager;
 
@@ -79,10 +80,6 @@ public class LargeImage extends AppCompatActivity {
         // Get current position from intent
         currentPosition = intent.getIntExtra("itemPosition", -1);
 
-        // Get current sort condition
-        sortCriteria = (SortHelper.SortCriteria) intent.getSerializableExtra("sortCriteria");
-        sortType = (SortHelper.SortType) intent.getSerializableExtra("sortType");
-
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -93,7 +90,6 @@ public class LargeImage extends AppCompatActivity {
                     editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(editIntent);
                 }
-
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     // If in folder, either move to trash or remove permanently
@@ -340,6 +336,7 @@ public class LargeImage extends AppCompatActivity {
             menu.getItem(1).setVisible(false);
             menu.getItem(2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.getItem(3).setVisible(false);
+
         } else if (getIntent().getStringExtra("pathToPicturesFolder").equals("Hide")) {
             menu.getItem(3).setVisible(false);
         }
