@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -18,7 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 
-public class SlideShow extends AppCompatActivity {
+public class SlideShowActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TextView nameOfFolder;
     private TextView count;
@@ -32,6 +33,7 @@ public class SlideShow extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        changeTheme(AppConfig.getInstance(this).getDarkMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slideshow);
 
@@ -114,6 +116,16 @@ public class SlideShow extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         slideHandler.postDelayed(sliderRunnable, value * 1000L);
+    }
+
+    private void changeTheme(boolean isChecked) {
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
+        }
     }
 }
 

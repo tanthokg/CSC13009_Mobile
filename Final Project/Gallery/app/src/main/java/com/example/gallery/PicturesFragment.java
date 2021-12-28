@@ -374,7 +374,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             {
                 int getPositionStartName = pathFolder.lastIndexOf("/");
                 String nameFolder = pathFolder.substring(getPositionStartName + 1);
-                Intent intent = new Intent(context, SlideShow.class);
+                Intent intent = new Intent(context, SlideShowActivity.class);
                 intent.putExtra("Path to Image Files", paths);
                 intent.putExtra("Name Folder", nameFolder);
                 context.startActivity(intent);
