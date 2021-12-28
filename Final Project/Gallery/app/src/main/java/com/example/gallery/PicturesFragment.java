@@ -42,7 +42,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Locale;
+
+import Helper.SortHelper;
 
 public class PicturesFragment extends Fragment implements FragmentCallbacks{
     private RecyclerView picturesRecView;
@@ -53,6 +56,17 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
 
     PicturesAdapter picturesAdapter;
     private ActionMode actionMode;
+
+    //sort utility attribute
+
+    //default is increase sort type
+    private SortHelper.SortType sortType
+            = SortHelper.SortType.INCREASE;
+
+    //default is sort by name
+    private SortHelper.SortCriteria sortCriteria
+            = SortHelper.SortCriteria.NAME;
+
 
     Context context;
     String pathFolder;
@@ -170,6 +184,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
                 @Override
                 public boolean accept(File file, String s) {
                     return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
+                            !s.toLowerCase(Locale.ROOT).startsWith(".hide") &&
                             (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
                 }
             };
@@ -309,20 +324,45 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             if (4 == spanCount) {
                 item.setIcon(R.drawable.ic_sharp_grid_view_24);
                 spanCount = 3;
-            }
-            else if (3 == spanCount) {
+            } else if (3 == spanCount) {
                 item.setIcon(R.drawable.ic_sharp_view_list_24);
                 spanCount = 2;
-            }
-            else if (2 == spanCount) {
+            } else if (2 == spanCount) {
                 item.setIcon(R.drawable.ic_sharp_view_comfy_24);
                 spanCount = 1;
-            }
-            else {
+            } else {
                 item.setIcon(R.drawable.ic_sharp_view_module_24);
                 spanCount = 4;
             }
             showAllPictures(paths);
+        }
+        else if (item.getItemId() == R.id.btnSort) { /*do nothing*/}
+        else if (item.getItemId() == R.id.sort_by) {/*do nothing*/}
+        else if (item.getItemId() == R.id.sort_type){ /*do nothing*/}
+        else if (item.getItemId() == R.id.sort_by_name){
+            sortCriteria = SortHelper.SortCriteria.NAME;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_by_last_modified_date) {
+            sortCriteria = SortHelper.SortCriteria.LAST_MODIFIED_DATE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_by_size) {
+            sortCriteria = SortHelper.SortCriteria.FILE_SIZE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_type_increase)  {
+            sortType = SortHelper.SortType.INCREASE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.sort_type_decrease) {
+            sortType = SortHelper.SortType.DECREASE;
+            SortHelper.sort(pictureFiles, sortCriteria, sortType);
+            reupdateFilePaths();
         }
         else if (R.id.btnSlideshow == id )
         {
@@ -476,6 +516,43 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         }
     }
 
+    // Delete multiple Images in PicturesFragments
+    public void hideMulti() {
+        //Get selected ids
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> paths = new ArrayList<String>();
+
+        // Get paths of selected images. If current id is selected, add it to a list
+        for (int i = 0; i < selected.size(); ++i)
+            if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
+
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        String message = "Are you sure to hide these selected images?";
+
+        confirmDialog.setMessage(message);
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Hide all items in the list
+                for (String path: paths) {
+                    AlbumUtility.getInstance(context).hide(path);
+                    callScanIntent(context,path);
+                }
+                Toast.makeText(context,"Picture(s) is hidden",Toast.LENGTH_SHORT).show();
+                actionMode.finish();
+                onResume();
+            }
+        });
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        confirmDialog.create();
+        confirmDialog.show();
+    }
+
     public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[] { path }, null,null);
     }
@@ -535,7 +612,17 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(context).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
+
+        //TODO:
+        Iterator<String> iter = albums.iterator();
+        while (iter.hasNext()) {
+            String album = iter.next();
+            if (album.equals("Favorite")||album.equals("Trashed")||album.equals("Hide")) {
+                iter.remove();
+            }
+        }
+        //albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed") || album.equals("Hide"));
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
@@ -568,5 +655,14 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
             }
         });
         addToAlbumDialog.create().show();
+    }
+
+    private void reupdateFilePaths() {
+        paths.clear();
+        for (File file : pictureFiles)
+        {
+            paths.add(file.getAbsolutePath());
+        }
+        showAllPictures(paths);
     }
 }

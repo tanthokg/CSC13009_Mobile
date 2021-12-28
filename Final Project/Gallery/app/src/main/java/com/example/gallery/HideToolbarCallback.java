@@ -8,11 +8,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.view.ActionMode;
 
-public class TrashToolbarCallback implements ActionMode.Callback {
+public class HideToolbarCallback implements ActionMode.Callback {
     private final Context context;
     private final PicturesAdapter picturesAdapter;
 
-    public TrashToolbarCallback(Context context, PicturesAdapter picturesAdapter) {
+    public HideToolbarCallback(Context context, PicturesAdapter picturesAdapter) {
         this.context = context;
         this.picturesAdapter = picturesAdapter;
     }
@@ -25,8 +25,7 @@ public class TrashToolbarCallback implements ActionMode.Callback {
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        menu.findItem(R.id.share).setVisible(false);
-        menu.findItem(R.id.hide).setVisible(false);
+        menu.findItem(R.id.recoverMulti).setVisible(false);
         menu.findItem(R.id.addToAlbum).setVisible(false);
         return true;
     }
@@ -34,22 +33,32 @@ public class TrashToolbarCallback implements ActionMode.Callback {
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         int id = item.getItemId();
-        if (R.id.delete == id) {
-            ((MainActivity)context).trashedFragment.deleteMulti();
-        } else if (R.id.recoverMulti == id)
+        if(item.getItemId() == R.id.delete)
         {
-            ((MainActivity)context).trashedFragment.recoverMulti();
-        } else if (R.id.selectAll == id)
-        {
-            ((MainActivity)context).trashedFragment.selectAll();
+            // Delete Multiple Images
+            ((MainActivity)context).hideFragment.deleteMulti();
         }
+        else if (item.getItemId() == R.id.hide) {
+            //TODO:
+            ((MainActivity)context).hideFragment.unhideMulti();
+        }
+        else if (item.getItemId() == R.id.share)
+        {
+            // Share Multiple Images
+            ((MainActivity)context).hideFragment.shareMulti();
+        }
+        else if (item.getItemId() == R.id.selectAll)
+        {
+            ((MainActivity)context).hideFragment.selectAll();
+        }
+
         return true;
     }
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         picturesAdapter.removeSelection();
-        ((MainActivity)context).trashedFragment.setNullToActionMode();
+        ((MainActivity)context).hideFragment.setNullToActionMode();
         ((MainActivity)context).bottomNavigationView.setVisibility(View.VISIBLE);
     }
 }

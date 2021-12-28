@@ -38,6 +38,10 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
             // Delete Multiple Images
             ((MainActivity)context).picturesFragment.deleteMulti();
         }
+        else if (item.getItemId() == R.id.hide) {
+            //TODO:
+            ((MainActivity)context).picturesFragment.hideMulti();
+        }
         else if (item.getItemId() == R.id.share)
         {
             // Share Multiple Images

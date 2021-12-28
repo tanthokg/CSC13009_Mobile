@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public AlbumsFragment albumsFragment;
     public SettingsFragment settingsFragment;
     public TrashedFragment trashedFragment;
+    public HideFragment hideFragment;
+
     Fragment selectedFragment;
     ActionBar actionBar;
     BottomNavigationView bottomNavigationView;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         foldersFragment = FoldersFragment.getInstance(MainActivity.this);
         picturesFragment = null;
         trashedFragment = null;
+        hideFragment = null;
+
         albumsFragment = AlbumsFragment.getInstance(MainActivity.this);
         settingsFragment = SettingsFragment.getInstance();
         if (!darkButtonIsPressed) {
@@ -185,7 +189,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     if (request.equals("Trashed")) {
                         trashedFragment = TrashedFragment.getInstance(albumsFragment.getContext());
                         selectedFragment = trashedFragment;
-                    } else {
+                    } else if (request.equals("Hide")){
+                        hideFragment = HideFragment.getInstance(albumsFragment.getContext());
+                        selectedFragment = hideFragment;
+                    } else{
                         picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
                         selectedFragment = picturesFragment;
                     }

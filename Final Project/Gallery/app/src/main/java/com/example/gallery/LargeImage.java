@@ -46,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import Helper.SortHelper;
+
 import LargeImagePackage.ViewPagerAdapter;
 import LargeImagePackage.ZoomableViewPager;
 
@@ -59,6 +61,9 @@ public class LargeImage extends AppCompatActivity {
     private WallpaperManager wallpaperManager;
     private BottomNavigationView bottomNavigationView;
     boolean isFavorite;
+
+    SortHelper.SortCriteria sortCriteria;
+    SortHelper.SortType sortType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +90,6 @@ public class LargeImage extends AppCompatActivity {
                     editIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(editIntent);
                 }
-
                 if (item.getItemId() == R.id.deletePicture) {
                     String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     // If in folder, either move to trash or remove permanently
@@ -121,7 +125,8 @@ public class LargeImage extends AppCompatActivity {
                 @Override
                 public boolean accept(File file, String s) {
                     return !s.toLowerCase(Locale.ROOT).startsWith(".trashed") &&
-                            (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
+                            !s.toLowerCase(Locale.ROOT).startsWith(".hide") &&
+                    (s.toLowerCase().endsWith("png") || s.toLowerCase(Locale.ROOT).endsWith("jpg"));
                 }
             });
         }
@@ -137,6 +142,9 @@ public class LargeImage extends AppCompatActivity {
                 i++;
             }
         }
+
+        //Sort with current condition
+        SortHelper.sort(pictureFiles, sortCriteria, sortType);
 
         mViewPager = (ZoomableViewPager) findViewById(R.id.viewPagerMain);
         mViewPagerAdapter = new ViewPagerAdapter(this, pictureFiles);
@@ -328,6 +336,9 @@ public class LargeImage extends AppCompatActivity {
             menu.getItem(1).setVisible(false);
             menu.getItem(2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.getItem(3).setVisible(false);
+
+        } else if (getIntent().getStringExtra("pathToPicturesFolder").equals("Hide")) {
+            menu.getItem(3).setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -376,7 +387,7 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed"));
+        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);

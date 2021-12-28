@@ -27,6 +27,8 @@ public class SlideShow extends AppCompatActivity {
     private Handler slideHandler = new Handler();
 
     int pathLength, currentIndex;
+    String timeStr;
+    int value;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +44,9 @@ public class SlideShow extends AppCompatActivity {
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        timeStr = AppConfig.getInstance(this).getTimeLapse();
+        value = Integer.parseInt(timeStr.substring(0, 1));
 
         Intent intent = getIntent();
         paths = intent.getStringArrayListExtra("Path to Image Files");
@@ -72,7 +77,7 @@ public class SlideShow extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 slideHandler.removeCallbacks(sliderRunnable);
-                slideHandler.postDelayed(sliderRunnable, 2000); // Slide duration 2 seconds
+                slideHandler.postDelayed(sliderRunnable, value * 1000L); // Slide duration 2 seconds
 
                 currentIndex = (viewPager2.getCurrentItem() + 1) % pathLength;
                 if(currentIndex == 0)
@@ -108,7 +113,7 @@ public class SlideShow extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        slideHandler.postDelayed(sliderRunnable, 2000);
+        slideHandler.postDelayed(sliderRunnable, value * 1000L);
     }
 }
 

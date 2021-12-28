@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -33,9 +34,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
+
 import Helper.SortHelper;
 
-public class TrashedFragment extends Fragment {
+public class HideFragment extends Fragment {
     private RecyclerView picturesRecView;
     private File[] allFiles;
     private File[] pictureFiles;
@@ -60,13 +62,13 @@ public class TrashedFragment extends Fragment {
     private SortHelper.SortCriteria sortCriteria
             = SortHelper.SortCriteria.NAME;
 
-    public static TrashedFragment getInstance(Context context) {
-        return new TrashedFragment(context);
+    public static HideFragment getInstance(Context context) {
+        return new HideFragment(context);
     }
 
-    TrashedFragment(Context context) {
+    HideFragment(Context context) {
         this.context = context;
-        this.pathFolder = "Trashed";
+        this.pathFolder = "Hide";
         this.type = "ALBUM";
     }
 
@@ -146,6 +148,9 @@ public class TrashedFragment extends Fragment {
     }
 
     void showAllPictures(ArrayList<String> paths) {
+        // Send a string path to the adapter. The adapter will create everything from the provided path
+        // This implementation is not permanent
+        // Update on Nov 29, 2021: send a list of paths to the adapter to utilize this fragment for albums
         picturesAdapter = new PicturesAdapter(context, paths, spanCount);
         picturesRecView.setAdapter(picturesAdapter);
         picturesRecView.setLayoutManager(new GridLayoutManager(context, spanCount));
@@ -154,7 +159,6 @@ public class TrashedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         // Update pictures view when LargeImage activity is finished
         readPicturesInAlbum();
     }
@@ -165,12 +169,10 @@ public class TrashedFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
 
-        if (!pathFolder.equals("Trashed")) {
-            menu.getItem(2).setVisible(false);
-            menu.getItem(3).setVisible(false);
-        }
-        if (pathFolder.equals("Trashed"))
-            menu.getItem(1).setVisible(false);
+        //Remove "Empty Trashed" option and "Recover All" option
+        menu.getItem(1).setVisible(false);
+        menu.getItem(2).setVisible(false);
+        menu.getItem(3).setVisible(false);
     }
 
     @Override
@@ -223,26 +225,6 @@ public class TrashedFragment extends Fragment {
             SortHelper.sort(pictureFiles, sortCriteria, sortType);
             reupdateFilePaths();
         }
-        else if (R.id.emptyTrashed == id) {
-            deleteAllInTrashed();
-        }
-        else if (R.id.recoverAll == id) {
-            recoverAllInTrashed();
-        } else if (R.id.btnSlideshow == id ) {
-            if(paths.size() == 0)
-            {
-                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                int getPositionStartName = pathFolder.lastIndexOf("/");
-                String nameFolder = pathFolder.substring(getPositionStartName + 1);
-                Intent intent = new Intent(context, SlideShow.class);
-                intent.putExtra("Path to Image Files", paths);
-                intent.putExtra("Name Folder", nameFolder);
-                context.startActivity(intent);
-            }
-        }
         else {
             String request = "Turn back album";
             main.onMsgFromFragToMain("PICTURES-FLAG", request);
@@ -279,7 +261,7 @@ public class TrashedFragment extends Fragment {
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode(new TrashToolbarCallback(context, picturesAdapter));
+                    startSupportActionMode(new HideToolbarCallback(context, picturesAdapter));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();
@@ -304,12 +286,11 @@ public class TrashedFragment extends Fragment {
         intent.putExtra("itemType", type);
         intent.putExtra("sortCriteria", sortCriteria);
         intent.putExtra("sortType", sortType);
-
         // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
         context.startActivity(intent);
     }
 
-    // Delete multiple images in TrashedFragment
+    // Delete multiple Images in HideFragments
     public void deleteMulti() {
         //Get selected ids
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();
@@ -320,34 +301,43 @@ public class TrashedFragment extends Fragment {
             if (selected.valueAt(i)) paths.add(pictureFiles[selected.keyAt(i)].getAbsolutePath());
 
         // Start deleting all image selected
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        dialog.setMessage("Delete selected pictures on device?");
-        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(context, R.style.AlertDialog);
+        String message = AppConfig.getInstance(context).getTrashMode()
+                ? "Are you sure to move these images to Trashed?"
+                : "Are you sure to delete these images?";
+        confirmDialog.setMessage(message);
+        confirmDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                // Delete On Device
-                for (String path : paths) {
-                    File file = new File(path);
-                    if (!file.delete())
-                        Log.e("Delete files in trashed: ", "Cannot Delete");
-                    callScanIntent(context, path);
+                // Delete/Move to trash all items in the list
+                if (AppConfig.getInstance(context).getTrashMode()) {
+                    for (String path: paths) {
+                        AlbumUtility.getInstance(context).addToTrashed(path);
+                        callScanIntent(context,path);
+                    }
+                    Toast.makeText(context,"Picture(s) Moved To Trashed",Toast.LENGTH_SHORT).show();
+                } else {
+                    for (String path: paths) {
+                        File file = new File(path);
+                        file.delete();
+                        AlbumUtility.getInstance(context).deletePictureInAllAlbums(path);
+                        callScanIntent(context,path);
+                    }
+                    Toast.makeText(context,"Picture(s) Deleted On Device",Toast.LENGTH_SHORT).show();
                 }
-                // Delete In Trashed
-                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
-                onResume();
-                Toast.makeText(context, "Picture(s) Deleted On Device", Toast.LENGTH_SHORT).show();
                 actionMode.finish();
+                onResume();
             }
         });
-        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        confirmDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
-        dialog.create().show();
+        confirmDialog.create().show();
     }
 
-    public void recoverMulti() {
+    public void unhideMulti() {
         //Get selected ids
         SparseBooleanArray selected = picturesAdapter.getSelectedIds();
         ArrayList<String> paths = new ArrayList<String>();
@@ -358,81 +348,23 @@ public class TrashedFragment extends Fragment {
 
         // Start deleting all image selected
         AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        dialog.setMessage("Recover selected pictures?");
+        dialog.setMessage("Unhide selected pictures?");
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (String path: paths) {
                     String oldFilename = path.substring(path.lastIndexOf('/') + 1);
-                    String newFilename = oldFilename.replace(".trashed", "");
+                    String newFilename = oldFilename.replace(".hide", "");
                     File directory = new File(path.substring(0, path.lastIndexOf('/')));
                     File from = new File(directory, oldFilename);
                     File to = new File(directory, newFilename);
-                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Hide", from.getAbsolutePath());
 
                     if (!from.renameTo(to))
-                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Error: Cannot Unhide Picture(s)", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(context, "Picture(s) Recovered", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Picture(s) Unhide", Toast.LENGTH_SHORT).show();
                 actionMode.finish();
-                onResume();
-            }
-        });
-        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        dialog.create().show();
-    }
-
-    public void deleteAllInTrashed() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        dialog.setMessage("Empty Trash?");
-        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Delete On Device
-                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
-                for (String path : paths) {
-                    File file = new File(path);
-                    if (!file.delete())
-                        Log.e("Delete files in trashed: ", "Cannot Delete");
-                    callScanIntent(context, path);
-                }
-                // Delete In Trashed
-                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
-                onResume();
-                Toast.makeText(context, "Emptied Trashed", Toast.LENGTH_SHORT).show();
-            }
-        });
-        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        dialog.create().show();
-    }
-
-    public void recoverAllInTrashed() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context, R.style.AlertDialog);
-        dialog.setMessage("Recover all pictures from Trashed?");
-        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                ArrayList<String> paths = AlbumUtility.getInstance(context).findDataByAlbumName("Trashed").getPicturePaths();
-                for (String path: paths) {
-                    String oldFilename = path.substring(path.lastIndexOf('/') + 1);
-                    String newFilename = oldFilename.replace(".trashed", "");
-                    File directory = new File(path.substring(0, path.lastIndexOf('/')));
-                    File from = new File(directory, oldFilename);
-                    File to = new File(directory, newFilename);
-                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", from.getAbsolutePath());
-
-                    if (!from.renameTo(to))
-                        Toast.makeText(context, "Error: Cannot Recover Picture(s)", Toast.LENGTH_SHORT).show();
-                }
-                Toast.makeText(context, "All Pictures Has Been Recovered", Toast.LENGTH_SHORT).show();
                 onResume();
             }
         });
@@ -452,6 +384,38 @@ public class TrashedFragment extends Fragment {
     public void selectAll() {
         picturesAdapter.selectAll();
         actionMode.setTitle(paths.size() + " selected");
+    }
+
+    // Share multiple Images in HideFragments
+    public void shareMulti() {
+        SparseBooleanArray selected = picturesAdapter.getSelectedIds();
+        ArrayList<String> path = new ArrayList<String>();
+
+        // Get paths of selected images
+        for (int index = (selected.size() - 1); index >= 0; index--) {
+            if (selected.valueAt(index)) {
+                //If current id is selected remove the item via key
+                path.add(pictureFiles[selected.keyAt(index)].getAbsolutePath());
+            }
+        }
+
+        try {
+            ArrayList<Uri> imageUris = new ArrayList<Uri>();
+            for (int i = 0; i < path.size(); i++) {
+                File file = new File(path.get(i));
+                Uri photoURI = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".provider", file);
+                imageUris.add(photoURI);
+            }
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.setType("image/jpg");
+            startActivity(Intent.createChooser(shareIntent, "Share images via"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        actionMode.finish();
     }
 
     private void reupdateFilePaths() {
