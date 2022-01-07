@@ -5,12 +5,20 @@
         android:id="@+id/nav_pictures"
         android:icon="@drawable/picture_icon"
         android:title="Pictures" />
+
     <item
         android:id="@+id/nav_album"
         android:icon="@drawable/album_icon"
         android:title="Albums"/>
+
+    <item
+        android:id="@+id/nav_hide"
+        android:icon="@drawable/ic_baseline_hide_24dp"
+        android:title="Hide"/>
+
     <item
         android:id="@+id/nav_setting"
         android:icon="@drawable/setting_icon"
         android:title="Setting"/>
+
 </menu>

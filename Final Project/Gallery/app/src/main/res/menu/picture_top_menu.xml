@@ -49,4 +49,16 @@
 
         </item>
     </item>>
+
+    <item android:id="@+id/setPassword"
+        android:title="Set Password"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/changePassword"
+        android:title="Change Password"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/clearPassword"
+        android:title="Clear Password"
+        app:showAsAction="never"/>
 </menu>

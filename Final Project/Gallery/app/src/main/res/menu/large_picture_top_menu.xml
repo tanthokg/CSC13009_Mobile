@@ -13,4 +13,8 @@
     <item
         android:id="@+id/menu_AddToAlbum"
         android:title="Add To Album"/>
+
+    <item
+        android:id="@+id/menu_HidePicture"
+        android:title="Hide"/>
 </menu>

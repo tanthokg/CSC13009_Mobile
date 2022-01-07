@@ -27,6 +27,7 @@ public class TrashToolbarCallback implements ActionMode.Callback {
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         menu.findItem(R.id.share).setVisible(false);
         menu.findItem(R.id.addToAlbum).setVisible(false);
+        menu.findItem(R.id.hide).setVisible(false);
         return true;
     }
 

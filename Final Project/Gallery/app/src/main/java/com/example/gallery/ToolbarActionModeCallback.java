@@ -14,10 +14,12 @@ import java.util.ArrayList;
 public class ToolbarActionModeCallback implements ActionMode.Callback{
     private final Context context;
     private final PicturesAdapter picturesAdapter;
+    private String _type;   //Picture or Album
 
-    public ToolbarActionModeCallback(Context context, PicturesAdapter picturesAdapter) {
+    public ToolbarActionModeCallback(Context context, PicturesAdapter picturesAdapter, String type) {
         this.context = context;
         this.picturesAdapter = picturesAdapter;
+        this._type = type;
     }
 
     @Override
@@ -28,6 +30,11 @@ public class ToolbarActionModeCallback implements ActionMode.Callback{
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         menu.findItem(R.id.recoverMulti).setVisible(false);
+        if (_type.equals("ALBUM"))
+        {
+            menu.findItem(R.id.hide).setVisible(false);
+        }
+
         return true;
     }
 

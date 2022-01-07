@@ -315,6 +315,9 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         inflater.inflate(R.menu.picture_top_menu, menu);
         menu.getItem(2).setVisible(false);
         menu.getItem(3).setVisible(false);
+        menu.getItem(4).setVisible(false);
+        menu.getItem(5).setVisible(false);
+        menu.getItem(6).setVisible(false);
     }
 
     @Override
@@ -416,7 +419,7 @@ public class PicturesFragment extends Fragment implements FragmentCallbacks{
         // there are some selected items, start the actionMode
         if (hasCheckedItems && actionMode == null) {
             actionMode = ((AppCompatActivity) getActivity()).
-                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter));
+                    startSupportActionMode(new ToolbarActionModeCallback(context, picturesAdapter, type));
         } else if (!hasCheckedItems && actionMode != null) {
             // there no selected items, finish the actionMode
             actionMode.finish();

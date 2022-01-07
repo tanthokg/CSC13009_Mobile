@@ -169,8 +169,13 @@ public class TrashedFragment extends Fragment {
             menu.getItem(2).setVisible(false);
             menu.getItem(3).setVisible(false);
         }
-        if (pathFolder.equals("Trashed"))
+        if (pathFolder.equals("Trashed")) {
             menu.getItem(1).setVisible(false);
+        }
+
+        menu.getItem(4).setVisible(false);
+        menu.getItem(5).setVisible(false);
+        menu.getItem(6).setVisible(false);
     }
 
     @Override

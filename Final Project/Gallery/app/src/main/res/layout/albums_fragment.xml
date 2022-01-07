@@ -4,20 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/albumItems"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
         android:padding="20dp">
-
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/albumFavorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             app:cardCornerRadius="8dp"
             app:strokeColor="@color/purple_700"
             app:strokeWidth="3dp">
@@ -26,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingHorizontal="5dp"
+                android:paddingHorizontal="40dp"
                 android:paddingVertical="20dp">
 
                 <ImageView
@@ -47,6 +44,7 @@
             android:id="@+id/albumTrashed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             app:cardCornerRadius="8dp"
             app:strokeColor="@color/purple_700"
             app:strokeWidth="3dp">
@@ -55,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingHorizontal="5dp"
+                android:paddingHorizontal="40dp"
                 android:paddingVertical="20dp">
 
                 <ImageView
@@ -71,37 +69,7 @@
                     android:paddingHorizontal="4dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/albumHide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            app:cardCornerRadius="8dp"
-            app:strokeColor="@color/purple_700"
-            app:strokeWidth="3dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingHorizontal="5dp"
-                android:paddingVertical="20dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_hide_24dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hide"
-                    android:textSize="18sp"
-                    android:paddingHorizontal="4dp"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albumsRecView"

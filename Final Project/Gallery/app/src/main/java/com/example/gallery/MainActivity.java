@@ -82,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 selectedFragment = albumsFragment;
             } else if (R.id.nav_setting == itemId) {
                 selectedFragment = settingsFragment;
+            } else if (R.id.nav_hide == itemId) {
+                //TODO:
+                this.onMsgFromFragToMain("ALBUM-FLAG", "Hide");
             }
             // Use addToBackStack to return the previous fragment when the Back button is pressed
             // Checking null was just a precaution
@@ -190,8 +193,17 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                         trashedFragment = TrashedFragment.getInstance(albumsFragment.getContext());
                         selectedFragment = trashedFragment;
                     } else if (request.equals("Hide")){
-                        hideFragment = HideFragment.getInstance(albumsFragment.getContext());
-                        selectedFragment = hideFragment;
+
+                        //If hide album have password => must login
+                        //else => goto hide album
+                        if (isHavingPassword()) {
+                            selectedFragment = HideLoginFragment.getInstance(this);
+                        } else {
+                            if (null == hideFragment) {
+                                hideFragment = HideFragment.getInstance(this);
+                            }
+                            selectedFragment = hideFragment;
+                        }
                     } else{
                         picturesFragment = PicturesFragment.getInstance(albumsFragment.getContext(), request, "ALBUM");
                         selectedFragment = picturesFragment;
@@ -199,6 +211,79 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Can't call picture fragment!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case HideLoginFragment.FLAG:
+                try {
+
+                //Correct password => goto hide album
+                if (request.equals(HideLoginFragment.CORRECT_FLAG)) {
+                    if (null == hideFragment) {
+                        hideFragment = HideFragment.getInstance(this);
+                    }
+                    selectedFragment = hideFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                }
+                //Incorrect password warning
+                else if (request.equals((HideLoginFragment.INCORRECT_FLAG))){
+                    Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show();
+                }
+                else if (request.equals(HideLoginFragment.RESET_PASS_FLAG)) {
+                    if (null == hideFragment) {
+                        hideFragment = HideFragment.getInstance(this);
+                    }
+                    //Reset password by delete all pictures in 'Hide' and delete password
+                    hideFragment.resetPassword();
+
+                    //Goto empty hide fragment
+                    selectedFragment = hideFragment;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+
+                    Toast.makeText(MainActivity.this, "Password is reset", Toast.LENGTH_SHORT).show();
+                }
+
+
+                }catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Error in opening hide fragment via login form",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case HideCreateFragment.FLAG:
+                try {
+                    if (request.equals(HideCreateFragment.OPEN_FORM)) {
+                        new HideCreateFragment().show(getSupportFragmentManager(), HideCreateFragment.Tag);
+                    }
+                    //Force to relogin after create password successfully
+                    else if (request.equals(HideCreateFragment.CREATE_SUCCESS)) {
+                        selectedFragment = HideLoginFragment.getInstance(this);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                    }
+                }catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Error in creating password",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case HideChangePasswordFragment.FLAG:
+                try {
+                    if (request.equals(HideChangePasswordFragment.OPEN_FORM)) {
+                        new HideChangePasswordFragment().show(getSupportFragmentManager(), HideChangePasswordFragment.Tag);
+                    }
+
+                    //Back to album to relogin after change password successfully
+                    else if (request.equals(HideChangePasswordFragment.CHANGE_SUCCESS)) {
+                        selectedFragment = HideLoginFragment.getInstance(this);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentHolder, selectedFragment).commit();
+                    }
+
+                    else if (request.equals(HideChangePasswordFragment.CLEAR_PASSWORD)) {
+                        hideFragment.clearPassword();
+                        Toast.makeText(MainActivity.this, "Password is clear",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Error in creating password",
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -217,6 +302,17 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             setTheme(R.style.Theme_Gallery);
             AppConfig.getInstance(this).setDarkMode(false);
         }
+    }
+
+
+
+    //Return true if the hide album have password
+    boolean isHavingPassword() {
+        SharedPreferences mPref =
+                getSharedPreferences(HideLoginFragment.PREF_NAME, Context.MODE_PRIVATE);
+
+        String password = mPref.getString(HideLoginFragment.PREF_PASS_NAME, null);
+        return (null != password);
     }
 
 }
