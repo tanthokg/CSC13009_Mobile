@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -18,7 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 
-public class SlideShow extends AppCompatActivity {
+public class SlideShowActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TextView nameOfFolder;
     private TextView count;
@@ -27,9 +28,12 @@ public class SlideShow extends AppCompatActivity {
     private Handler slideHandler = new Handler();
 
     int pathLength, currentIndex;
+    String timeStr;
+    int value;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        changeTheme(AppConfig.getInstance(this).getDarkMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slideshow);
 
@@ -42,6 +46,9 @@ public class SlideShow extends AppCompatActivity {
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        timeStr = AppConfig.getInstance(this).getTimeLapse();
+        value = Integer.parseInt(timeStr.substring(0, 1));
 
         Intent intent = getIntent();
         paths = intent.getStringArrayListExtra("Path to Image Files");
@@ -72,7 +79,7 @@ public class SlideShow extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 slideHandler.removeCallbacks(sliderRunnable);
-                slideHandler.postDelayed(sliderRunnable, 2000); // Slide duration 2 seconds
+                slideHandler.postDelayed(sliderRunnable, value * 1000L); // Slide duration 2 seconds
 
                 currentIndex = (viewPager2.getCurrentItem() + 1) % pathLength;
                 if(currentIndex == 0)
@@ -108,7 +115,17 @@ public class SlideShow extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        slideHandler.postDelayed(sliderRunnable, 2000);
+        slideHandler.postDelayed(sliderRunnable, value * 1000L);
+    }
+
+    private void changeTheme(boolean isChecked) {
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
+        }
     }
 }
 
