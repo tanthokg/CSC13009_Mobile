@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_SetWallpaper"
+        android:title="Set as Wallpaper"/>
+    <item
+        android:id="@+id/menu_SetLockscreen"
+        android:title="Set as Lockscreen"/>
+    <item
+        android:id="@+id/menu_ViewInfo"
+        android:icon="@drawable/ic_baseline_info_24"
+        android:title="View info"/>
+    <item
+        android:id="@+id/menu_AddToAlbum"
+        android:title="Add To Album"/>
+
+    <item
+        android:id="@+id/menu_HidePicture"
+        android:title="Hide"/>
+</menu>

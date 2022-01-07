@@ -175,7 +175,7 @@ public class HideFragment extends Fragment {
         _menu = menu;
 
         //Remove "Empty Trashed" option and "Recover All" option
-        menu.getItem(1).setVisible(false);
+        //menu.getItem(1).setVisible(false);
         menu.getItem(2).setVisible(false);
         menu.getItem(3).setVisible(false);
 
@@ -251,6 +251,21 @@ public class HideFragment extends Fragment {
             _menu.getItem(4).setVisible(true);
             _menu.getItem(5).setVisible(false);
             _menu.getItem(6).setVisible(false);
+        }
+        else if (item.getItemId() == R.id.btnSlideshow) {
+            if(0 == paths.size())
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShowActivity.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         }
         else {
             String request = "Turn back album";

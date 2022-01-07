@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/btnChangeFormatDisplay"
+        android:icon="@drawable/ic_sharp_view_module_24"
+        app:showAsAction="ifRoom"
+        android:title="View as"/>
+
+    <item android:id="@+id/btnSlideshow"
+        android:icon="@drawable/ic_baseline_slideshow_24"
+        app:showAsAction="always"
+        android:title="Slide Show"/>
+
+    <item android:id="@+id/emptyTrashed"
+        android:title="Empty Trashed"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/recoverAll"
+        android:title="Recover All"
+        app:showAsAction="never"/>
+
+ 	<item android:id="@+id/btnSort"
+        app:showAsAction="always"
+        android:title="View as">
+
+
+        <item android:id="@+id/sort_by"
+            android:title="Sort by"
+            android:orderInCategory="100"
+            app:showAsAction="collapseActionView">
+
+            <menu>
+                <item android:id="@+id/sort_by_name" android:title="Name"/>
+                <item android:id="@+id/sort_by_last_modified_date" android:title="Last modified date"/>
+                <item android:id="@+id/sort_by_size" android:title="Size"/>
+            </menu>
+
+        </item>
+
+        <item android:id="@+id/sort_type"
+            android:title="Sort type"
+            android:orderInCategory="100"
+            app:showAsAction="collapseActionView">
+
+            <menu>
+                <item android:id="@+id/sort_type_increase" android:title="Increase"/>
+                <item android:id="@+id/sort_type_decrease" android:title="Decrease"/>
+            </menu>
+
+        </item>
+    </item>>
+
+    <item android:id="@+id/setPassword"
+        android:title="Set Password"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/changePassword"
+        android:title="Change Password"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/clearPassword"
+        android:title="Clear Password"
+        app:showAsAction="never"/>
+</menu>
