@@ -241,15 +241,15 @@ public class AlbumUtility {
             // Empty the picturePaths
             albumData.setPicturePaths(new ArrayList<String>());
             // Add it to the data
-            //TODO:
-            //data.removeIf(d -> d.getAlbumName().equals(albumName));
-            Iterator<AlbumData> iter = data.iterator();
+            // TODO:
+            data.removeIf(d -> d.getAlbumName().equals(albumName));
+            /*Iterator<AlbumData> iter = data.iterator();
             while (iter.hasNext()) {
                 AlbumData element = iter.next();
                 if (element.getAlbumName().equals(albumName)) {
                     iter.remove();
                 }
-            }
+            }*/
 
             data.add(albumData);
             setAllAlbumData(data);

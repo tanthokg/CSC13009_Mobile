@@ -81,6 +81,10 @@ public class LargeImage extends AppCompatActivity {
         // Get current position from intent
         currentPosition = intent.getIntExtra("itemPosition", -1);
 
+        // Get current sort condition
+        sortCriteria = (SortHelper.SortCriteria) intent.getSerializableExtra("sortCriteria");
+        sortType = (SortHelper.SortType) intent.getSerializableExtra("sortType");
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

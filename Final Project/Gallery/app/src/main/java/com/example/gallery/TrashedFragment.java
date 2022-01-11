@@ -306,7 +306,8 @@ public class TrashedFragment extends Fragment {
         intent.putExtra("sortCriteria", sortCriteria);
         intent.putExtra("sortType", sortType);
 
-        // Toast.makeText(context, "Position: " + itemPosition, Toast.LENGTH_SHORT).show();
+        /*String msg = "Path: " + pathToPicturesFolder + "\nPosition: " + itemPosition;
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();*/
         context.startActivity(intent);
     }
 
@@ -333,8 +334,9 @@ public class TrashedFragment extends Fragment {
                         Log.e("Delete files in trashed: ", "Cannot Delete");
                     callScanIntent(context, path);
                 }
-                // Delete In Trashed
-                AlbumUtility.getInstance(context).deleteAllPicturesInAlbum("Trashed");
+                // Delete Selected Paths In Trashed
+                for (String path: paths)
+                    AlbumUtility.getInstance(context).deletePictureInAlbum("Trashed", path);
                 onResume();
                 Toast.makeText(context, "Picture(s) Deleted On Device", Toast.LENGTH_SHORT).show();
                 actionMode.finish();
