@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/drawable/ic_baseline_hide_24dp.xml" value="0.2564814814814815" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/hide_create_form.xml" value="0.21388888888888888" />
+        <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/hide_bottom_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/large_picture_top_menu.xml" value="0.21388888888888888" />
+        <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/main_bottom_menu.xml" value="0.21388888888888888" />
       </map>
     </option>
   </component>

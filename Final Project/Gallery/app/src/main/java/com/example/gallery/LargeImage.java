@@ -339,6 +339,8 @@ public class LargeImage extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.large_picture_top_menu, menu);
 
+        if (type.equals("ALBUM"))
+            menu.getItem(4).setVisible(false);
         if (type.equals("ALBUM") && getIntent().getStringExtra("pathToPicturesFolder").equals("Trashed")) {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(false);
