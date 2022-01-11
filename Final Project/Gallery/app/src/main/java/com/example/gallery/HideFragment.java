@@ -3,6 +3,7 @@ package com.example.gallery;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -51,6 +52,8 @@ public class HideFragment extends Fragment {
     private final String pathFolder;
     private final String type;
 
+    private Menu _menu;
+
     private FloatingActionButton btnAdd;
     MainActivity main;
 
@@ -82,10 +85,10 @@ public class HideFragment extends Fragment {
             throw new IllegalStateException("MainActivity must implement callbacks");
         }
 
-        // Show the up-key back arrow and name folder on Action Bar
+        // Remove the up-key back arrow and name folder on Action Bar
         setHasOptionsMenu(true);
-        ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(false);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(false);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
 
@@ -169,10 +172,21 @@ public class HideFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.picture_top_menu, menu);
 
+        _menu = menu;
+
         //Remove "Empty Trashed" option and "Recover All" option
-        menu.getItem(1).setVisible(false);
+        //menu.getItem(1).setVisible(false);
         menu.getItem(2).setVisible(false);
         menu.getItem(3).setVisible(false);
+
+        //If already have password => we don't have "Set password" option
+        //else => we don't have "Change password" and "Clear password" option
+        if (main.isHavingPassword()) {
+            menu.getItem(4).setVisible(false);
+        } else {
+            menu.getItem(5).setVisible(false);
+            menu.getItem(6).setVisible(false);
+        }
     }
 
     @Override
@@ -224,6 +238,34 @@ public class HideFragment extends Fragment {
             sortType = SortHelper.SortType.DECREASE;
             SortHelper.sort(pictureFiles, sortCriteria, sortType);
             reupdateFilePaths();
+        }
+        else if (item.getItemId() == R.id.setPassword) {
+            main.onMsgFromFragToMain(HideCreateFragment.FLAG, HideCreateFragment.OPEN_FORM);
+        }
+        else if (item.getItemId() == R.id.changePassword) {
+            main.onMsgFromFragToMain(HideChangePasswordFragment.FLAG, HideChangePasswordFragment.OPEN_FORM);
+        }
+        else if (item.getItemId() == R.id.clearPassword) {
+            main.onMsgFromFragToMain(HideChangePasswordFragment.FLAG, HideChangePasswordFragment.CLEAR_PASSWORD);
+
+            _menu.getItem(4).setVisible(true);
+            _menu.getItem(5).setVisible(false);
+            _menu.getItem(6).setVisible(false);
+        }
+        else if (item.getItemId() == R.id.btnSlideshow) {
+            if(0 == paths.size())
+            {
+                Toast.makeText(context, "Nothing to slide show", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                int getPositionStartName = pathFolder.lastIndexOf("/");
+                String nameFolder = pathFolder.substring(getPositionStartName + 1);
+                Intent intent = new Intent(context, SlideShowActivity.class);
+                intent.putExtra("Path to Image Files", paths);
+                intent.putExtra("Name Folder", nameFolder);
+                context.startActivity(intent);
+            }
         }
         else {
             String request = "Turn back album";
@@ -426,4 +468,44 @@ public class HideFragment extends Fragment {
         }
         showAllPictures(paths);
     }
+
+    //Could delete all pictures in hide without opening inflate Hide fragment into screen
+    public void deleteAll_forPublic() {
+
+        AlbumData data = AlbumUtility.getInstance(context).findDataByAlbumName(pathFolder);
+        ArrayList<String> _paths;
+        if (null != data) {
+            _paths = data.getPicturePaths();
+            File[] _pictureFiles = new File[_paths.size()];
+            int i = 0;
+            for (String path : _paths) {
+                _pictureFiles[i] = new File(path);
+                _pictureFiles[i].delete();
+                AlbumUtility.getInstance(context).deletePictureInAllAlbums(path);
+                callScanIntent(context,path);
+                i++;
+            }
+        } else {
+            _paths = new ArrayList<String>();
+        }
+
+    }
+
+    public void clearPassword() {
+        SharedPreferences mPref = context.
+                getSharedPreferences(HideLoginFragment.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(HideLoginFragment.PREF_PASS_NAME, null);
+        editor.commit();
+    }
+
+
+    public void resetPassword() {
+        //Delete all pictures in hide fragment
+        deleteAll_forPublic();
+
+        //Delete password
+        clearPassword();
+    }
+
 }

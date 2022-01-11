@@ -44,6 +44,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Locale;
 
 import Helper.SortHelper;
@@ -79,6 +80,10 @@ public class LargeImage extends AppCompatActivity {
 
         // Get current position from intent
         currentPosition = intent.getIntExtra("itemPosition", -1);
+
+        // Get current sort condition
+        sortCriteria = (SortHelper.SortCriteria) intent.getSerializableExtra("sortCriteria");
+        sortType = (SortHelper.SortType) intent.getSerializableExtra("sortType");
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -157,7 +162,8 @@ public class LargeImage extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (!intent.getStringExtra("pathToPicturesFolder").equals("Trashed")) {
+                if (!intent.getStringExtra("pathToPicturesFolder").equals("Trashed") &&
+                    !intent.getStringExtra("pathToPicturesFolder").equals("Hide")) {
                     String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
                     isFavorite = AlbumUtility.getInstance(LargeImage.this).checkPictureInFavorite(picturePath);
                     if (isFavorite)
@@ -174,11 +180,17 @@ public class LargeImage extends AppCompatActivity {
 
         if (intent.getStringExtra("pathToPicturesFolder").equals("Trashed")) {
             inflateTrashedMenu();
-        } else {
+        }
+        else if (intent.getStringExtra("pathToPicturesFolder").equals("Hide")) {
+            inflateHideMenu();
+        }
+        else
+        {
             String picturePath = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
             isFavorite = AlbumUtility.getInstance(this).checkPictureInFavorite(picturePath);
             if (isFavorite)
                 bottomNavigationView.getMenu().getItem(1).setIcon(R.drawable.ic_baseline_favorite_24);
+
         }
     }
 
@@ -331,14 +343,18 @@ public class LargeImage extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.large_picture_top_menu, menu);
 
+        if (type.equals("ALBUM"))
+            menu.getItem(4).setVisible(false);
         if (type.equals("ALBUM") && getIntent().getStringExtra("pathToPicturesFolder").equals("Trashed")) {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(false);
             menu.getItem(2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.getItem(3).setVisible(false);
+            menu.getItem(4).setVisible(false);
 
         } else if (getIntent().getStringExtra("pathToPicturesFolder").equals("Hide")) {
             menu.getItem(3).setVisible(false);
+            menu.getItem(4).setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -379,6 +395,9 @@ public class LargeImage extends AppCompatActivity {
         if (item.getItemId() == R.id.menu_AddToAlbum) {
             addPictureToAlbum();
         }
+        if (item.getItemId() == R.id.menu_HidePicture) {
+            hide(pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath());
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -387,7 +406,16 @@ public class LargeImage extends AppCompatActivity {
         ListView chooseAlbumListView = addToAlbumView.findViewById(R.id.chooseAlbumListView);
 
         ArrayList<String> albums = AlbumUtility.getInstance(this).getAllAlbums();
-        albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
+        //TODO
+        //albums.removeIf(album -> album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide"));
+        Iterator<String> iter = albums.iterator();
+        while (iter.hasNext()) {
+           String album = iter.next();
+            if (album.equals("Favorite") || album.equals("Trashed")||album.equals("Hide")) {
+                iter.remove();
+            }
+        }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, albums);
         chooseAlbumListView.setAdapter(adapter);
@@ -478,4 +506,63 @@ public class LargeImage extends AppCompatActivity {
         return bm;
     }
 
+    private void inflateHideMenu() {
+        String path = pictureFiles[mViewPager.getCurrentItem()].getAbsolutePath();
+        bottomNavigationView.getMenu().clear();
+        bottomNavigationView.inflateMenu(R.menu.hide_bottom_menu);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (R.id.unhidePicture == id) {
+                    unhide(path);
+                }
+                return true;
+            }
+        });
+    }
+
+    private void hide(String path) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setMessage("Hide this picture?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).hide(path)) {
+                    Toast.makeText(LargeImage.this, "Picture is hide", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else
+                    Toast.makeText(LargeImage.this, "Error: Cannot Hide", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.create().show();
+    }
+
+    private void unhide(String path) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialog);
+        dialog.setMessage("Unhide this picture?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (AlbumUtility.getInstance(LargeImage.this).unhide(path)) {
+                    Toast.makeText(LargeImage.this, "Picture is unhide", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else
+                    Toast.makeText(LargeImage.this, "Error: Cannot Unhide", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.create().show();
+    }
 }

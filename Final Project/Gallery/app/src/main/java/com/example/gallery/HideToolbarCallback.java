@@ -27,6 +27,7 @@ public class HideToolbarCallback implements ActionMode.Callback {
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         menu.findItem(R.id.recoverMulti).setVisible(false);
         menu.findItem(R.id.addToAlbum).setVisible(false);
+        menu.findItem(R.id.hide).setTitle("Unhide");
         return true;
     }
 

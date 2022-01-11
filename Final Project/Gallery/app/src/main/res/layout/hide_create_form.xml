@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="fill_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/passwordFieldCreate"
+            android:layout_weight="5"
+            android:hint="Type your password"
+            android:inputType="textPassword"
+            android:layout_margin="10dp" />
+
+        <Button
+            android:id="@+id/showHideButtonPasswordCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="fill_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/retypePasswordFieldCreate"
+            android:layout_weight="5"
+            android:hint="Retype your password"
+            android:inputType="textPassword"
+            android:layout_margin="10dp" />
+
+        <Button
+            android:id="@+id/showHideButtonRetypePasswordCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show"/>
+
+    </LinearLayout>
+
+</LinearLayout>
