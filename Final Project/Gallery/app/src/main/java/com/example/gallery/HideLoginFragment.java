@@ -1,7 +1,6 @@
 package com.example.gallery;
 
 import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +18,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -160,14 +160,14 @@ public class HideLoginFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder confirmResetDialog;
-                if (AppConfig.getInstance(getContext()).getDarkMode()) {
+                AlertDialog.Builder confirmResetDialog = new AlertDialog.Builder(getContext(), R.style.AlertDialog);;
+                /*if (AppConfig.getInstance(getContext()).getDarkMode()) {
                      confirmResetDialog =
                             new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK);
                 } else {
                     confirmResetDialog =
                             new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-                }
+                }*/
                 confirmResetDialog.setTitle("Confirm reset password");
                 confirmResetDialog.setMessage("By resetting password, you can access \"Hide\" " +
                         "without typing password, but every pictures in \"Hide\" will be deleted" +

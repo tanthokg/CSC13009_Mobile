@@ -187,14 +187,14 @@ public class HideChangePasswordFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        AlertDialog.Builder createDialog;
-        if (AppConfig.getInstance(getContext()).getDarkMode()) {
+        AlertDialog.Builder createDialog = new AlertDialog.Builder(getContext(), R.style.AlertDialogCustom);
+        /*if (AppConfig.getInstance(getContext()).getDarkMode()) {
             createDialog =
                     new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK);
         } else {
             createDialog =
                     new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-        }
+        }*/
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.hide_change_password_form, null);
         createDialog.setView(view)
