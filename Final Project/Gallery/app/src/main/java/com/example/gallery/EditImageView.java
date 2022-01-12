@@ -14,6 +14,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,9 +34,10 @@ public class EditImageView extends View {
     private ColorMatrix colorMatrix;
     private float dx, dy;
     private int angleRotate;
+    private int angleRounded;
     private List<Bitmap> listBitmap;
     private List<Path> listPath;
-    private boolean isRotate, isBrush;
+    private boolean isRotate, isBrush, isRounded;
     private float[] originalCMatrix = new float[] {
         1, 0, 0, 0, 0,
         0, 1, 0, 0, 0,
@@ -78,6 +80,7 @@ public class EditImageView extends View {
         listPath = new ArrayList<Path>();
         isRotate = false;
         isBrush = false;
+        isRounded = false;
 
         colorMatrix = new ColorMatrix(originalCMatrix);
         //prevCMatrix = originalCMatrix;
@@ -96,12 +99,21 @@ public class EditImageView extends View {
             canvas.drawPaint(mPaint);
             isRotate = false;
         }
+//        if (isRounded) {
+//            Paint mPaint = new Paint();
+//            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+//            canvas.drawPaint(mPaint);
+//            isRounded = false;
+//        }
 
         if (editBitmap != null) {
             matrix.setRotate(angleRotate, editBitmap.getWidth()/2, editBitmap.getHeight()/2);
+
             paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
             canvas.drawColor(Color.WHITE);
             canvas.drawBitmap(editBitmap, matrix, paint);
+
+
         }
     }
 
@@ -128,9 +140,16 @@ public class EditImageView extends View {
         isRotate = true;
         invalidate();
     }
+    public void setAngleRounded(int rounded) {
+        angleRounded = rounded;
+        rounded(angleRounded);
+        isRounded = true;
+        invalidate();
+    }
 
     public void reset() {
         angleRotate = 0;
+        angleRounded = 0;
         isBrush = false;
         colorMatrix.set(originalCMatrix);
         colorMatrixList.clear();
@@ -140,6 +159,12 @@ public class EditImageView extends View {
 
     public void clearRotate() {
         angleRotate = 0;
+
+        invalidate();
+    }
+    public void clearRoundedCorner() {
+        angleRounded = 0;
+
         invalidate();
     }
 
@@ -149,6 +174,34 @@ public class EditImageView extends View {
         invalidate();
     }
 
+    public void rounded(int angleRounded)
+    {
+        // image size
+        int width = editBitmap.getWidth();
+        int height = editBitmap.getHeight();
+        // create bitmap output
+        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        // set canvas for painting
+        Canvas _canvas = new Canvas(result);
+        _canvas.drawARGB(0, 0, 0, 0);
+
+        // config paint
+        final Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.BLACK);
+
+        // config rectangle for embedding
+        Rect rect = new Rect(0, 0, width, height);
+        RectF rectF = new RectF(rect);
+
+        // draw rect to canvas
+        _canvas.drawRoundRect(rectF, angleRounded, angleRounded , paint);
+
+        // create Xfer mode
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        // draw source image to canvas
+        _canvas.drawBitmap(editBitmap, rect, rect, paint);
+    }
     public void saveImage() {
         addLastBitmap(getEditBitmap());
         isBrush = false;

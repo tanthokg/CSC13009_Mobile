@@ -79,6 +79,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         toolItemList.add(new Tool(R.drawable.ic_outline_rotate_left_24, "Rotate"));
         toolItemList.add(new Tool(R.drawable.ic_outline_filter_hdr_24, "Filter"));
         toolItemList.add(new Tool(R.drawable.ic_outline_brush_24, "Brush"));
+        toolItemList.add(new Tool(R.drawable.ic_baseline_rounded_corner_24, "Rounded Corner"));
 
         adapter = new ToolAdapter(toolItemList, EditImageActivity.this, editImageView);
         toolsRecView.setAdapter(adapter);
@@ -164,6 +165,10 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             }
             if (sender.equals("BRUSH"))
                 editImageView.clearBrush();
+
+            if (sender.equals("ROUNDED CORNER"))
+                editImageView.clearRoundedCorner();
+
         }
         if (request.equals("CHECK")) {
             editImageView.saveImage();

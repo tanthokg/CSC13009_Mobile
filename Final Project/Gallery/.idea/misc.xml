@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/custom_preview.xml" value="0.16614583333333333" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/filter_image_fragment.xml" value="0.25416666666666665" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/drawable/ic_outline_filter_hdr_24.xml" value="0.13703703703703704" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/edit_brush_fragment.xml" value="0.1" />
@@ -15,6 +16,17 @@
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/hide_bottom_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/large_picture_top_menu.xml" value="0.21388888888888888" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/main_bottom_menu.xml" value="0.21388888888888888" />
+        <entry key="app/src/main/res/layout/rotate_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/rounded_corner_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/slideshow.xml" value="0.165625" />
+        <entry key="app/src/main/res/layout/slideshow_item.xml" value="0.165625" />
+        <entry key="app/src/main/res/layout/tool_item.xml" value="0.165625" />
+        <entry key="app/src/main/res/layout/url_dialog_fragment.xml" value="0.165625" />
+        <entry key="app/src/main/res/menu/edit_bottom_menu.xml" value="0.165625" />
+        <entry key="app/src/main/res/menu/edit_menu.xml" value="0.165625" />
+        <entry key="app/src/main/res/menu/main_bottom_menu.xml" value="0.165625" />
+        <entry key="app/src/main/res/menu/picture_top_menu.xml" value="0.165625" />
+        <entry key="app/src/main/res/menu/toolbar_multiple_items.xml" value="0.165625" />
       </map>
     </option>
   </component>
