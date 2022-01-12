@@ -79,6 +79,7 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         toolItemList.add(new Tool(R.drawable.ic_outline_rotate_left_24, "Rotate"));
         toolItemList.add(new Tool(R.drawable.ic_outline_filter_hdr_24, "Filter"));
         toolItemList.add(new Tool(R.drawable.ic_outline_brush_24, "Brush"));
+        toolItemList.add(new Tool(R.drawable.ic_eraser, "Eraser"));
 
         adapter = new ToolAdapter(toolItemList, EditImageActivity.this, editImageView);
         toolsRecView.setAdapter(adapter);
@@ -162,8 +163,6 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
             if (sender.equals("FILTER")) {
                 editImageView.clearFilter();
             }
-            if (sender.equals("BRUSH"))
-                editImageView.clearBrush();
         }
         if (request.equals("CHECK")) {
             editImageView.saveImage();

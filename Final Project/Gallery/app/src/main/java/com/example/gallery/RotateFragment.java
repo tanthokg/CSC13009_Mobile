@@ -107,43 +107,4 @@ public class RotateFragment extends Fragment {
 
         return rotateFragment;
     }
-
-    // TODO: 90 + 90 = 180 -> rotate 180 -> not changed
-    /*private Bitmap rotate(int value) {
-        int width = editBmp.getWidth();
-        int height = editBmp.getHeight();
-
-        // Set width and height of rotated bitmap
-        int newWidth = width, newHeight = height;
-        if (((value - degree) == 90 || (value - degree) == -90) && (degree == 0 || degree == -180 || degree == 180)){
-            newWidth = height;
-            newHeight = width;
-        }
-        else if ((value - degree) != 0 && (value - degree != 180) && (value - degree) != -180) {
-            double radAngle = Math.toRadians(value);
-            double cosAngle = Math.abs(Math.cos(radAngle));
-            double sinAngle = Math.abs(Math.sin(radAngle));
-            newWidth = (int) (width *cosAngle + height *sinAngle);
-            newHeight = (int) (width *sinAngle + height *cosAngle);
-        }
-
-        // Create a new bitmap to rotate
-        Bitmap rotatedBitmap = Bitmap.createBitmap(newWidth, newHeight, originalBmp.getConfig());
-        Canvas canvas = new Canvas(rotatedBitmap);
-
-        // Get 2 edges of bitmap and depend on them to rotate
-        Rect rect = new Rect(0,0, newWidth, newHeight);
-        Matrix matrix = new Matrix();
-        float px = rect.exactCenterX();
-        float py = rect.exactCenterY();
-        matrix.postTranslate((float) (-currentBmp.getWidth()/2), (float) (-currentBmp.getHeight()/2));
-        matrix.postRotate(value - degree);
-        // Save current angle
-        degree = value;
-        matrix.postTranslate(px, py);
-        canvas.drawBitmap(currentBmp, matrix, new Paint( Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG ));
-        matrix.reset();
-
-        return rotatedBitmap;
-    }*/
 }

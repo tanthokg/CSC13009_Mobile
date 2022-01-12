@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txtBrushSize"
+        android:id="@+id/txtEraserSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -17,7 +17,7 @@
         android:textStyle="bold"/>
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/sliderBrushSize"
+        android:id="@+id/sliderEraserSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -28,14 +28,8 @@
         app:thumbColor="?attr/colorOnSecondary"
         app:trackColorActive="?attr/colorOnSecondary"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/brushColorRecView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
-
     <ImageButton
-        android:id="@+id/btnCheckBrush"
+        android:id="@+id/btnCheckEraser"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginEnd="10dp"

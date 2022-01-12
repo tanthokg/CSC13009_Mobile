@@ -42,6 +42,8 @@ public class EditImageView extends View {
         0, 0, 1, 0, 0,
         0, 0, 0, 1, 0 };
     private List<float[]> colorMatrixList;
+    private int brushSize, eraserSize;
+    private String brushColor;
 
     public EditImageView(Context context) {
         super(context);
@@ -64,14 +66,17 @@ public class EditImageView extends View {
     }
 
     private void init() {
+        brushSize = 10;
+        brushColor = "#000000";
+        eraserSize = 10;
         path = new Path();
         paint = new Paint();
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.parseColor(brushColor));
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeWidth(20);
+        paint.setStrokeWidth(brushSize);
 
         matrix = new Matrix();
         listBitmap = new ArrayList<Bitmap>();
@@ -80,7 +85,6 @@ public class EditImageView extends View {
         isBrush = false;
 
         colorMatrix = new ColorMatrix(originalCMatrix);
-        //prevCMatrix = originalCMatrix;
         colorMatrixList = new ArrayList<float[]>();
         colorMatrixList.add(originalCMatrix);
     }
@@ -99,9 +103,10 @@ public class EditImageView extends View {
 
         if (editBitmap != null) {
             matrix.setRotate(angleRotate, editBitmap.getWidth()/2, editBitmap.getHeight()/2);
-            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+            Paint mPaint = new Paint();
+            mPaint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
             canvas.drawColor(Color.WHITE);
-            canvas.drawBitmap(editBitmap, matrix, paint);
+            canvas.drawBitmap(editBitmap, matrix, mPaint);
         }
     }
 
@@ -135,6 +140,7 @@ public class EditImageView extends View {
         colorMatrix.set(originalCMatrix);
         colorMatrixList.clear();
         colorMatrixList.add(originalCMatrix);
+        enableBrush();
         invalidate();
     }
 
@@ -154,6 +160,7 @@ public class EditImageView extends View {
         isBrush = false;
         colorMatrixList.clear();
         colorMatrixList.add(colorMatrix.getArray());
+        enableBrush();
         invalidate();
     }
 
@@ -221,16 +228,16 @@ public class EditImageView extends View {
         paint.setXfermode(null);
         paint.setShader(null);
         paint.setMaskFilter(null);
-        isBrush = true;
     }
 
-    public void clearBrush() {
-        /*paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        for (Path drawnPath : listPath) {
-            customCanvas.drawPath(drawnPath, paint);
-        }
-        listPath.clear();
-        invalidate();*/
+    public void setIsBrush(boolean brush) {
+        isBrush = brush;
+    }
+
+    public void enableEraser() {
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        setEraserSize(eraserSize);
+
     }
 
     public void setColorMatrix(ColorMatrix cMatrix) {
@@ -244,5 +251,24 @@ public class EditImageView extends View {
         colorMatrixList.clear();
         colorMatrixList.add(colorMatrix.getArray());
         invalidate();
+    }
+
+    private int toPx(int size) {
+        return (int) (size * getResources().getDisplayMetrics().density);
+    }
+
+    public void setBrushSize(int size) {
+        brushSize = toPx(size);
+        paint.setStrokeWidth(brushSize);
+    }
+
+    public void setBrushColor(String color) {
+        brushColor = color;
+        paint.setColor(Color.parseColor(brushColor));
+    }
+
+    public void setEraserSize(int size) {
+        eraserSize = toPx(size);
+        paint.setStrokeWidth(eraserSize);
     }
 }

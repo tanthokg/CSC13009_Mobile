@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/color_item.xml" value="0.1" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/edit_brush_fragment.xml" value="0.20925925925925926" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/edit_eraser_fragment.xml" value="0.1" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/filter_image_fragment.xml" value="0.25416666666666665" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/rotate_fragment.xml" value="0.1" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/drawable/ic_outline_filter_hdr_24.xml" value="0.13703703703703704" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/edit_brush_fragment.xml" value="0.1" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/edit_image_activity.xml" value="0.2712962962962963" />
