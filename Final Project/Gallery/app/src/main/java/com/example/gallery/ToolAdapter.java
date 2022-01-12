@@ -47,6 +47,9 @@ public class ToolAdapter extends RecyclerView.Adapter<ToolAdapter.ViewHolder> {
                 if (toolItemList.get(holder.getAdapterPosition()).getName().equals("Rotate")) {
                     activity.inflateFragment(RotateFragment.getInstance(context, editImageView));
                 }
+                if (toolItemList.get(holder.getAdapterPosition()).getName().equals("Filter")) {
+                    activity.inflateFragment(FilterFragment.getInstance(context, editImageView, editImageView.getBitmapResource()));
+                }
                 if (toolItemList.get(holder.getAdapterPosition()).getName().equals("Brush")) {
                     activity.inflateFragment(BrushFragment.getInstance(context, editImageView));
                 }

@@ -31,10 +31,11 @@ public class RotateFragment extends Fragment {
     public static RotateFragment getInstance(Context context, EditImageView editImageView) {
         if (rotateFragment != null)
             return rotateFragment;
-        return new RotateFragment(context, editImageView);
+        rotateFragment =  new RotateFragment(context, editImageView);
+        return rotateFragment;
     }
 
-    public RotateFragment(Context context, EditImageView editImageView) {
+    private RotateFragment(Context context, EditImageView editImageView) {
         this.context = context;
         this.editImageView = editImageView;
         degree = 0;

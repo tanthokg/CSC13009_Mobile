@@ -157,7 +157,13 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
     @Override
     public void onMsgFromFragToEdit(String sender, String request, Bitmap bitmap) {
         if (request.equals("CLEAR")) {
-            editImageView.reset();
+            if (sender.equals("ROTATE"))
+                editImageView.clearRotate();
+            if (sender.equals("FILTER")) {
+                editImageView.clearFilter();
+            }
+            if (sender.equals("BRUSH"))
+                editImageView.clearBrush();
         }
         if (request.equals("CHECK")) {
             editImageView.saveImage();

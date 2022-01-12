@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.ColorSpace;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -28,10 +30,18 @@ public class EditImageView extends View {
     private Bitmap editBitmap;
     private Canvas customCanvas;
     private Matrix matrix;
+    private ColorMatrix colorMatrix;
     private float dx, dy;
     private int angleRotate;
     private List<Bitmap> listBitmap;
+    private List<Path> listPath;
     private boolean isRotate, isBrush;
+    private float[] originalCMatrix = new float[] {
+        1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0 };
+    private List<float[]> colorMatrixList;
 
     public EditImageView(Context context) {
         super(context);
@@ -65,8 +75,14 @@ public class EditImageView extends View {
 
         matrix = new Matrix();
         listBitmap = new ArrayList<Bitmap>();
+        listPath = new ArrayList<Path>();
         isRotate = false;
         isBrush = false;
+
+        colorMatrix = new ColorMatrix(originalCMatrix);
+        //prevCMatrix = originalCMatrix;
+        colorMatrixList = new ArrayList<float[]>();
+        colorMatrixList.add(originalCMatrix);
     }
 
     @SuppressLint("DrawAllocation")
@@ -82,10 +98,10 @@ public class EditImageView extends View {
         }
 
         if (editBitmap != null) {
-            canvas.drawPaint(paint);
             matrix.setRotate(angleRotate, editBitmap.getWidth()/2, editBitmap.getHeight()/2);
+            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
             canvas.drawColor(Color.WHITE);
-            canvas.drawBitmap(editBitmap, matrix, null);
+            canvas.drawBitmap(editBitmap, matrix, paint);
         }
     }
 
@@ -116,6 +132,14 @@ public class EditImageView extends View {
     public void reset() {
         angleRotate = 0;
         isBrush = false;
+        colorMatrix.set(originalCMatrix);
+        colorMatrixList.clear();
+        colorMatrixList.add(originalCMatrix);
+        invalidate();
+    }
+
+    public void clearRotate() {
+        angleRotate = 0;
         invalidate();
     }
 
@@ -127,9 +151,9 @@ public class EditImageView extends View {
 
     public void saveImage() {
         addLastBitmap(getEditBitmap());
-        //editBitmap = listBitmap.get(listBitmap.size() - 1);
-        //angleRotate = 0;
         isBrush = false;
+        colorMatrixList.clear();
+        colorMatrixList.add(colorMatrix.getArray());
         invalidate();
     }
 
@@ -182,6 +206,7 @@ public class EditImageView extends View {
             dx = x;
             dy = y;
             customCanvas.drawPath(path, paint);
+            listPath.add(path);
             invalidate();
         }
     }
@@ -197,5 +222,27 @@ public class EditImageView extends View {
         paint.setShader(null);
         paint.setMaskFilter(null);
         isBrush = true;
+    }
+
+    public void clearBrush() {
+        /*paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        for (Path drawnPath : listPath) {
+            customCanvas.drawPath(drawnPath, paint);
+        }
+        listPath.clear();
+        invalidate();*/
+    }
+
+    public void setColorMatrix(ColorMatrix cMatrix) {
+        colorMatrixList.add(cMatrix.getArray());
+        colorMatrix = cMatrix;
+        invalidate();
+    }
+
+    public void clearFilter() {
+        colorMatrix = new ColorMatrix(colorMatrixList.get(0));
+        colorMatrixList.clear();
+        colorMatrixList.add(colorMatrix.getArray());
+        invalidate();
     }
 }

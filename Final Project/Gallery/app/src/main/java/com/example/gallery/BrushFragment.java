@@ -23,10 +23,11 @@ public class BrushFragment extends Fragment {
     public static BrushFragment getInstance(Context context, EditImageView editImageView) {
         if (brushFragment != null)
            return brushFragment;
-        return new BrushFragment(context, editImageView);
+        brushFragment = new BrushFragment(context, editImageView);
+        return brushFragment;
     }
 
-    public BrushFragment(Context context, EditImageView editImageView) {
+    private BrushFragment(Context context, EditImageView editImageView) {
         this.context = context;
         this.editImageView = editImageView;
     }
