@@ -1,25 +1,37 @@
 package com.example.gallery;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditImageView extends View {
 
     private Paint paint;
     private Path path;
-    private Bitmap editBitmap, viewBitmap;
+    private Bitmap editBitmap;
     private Canvas customCanvas;
+    private Matrix matrix;
     private float dx, dy;
+    private int angleRotate;
+    private List<Bitmap> listBitmap;
+    private boolean isRotate, isBrush;
 
     public EditImageView(Context context) {
         super(context);
@@ -28,14 +40,17 @@ public class EditImageView extends View {
 
     public EditImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public EditImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     public EditImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init();
     }
 
     private void init() {
@@ -47,25 +62,30 @@ public class EditImageView extends View {
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeWidth(20);
+
+        matrix = new Matrix();
+        listBitmap = new ArrayList<Bitmap>();
+        isRotate = false;
+        isBrush = false;
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        viewBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        customCanvas = new Canvas(viewBitmap);
-    }
-
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Rect rect = new Rect();
+        if (isRotate) {
+            Paint mPaint = new Paint();
+            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            canvas.drawPaint(mPaint);
+            isRotate = false;
+        }
 
         if (editBitmap != null) {
-            canvas.drawBitmap(editBitmap, rect.left, rect.top, null);
-            canvas.drawBitmap(viewBitmap, rect.left, rect.top, null);
+            canvas.drawPaint(paint);
+            matrix.setRotate(angleRotate, editBitmap.getWidth()/2, editBitmap.getHeight()/2);
+            canvas.drawColor(Color.WHITE);
+            canvas.drawBitmap(editBitmap, matrix, null);
         }
     }
 
@@ -75,14 +95,107 @@ public class EditImageView extends View {
         float scaleWidth = (float) (widthView * 1.0 / resource.getWidth());
         float scaleHeight = (float) (heightView * 1.0 / resource.getHeight());
         float scale = Math.min(scaleWidth, scaleHeight);
-        int width = (int) (widthBitmap * scale);
+        int width = (int) (widthBitmap * scaleWidth);
         int height = (int) (heightBitmap * scale);
 
         this.editBitmap = Bitmap.createScaledBitmap(resource, width, height, true);
+        customCanvas = new Canvas(editBitmap);
         invalidate();
     }
 
     public Bitmap getBitmapResource() {
         return editBitmap;
+    }
+
+    public void setAngleRotate(int rotate) {
+        angleRotate = rotate;
+        isRotate = true;
+        invalidate();
+    }
+
+    public void reset() {
+        angleRotate = 0;
+        isBrush = false;
+        invalidate();
+    }
+
+    public void flip() {
+        matrix.postScale(-1, 1);
+        angleRotate = angleRotate * -1;
+        invalidate();
+    }
+
+    public void saveImage() {
+        addLastBitmap(getEditBitmap());
+        editBitmap = listBitmap.get(listBitmap.size() - 1);
+        angleRotate = 0;
+        isBrush = false;
+        invalidate();
+    }
+
+    public void addLastBitmap(Bitmap bitmap) {
+        listBitmap.add(bitmap);
+    }
+
+    public Bitmap getEditBitmap() {
+        this.setDrawingCacheEnabled(true);
+        this.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(this.getDrawingCache());
+        this.setDrawingCacheEnabled(true);
+        return bitmap;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (isBrush) {
+            float x = event.getX();
+            float y = event.getY();
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touchStart(x, y);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    touchMove(x, y);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    touchUp();
+                    addLastBitmap(getEditBitmap());
+                    break;
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    private void touchUp() {
+        path.reset();
+    }
+
+    private void touchMove(float x, float y) {
+        float spaceX = Math.abs(x - dx);
+        float spaceY = Math.abs(y - dy);
+
+        if (spaceX >= 5 || spaceY >= 5) {
+            path.quadTo(x, y, (x+dx)/2, (y+dy)/2);
+            dx = x;
+            dy = y;
+            customCanvas.drawPath(path, paint);
+            invalidate();
+        }
+    }
+
+    private void touchStart(float x, float y) {
+        path.moveTo(x, y);
+        dx = x;
+        dy = y;
+    }
+
+    public void enableBrush() {
+        paint.setXfermode(null);
+        paint.setShader(null);
+        paint.setMaskFilter(null);
+        isBrush = true;
     }
 }

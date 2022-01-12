@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/drawable/ic_outline_filter_hdr_24.xml" value="0.13703703703703704" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/edit_brush_fragment.xml" value="0.1" />
         <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/edit_image_activity.xml" value="0.2712962962962963" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/rotate_fragment.xml" value="0.1" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/layout/tool_item.xml" value="0.1" />
+        <entry key="..\:/GitHub/group_03_PTPMDD_19_3_Uyen/Final Project/Gallery/app/src/main/res/menu/edit_bottom_menu.xml" value="0.1" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/drawable/ic_baseline_hide_24dp.xml" value="0.2564814814814815" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/layout/hide_create_form.xml" value="0.21388888888888888" />
         <entry key="..\:/Programming/GitHub/group_03_PTPMDD_19_3/Final Project/Gallery/app/src/main/res/menu/hide_bottom_menu.xml" value="0.25416666666666665" />
