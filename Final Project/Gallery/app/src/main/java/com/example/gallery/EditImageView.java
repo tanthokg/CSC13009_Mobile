@@ -127,8 +127,8 @@ public class EditImageView extends View {
 
     public void saveImage() {
         addLastBitmap(getEditBitmap());
-        editBitmap = listBitmap.get(listBitmap.size() - 1);
-        angleRotate = 0;
+        //editBitmap = listBitmap.get(listBitmap.size() - 1);
+        //angleRotate = 0;
         isBrush = false;
         invalidate();
     }
