@@ -29,8 +29,6 @@ public class RotateFragment extends Fragment {
     EditImageView editImageView;
 
     public static RotateFragment getInstance(Context context, EditImageView editImageView) {
-        if (rotateFragment != null)
-            return rotateFragment;
         rotateFragment =  new RotateFragment(context, editImageView);
         return rotateFragment;
     }

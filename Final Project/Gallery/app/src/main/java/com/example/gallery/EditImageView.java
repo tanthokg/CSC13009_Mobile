@@ -169,6 +169,7 @@ public class EditImageView extends View {
     }
 
     public Bitmap getEditBitmap() {
+        invalidate();
         this.setDrawingCacheEnabled(true);
         this.buildDrawingCache();
         Bitmap bitmap = Bitmap.createBitmap(this.getDrawingCache());

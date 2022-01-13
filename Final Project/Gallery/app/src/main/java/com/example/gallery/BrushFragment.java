@@ -31,8 +31,6 @@ public class BrushFragment extends Fragment {
             "#00FFFF", "#1E90FF", "#00008B", "#0000FF", "#8A2BE2", "#7B68EE", "#9400D3", "#FF00FF", "#FF1493", "#FFC0CB", "#FFE4C4", "#8B4513", "#808080"};
 
     public static BrushFragment getInstance(Context context, EditImageView editImageView) {
-        if (brushFragment != null)
-           return brushFragment;
         brushFragment = new BrushFragment(context, editImageView);
         return brushFragment;
     }

@@ -29,10 +29,6 @@ public class FilterFragment extends Fragment {
     String[] filters = { "No Effect", "Auto", "Cream", "Forest", "Cozy", "Blossom", "Evergreen", "Grayscale", "Sharpen", "Vintage"};
 
     public static FilterFragment getInstance(Context context, EditImageView editImageView, Bitmap bmp) {
-        if (filterFragment != null) {
-            bitmap = bmp;
-            return filterFragment;
-        }
         filterFragment = new FilterFragment(context, editImageView, bmp);
         return filterFragment;
     }
