@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txtEraserSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="10"
+        android:textColor="?attr/colorOnSecondary"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/sliderEraserSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:stepSize="1.0"
+        android:valueFrom="10"
+        android:valueTo="25"
+        app:thumbColor="?attr/colorOnSecondary"
+        app:trackColorActive="?attr/colorOnSecondary"/>
+
+    <ImageButton
+        android:id="@+id/btnCheckEraser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="?attr/colorOnPrimary"
+        android:src="@drawable/ic_baseline_check_24"/>
+
+</LinearLayout>

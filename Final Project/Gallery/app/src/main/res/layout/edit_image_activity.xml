@@ -5,25 +5,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
-        android:id="@+id/imgEdit"
-        android:src="@drawable/ic_launcher_background"/>
+        android:layout_weight="6">
 
-    <FrameLayout
+        <com.example.gallery.EditImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imgEdit"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
-        android:id="@+id/editFragment"/>
+        android:layout_weight="3">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:labelVisibilityMode="unlabeled"
-        app:itemIconTint="?attr/colorOnSecondary"
-        app:menu="@menu/edit_bottom_menu"
-        android:id="@+id/bottomNavEdit"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/editFragment"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/toolsRecView"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

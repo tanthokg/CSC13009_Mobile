@@ -1,23 +1,15 @@
 package com.example.gallery;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.effect.EffectFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,23 +17,29 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EditImageActivity extends AppCompatActivity implements EditCallbacks{
+public class EditImageActivity extends AppCompatActivity implements EditCallbacks {
 
-    ImageView imgEdit;
-    BottomNavigationView bottomNavEdit;
+    EditImageView editImageView;
+    RecyclerView toolsRecView;
     Fragment currentFragment;
-    RotateFragment rotateFragment;
-    FilterFragment filterFragment;
-    Bitmap currentBitmap;
+    List<Tool> toolItemList;
+    ToolAdapter adapter;
     String pathPictureFile;
+    int widthScreen, heightScreen;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,78 +50,39 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        imgEdit = (ImageView) findViewById(R.id.imgEdit);
         pathPictureFile = intent.getStringExtra("pathToPictureFolder");
-        Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
-        currentBitmap = BitmapFactory.decodeFile(pathPictureFile);
-        filterFragment = new FilterFragment(this, currentBitmap);
-        rotateFragment = new RotateFragment(this, currentBitmap);
 
-        bottomNavEdit = (BottomNavigationView) findViewById(R.id.bottomNavEdit);
-        bottomNavEdit.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        widthScreen = displayMetrics.widthPixels;
+        heightScreen = displayMetrics.heightPixels;
+
+        editImageView = (EditImageView) findViewById(R.id.imgEdit);
+        Glide.with(this).asBitmap().load(pathPictureFile).into(new CustomTarget<Bitmap>() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (R.id.nav_rotate == id) {
-                    currentFragment = rotateFragment;
-                }
-                if (R.id.nav_filter == id) {
-                    currentFragment = filterFragment;
-                }
-                if (currentFragment != null) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.editFragment, currentFragment)
-                            .commit();
-                    bottomNavEdit.setVisibility(View.GONE);
-                    return true;
-                }
-                return false;
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                editImageView.setBitmapResource(resource, widthScreen, heightScreen*6/10);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
             }
         });
+
+        toolsRecView = (RecyclerView) findViewById(R.id.toolsRecView);
+        initTool();
     }
 
-    private void changeTheme(boolean isChecked) {
-        if (isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            setTheme(R.style.Theme_Gallery_);
-        }
-        else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            setTheme(R.style.Theme_Gallery);
-        }
-    }
+    private void initTool() {
+        toolItemList = new ArrayList<Tool>();
+        toolItemList.add(new Tool(R.drawable.ic_outline_rotate_left_24, "Rotate"));
+        toolItemList.add(new Tool(R.drawable.ic_outline_filter_hdr_24, "Filter"));
+        toolItemList.add(new Tool(R.drawable.ic_outline_brush_24, "Brush"));
 
-    @Override
-    public void onMsgFromFragToEdit(String sender, String request, Bitmap bitmap) {
-        /*switch (sender) {
-            case "FILTER-FLAG":
-                Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
-                currentBitmap = bitmap;
-                rotateFragment.onMsgFromMainToFrag(bitmap);
-                break;
-            case "ROTATE-FLAG":
-                Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
-                currentBitmap = bitmap;
-                filterFragment.onMsgFromMainToFrag(bitmap);
-            default:
-                break;
-        }*/
-        if (request.equals("UPDATE")) {
-            Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
-        }
-        else if (request.equals("CLEAR")) {
-            Glide.with(this).asBitmap().load(bitmap).into(imgEdit);
-            bottomNavEdit.setVisibility(View.VISIBLE);
-            getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-        }
-        else if (request.equals("SAVE")) {
-            bottomNavEdit.setVisibility(View.VISIBLE);
-            getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-            currentBitmap = bitmap;
-            rotateFragment.onMsgFromMainToFrag(currentBitmap);
-            filterFragment.onMsgFromMainToFrag(currentBitmap);
-        }
+        adapter = new ToolAdapter(toolItemList, EditImageActivity.this, editImageView);
+        toolsRecView.setAdapter(adapter);
+        toolsRecView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
 
     @Override
@@ -137,19 +96,40 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         int id = item.getItemId();
 
         if (R.id.menuReset == id) {
-            Glide.with(this).asBitmap().load(pathPictureFile).into(imgEdit);
-            rotateFragment.onMsgFromMainToFrag(null);
-            filterFragment.onMsgFromMainToFrag(null);
+            Glide.with(this).asBitmap().load(pathPictureFile).into(new CustomTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    editImageView.setBitmapResource(resource, widthScreen, heightScreen*6/10);
+                    editImageView.reset();
+                }
+
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                }
+            });
             return true;
         }
         if (R.id.menuSave == id) {
-            saveImage(currentBitmap);
+            saveImage(editImageView.getEditBitmap());
         }
         if (android.R.id.home == id) {
             onBackPressed();
+            finish();
             return true;
         }
         return false;
+    }
+
+    private void changeTheme(boolean isChecked) {
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Gallery_);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Gallery);
+        }
     }
 
     private void saveImage(Bitmap bitmap) {
@@ -165,5 +145,29 @@ public class EditImageActivity extends AppCompatActivity implements EditCallback
         } catch (Exception e) {
             Log.e("Error to save image in edit ", e.getMessage());
         }
+    }
+
+    public void inflateFragment(Fragment fragment) {
+        toolsRecView.setVisibility(View.GONE);
+        getSupportActionBar().hide();
+        currentFragment = fragment;
+        getSupportFragmentManager().beginTransaction().replace(R.id.editFragment, currentFragment).commit();
+    }
+
+    @Override
+    public void onMsgFromFragToEdit(String sender, String request, Bitmap bitmap) {
+        if (request.equals("CLEAR")) {
+            if (sender.equals("ROTATE"))
+                editImageView.clearRotate();
+            if (sender.equals("FILTER")) {
+                editImageView.clearFilter();
+            }
+        }
+        if (request.equals("CHECK")) {
+            editImageView.saveImage();
+        }
+        getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
+        getSupportActionBar().show();
+        toolsRecView.setVisibility(View.VISIBLE);
     }
 }

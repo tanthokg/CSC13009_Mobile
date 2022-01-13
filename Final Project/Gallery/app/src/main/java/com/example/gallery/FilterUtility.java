@@ -146,4 +146,10 @@ public class FilterUtility {
                 0, 0, 0, 0.5f, 0
         });
     }
+
+    public ColorMatrix getFilter(String name) {
+        ColorMatrix cMatrix = new ColorMatrix();
+        setColorMatrix(name, cMatrix);
+        return cMatrix;
+    }
 }
