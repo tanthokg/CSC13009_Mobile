@@ -103,10 +103,9 @@ public class EditImageView extends View {
 
         if (editBitmap != null) {
             matrix.setRotate(angleRotate, editBitmap.getWidth()/2, editBitmap.getHeight()/2);
-            Paint mPaint = new Paint();
-            mPaint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
             canvas.drawColor(Color.WHITE);
-            canvas.drawBitmap(editBitmap, matrix, mPaint);
+            canvas.drawBitmap(editBitmap, matrix, paint);
         }
     }
 
@@ -151,6 +150,7 @@ public class EditImageView extends View {
 
     public void flip() {
         matrix.postScale(-1, 1);
+        customCanvas.drawBitmap(editBitmap, matrix, null);
         angleRotate = angleRotate * -1;
         invalidate();
     }
@@ -234,12 +234,6 @@ public class EditImageView extends View {
         isBrush = brush;
     }
 
-    public void enableEraser() {
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        setEraserSize(eraserSize);
-
-    }
-
     public void setColorMatrix(ColorMatrix cMatrix) {
         colorMatrixList.add(cMatrix.getArray());
         colorMatrix = cMatrix;
@@ -265,10 +259,5 @@ public class EditImageView extends View {
     public void setBrushColor(String color) {
         brushColor = color;
         paint.setColor(Color.parseColor(brushColor));
-    }
-
-    public void setEraserSize(int size) {
-        eraserSize = toPx(size);
-        paint.setStrokeWidth(eraserSize);
     }
 }

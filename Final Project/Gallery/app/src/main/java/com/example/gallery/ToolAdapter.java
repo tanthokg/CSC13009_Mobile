@@ -54,10 +54,6 @@ public class ToolAdapter extends RecyclerView.Adapter<ToolAdapter.ViewHolder> {
                     editImageView.setIsBrush(true);
                     activity.inflateFragment(BrushFragment.getInstance(context, editImageView));
                 }
-                if (toolItemList.get(holder.getAdapterPosition()).getName().equals("Eraser")) {
-                    editImageView.setIsBrush(true);
-                    activity.inflateFragment(EraserFragment.getInstance(context, editImageView));
-                }
             }
         });
     }
