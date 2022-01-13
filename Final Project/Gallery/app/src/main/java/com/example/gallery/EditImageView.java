@@ -35,7 +35,7 @@ public class EditImageView extends View {
     private int angleRotate;
     private List<Bitmap> listBitmap;
     private List<Path> listPath;
-    private boolean isRotate, isBrush;
+    private boolean isRotate, isBrush, isCrop;
     private float[] originalCMatrix = new float[] {
         1, 0, 0, 0, 0,
         0, 1, 0, 0, 0,
@@ -83,6 +83,7 @@ public class EditImageView extends View {
         listPath = new ArrayList<Path>();
         isRotate = false;
         isBrush = false;
+        isCrop = false;
 
         colorMatrix = new ColorMatrix(originalCMatrix);
         colorMatrixList = new ArrayList<float[]>();
@@ -135,16 +136,19 @@ public class EditImageView extends View {
 
     public void reset() {
         angleRotate = 0;
+        isCrop = false;
         isBrush = false;
         colorMatrix.set(originalCMatrix);
         colorMatrixList.clear();
         colorMatrixList.add(originalCMatrix);
         enableBrush();
+        enableCrop();
         invalidate();
     }
 
     public void clearRotate() {
         angleRotate = 0;
+        isCrop = false;
         invalidate();
     }
 
@@ -158,9 +162,11 @@ public class EditImageView extends View {
     public void saveImage() {
         addLastBitmap(getEditBitmap());
         isBrush = false;
+        isCrop = false;
         colorMatrixList.clear();
         colorMatrixList.add(colorMatrix.getArray());
         enableBrush();
+        enableCrop();
         invalidate();
     }
 
@@ -197,9 +203,55 @@ public class EditImageView extends View {
 
             return true;
         }
+        if (isCrop) {
+            float x = event.getX();
+            float y = event.getY();
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    //  path.moveTo(x, y);
+                    touchStart(x, y);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    // path.lineTo(x, y);
+                    touchMove(x, y);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    path.lineTo(x, y);
+
+
+                    crop();
+                    touchUp();
+
+                    // addLastBitmap(getEditBitmap());
+                    // touchUp();
+                    break;
+            }
+            invalidate();
+            return true;
+        }
         return false;
     }
+    private void crop() {
+        //editBitmap = getEditBitmap();
+        Bitmap croppedBmp = Bitmap.createBitmap(editBitmap.getWidth(), editBitmap.getHeight(), editBitmap.getConfig());
+        Canvas cropCanvas = new Canvas(croppedBmp);
+        // Canvas cropCanvas = new Canvas(editBitmap);
+        Paint paint = new Paint();
+        cropCanvas.drawPath(path, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        cropCanvas.drawBitmap(editBitmap, 0, 0, paint);
+        //   editBitmap = Bitmap.createBitmap(croppedBmp.getWidth(), croppedBmp.getHeight(), croppedBmp.getConfig());
+        //  editBitmap = croppedBmp;
+        editBitmap = Bitmap.createScaledBitmap(croppedBmp, croppedBmp.getWidth(), croppedBmp.getHeight(), true);
+        customCanvas = new Canvas(editBitmap);
+//        customCanvas = new Canvas(croppedBmp);
 
+
+        invalidate();
+
+
+    }
     private void touchUp() {
         path.reset();
     }
@@ -230,9 +282,18 @@ public class EditImageView extends View {
         paint.setMaskFilter(null);
     }
 
+    public void enableCrop() {
+        paint.setXfermode(null);
+        paint.setShader(null);
+        paint.setMaskFilter(null);
+    }
     public void setIsBrush(boolean brush) {
         isBrush = brush;
     }
+    public void setIsCrop(boolean crop) {
+        isCrop = crop;
+    }
+
 
     public void setColorMatrix(ColorMatrix cMatrix) {
         colorMatrixList.add(cMatrix.getArray());

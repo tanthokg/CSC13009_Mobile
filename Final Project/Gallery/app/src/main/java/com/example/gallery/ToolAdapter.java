@@ -54,6 +54,10 @@ public class ToolAdapter extends RecyclerView.Adapter<ToolAdapter.ViewHolder> {
                     editImageView.setIsBrush(true);
                     activity.inflateFragment(BrushFragment.getInstance(context, editImageView));
                 }
+                if (toolItemList.get(holder.getAdapterPosition()).getName().equals("Crop")) {
+                    editImageView.setIsCrop(true);
+                    activity.inflateFragment(CropFragment.getInstance(context, editImageView));
+                }
             }
         });
     }
