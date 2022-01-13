@@ -105,9 +105,14 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
     }
 
     @Override
-    public void onMsgFromMainToFrag(Bitmap result) {
+    public void onResume() {
+        super.onResume();
         rotateSlider.setValue(0);
         valueRotate.setText("0");
+    }
+
+    @Override
+    public void onMsgFromMainToFrag(Bitmap result) {
         degree = 0;
         if (null == result) {
             editBmp = originalBmp;
@@ -119,7 +124,6 @@ public class RotateFragment extends Fragment implements FragmentCallbacks {
         }
     }
 
-    // TODO: 90 + 90 = 180 -> rotate 180 -> not changed
     private Bitmap rotate(int value) {
         int width = editBmp.getWidth();
         int height = editBmp.getHeight();
