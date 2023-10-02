@@ -28,7 +28,7 @@
 ### Demo Screenshots
 - View and manage pictures in different folders, create and manage albums.
 
-![demo-image-01](Final%20Project/Demo/gallery-demo-01.jpg | width = 50)
+![demo-image-01](Final%20Project/Demo/gallery-demo-01.jpg)
 
 - Share pictures, view info, delete pictures, or add it to album(s).
   
